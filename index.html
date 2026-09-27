@@ -2021,8 +2021,40 @@ function updateTimer(){
       100
     )+'%';
 
-}
+  updateLiveSummary();
 
+}
+function updateLiveSummary(){
+
+  if(!timer)
+    return;
+
+  const savedTotal =
+    dayTotals(day).sec;
+
+  const liveTotal =
+    savedTotal +
+    Math.floor(timer.elapsed);
+
+  $('total').textContent =
+    fmt(liveTotal);
+
+  const percent =
+    Math.min(
+      100,
+      Math.round(
+        liveTotal /
+        DAILY_GOAL *
+        100
+      )
+    );
+
+  $('progress').style.width =
+    percent + '%';
+
+  $('percent').textContent =
+    percent + '%';
+}
 
 /* ==================================================
    TIMER BİTTİ
