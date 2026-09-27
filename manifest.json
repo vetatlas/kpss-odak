@@ -1,0 +1,11 @@
+{
+  "name": "KPSS Odak Merkezi",
+  "short_name": "KPSS Odak",
+  "description": "KPSS çalışma ve takip merkezi",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "orientation": "portrait",
+  "lang": "tr"
+}
