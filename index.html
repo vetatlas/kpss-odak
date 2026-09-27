@@ -760,7 +760,42 @@ h1{
 
 <section class="subjects" id="subjects"></section>
 
+<section class="section">
+  <div class="section-title">
+    <h2>📕 Yanlış Defteri</h2>
+    <span id="wrongCount">0 yanlış</span>
+  </div>
 
+  <div class="stat" style="text-align:center;">
+    <div style="font-size:28px;margin-bottom:6px;">📸</div>
+
+    <div style="font-weight:750;font-size:13px;">
+      Yanlış yaptığın soruyu fotoğrafla kaydet
+    </div>
+
+    <div style="font-size:10px;color:var(--muted);margin:5px 0 10px;">
+      Yazmak yok. Fotoğrafı seç, dersini seç, kaydet.
+    </div>
+
+    <input
+      id="wrongPhoto"
+      type="file"
+      accept="image/*"
+      capture="environment"
+      style="display:none;"
+    >
+
+    <button
+      id="addWrong"
+      class="notify-btn"
+      type="button"
+    >
+      📸 Yanlış Ekle
+    </button>
+  </div>
+
+  <div id="wrongList"></div>
+</section>
 <section class="notify-card">
 
   <div class="notify-text">
@@ -2514,7 +2549,283 @@ document.addEventListener(
 /* ==================================================
    BAŞLAT
 ================================================== */
+/* ==================================================
+   YANLIŞ DEFTERİ
+================================================== */
 
+function getWrongQuestions(){
+
+  try{
+
+    return JSON.parse(
+      localStorage.getItem('kpss_wrong_questions')
+    ) || [];
+
+  }catch{
+
+    return [];
+
+  }
+
+}
+
+
+function saveWrongQuestions(list){
+
+  localStorage.setItem(
+    'kpss_wrong_questions',
+    JSON.stringify(list)
+  );
+
+}
+
+
+function compressWrongImage(file){
+
+  return new Promise((resolve,reject)=>{
+
+    const reader=new FileReader();
+
+    reader.onload=()=>{
+
+      const img=new Image();
+
+      img.onload=()=>{
+
+        const max=1200;
+
+        let w=img.width;
+        let h=img.height;
+
+        if(w>max || h>max){
+
+          if(w>h){
+
+            h=Math.round(
+              h*max/w
+            );
+
+            w=max;
+
+          }else{
+
+            w=Math.round(
+              w*max/h
+            );
+
+            h=max;
+
+          }
+
+        }
+
+        const canvas=
+          document.createElement('canvas');
+
+        canvas.width=w;
+        canvas.height=h;
+
+        const ctx=
+          canvas.getContext('2d');
+
+        ctx.drawImage(
+          img,
+          0,
+          0,
+          w,
+          h
+        );
+
+        resolve(
+          canvas.toDataURL(
+            'image/jpeg',
+            0.65
+          )
+        );
+
+      };
+
+      img.onerror=reject;
+
+      img.src=reader.result;
+
+    };
+
+    reader.onerror=reject;
+
+    reader.readAsDataURL(file);
+
+  });
+
+}
+
+
+function renderWrongQuestions(){
+
+  const list=
+    getWrongQuestions();
+
+  $('wrongCount').textContent=
+    list.length+' yanlış';
+
+  const box=
+    $('wrongList');
+
+  box.innerHTML='';
+
+  list
+    .slice()
+    .reverse()
+    .forEach((wrong,index)=>{
+
+      const card=
+        document.createElement('div');
+
+      card.className='stat';
+
+      card.style.marginTop='8px';
+
+      card.innerHTML=`
+
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:8px;
+        ">
+
+          <b>📕 ${wrong.subject}</b>
+
+          <button
+            class="wrong-delete"
+            data-id="${wrong.id}"
+            style="
+              border:0;
+              background:transparent;
+              color:#ff6682;
+              font-size:18px;
+            "
+          >
+            ×
+          </button>
+
+        </div>
+
+        <img
+          src="${wrong.image}"
+          style="
+            width:100%;
+            max-height:420px;
+            object-fit:contain;
+            border-radius:10px;
+            background:#07090d;
+            display:block;
+          "
+        >
+
+        <div style="
+          margin-top:8px;
+          font-size:10px;
+          color:var(--muted);
+        ">
+          ${wrong.date}
+        </div>
+
+      `;
+
+      box.appendChild(card);
+
+    });
+
+}
+
+
+$('addWrong').onclick=()=>{
+
+  $('wrongPhoto').click();
+
+};
+
+
+$('wrongPhoto').addEventListener(
+  'change',
+  async e=>{
+
+    const file=
+      e.target.files[0];
+
+    if(!file)
+      return;
+
+    const image=
+      await compressWrongImage(file);
+
+    const subject=
+      prompt(
+        'Hangi ders?\\n\\nTürkçe / Matematik / Tarih / Coğrafya / Vatandaşlık / Güncel'
+      );
+
+    if(!subject){
+
+      e.target.value='';
+
+      return;
+
+    }
+
+    const list=
+      getWrongQuestions();
+
+    list.push({
+
+      id:Date.now(),
+
+      subject:subject,
+
+      image:image,
+
+      date:new Date().toLocaleDateString(
+        'tr-TR'
+      )
+
+    });
+
+    saveWrongQuestions(list);
+
+    renderWrongQuestions();
+
+    e.target.value='';
+
+  }
+);
+
+
+$('wrongList').addEventListener(
+  'click',
+  e=>{
+
+    const btn=
+      e.target.closest('.wrong-delete');
+
+    if(!btn)
+      return;
+
+    const id=
+      Number(btn.dataset.id);
+
+    const list=
+      getWrongQuestions()
+      .filter(x=>x.id!==id);
+
+    saveWrongQuestions(list);
+
+    renderWrongQuestions();
+
+  }
+);
+
+renderWrongQuestions();
+  
 render();
 
 updateNotificationStatus();
