@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>KPSS Odak Merkezi</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#07111f;
+  color:#fff;
+}
+
+header{
+  padding:18px;
+  background:linear-gradient(135deg,#0d47a1,#1976d2);
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+header h1{
+  margin:0;
+  font-size:23px;
+}
+
+header p{
+  margin:6px 0 0;
+  opacity:.85;
+  font-size:13px;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+.card{
+  background:#101d2e;
+  border:1px solid #21344d;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:15px;
+  box-shadow:0 8px 30px rgba(0,0,0,.18);
+}
+
+h2{
+  margin-top:0;
+  font-size:19px;
+}
+
+button{
+  border:0;
+  border-radius:10px;
+  padding:11px 15px;
+  background:#1976d2;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:active{
+  transform:scale(.97);
+}
+
+button.secondary{
+  background:#26384e;
+}
+
+input{
+  width:100%;
+  padding:11px;
+  border-radius:9px;
+  border:1px solid #334b68;
+  background:#0a1625;
+  color:white;
+  margin-top:5px;
+}
+
+.subject{
+  border:1px solid #263b55;
+  border-radius:14px;
+  padding:14px;
+  margin-top:12px;
+  background:#0c1828;
+}
+
+.subject-title{
+  font-size:18px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.timer-buttons{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.timer-buttons button{
+  flex:1;
+  min-width:80px;
+}
+
+.row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.row > *{
+  flex:1;
+}
+
+.progress{
+  height:14px;
+  background:#24364b;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:10px;
+}
+
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#42a5f5;
+  transition:width .4s ease;
+}
+
+.stat{
+  display:flex;
+  justify-content:space-between;
+  padding:9px 0;
+  border-bottom:1px solid #21344d;
+}
+
+.stat:last-child{
+  border-bottom:0;
+}
+
+.calendar{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+}
+
+.day{
+  padding:9px 3px;
+  border-radius:9px;
+  text-align:center;
+  font-size:12px;
+  background:#18283b;
+  border:1px solid #253b54;
+}
+
+.day.goal{
+  background:#155d36;
+}
+
+.day.partial{
+  background:#795a13;
+}
+
+.day.today{
+  border:2px solid #42a5f5;
+}
+
+#timerOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(2,8,18,.96);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+}
+
+.timerBox{
+  width:min(92%,430px);
+  background:#101d2e;
+  border:1px solid #2d4967;
+  border-radius:22px;
+  padding:25px;
+  text-align:center;
+}
+
+.timerSubject{
+  font-size:18px;
+  opacity:.8;
+}
+
+.bigTimer{
+  font-size:65px;
+  font-weight:bold;
+  margin:20px 0;
+  letter-spacing:2px;
+}
+
+.timerActions{
+  display:flex;
+  gap:10px;
+}
+
+.timerActions button{
+  flex:1;
+}
+
+.notifyBox{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+#notifyStatus{
+  font-size:13px;
+  opacity:.8;
+}
+
+.small{
+  font-size:12px;
+  opacity:.7;
+}
+
+@media(max-width:600px){
+  .bigTimer{
+    font-size:52px;
+  }
+
+  .calendar{
+    gap:4px;
+  }
+
+  .day{
+    padding:7px 2px;
+    font-size:10px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🎯 KPSS Odak Merkezi</h1>
+  <p>Çalışmanı takip et, hedefe odaklan.</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>🔔 Bildirimler</h2>
+
+    <div class="notifyBox">
+      <button onclick="requestNotifications()">
+        Bildirimleri Aç
+      </button>
+
+      <span id="notifyStatus">
+        Kontrol ediliyor...
+      </span>
+    </div>
+
+    <p class="small">
+      Sayaç başladığında bildirim gönderilir. Arka planda tarayıcı kısıtlamaları nedeniyle
+      bildirim güncellemeleri her zaman garanti değildir.
+    </p>
+  </div>
+
+
+  <div class="card">
+    <h2>📊 Bugünün Durumu</h2>
+
+    <div class="stat">
+      <span>Çalışma</span>
+      <strong id="todayTime">0 dk</strong>
+    </div>
+
+    <div class="stat">
+      <span>Soru</span>
+      <strong id="todayQuestions">0</strong>
+    </div>
+
+    <div class="stat">
+      <span>Günlük hedef</span>
+      <strong>8 saat</strong>
+    </div>
+
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <p id="progressText" class="small">
+      %0 tamamlandı
+    </p>
+  </div>
+
+
+  <div class="card">
+    <h2>📚 Dersler</h2>
+
+    <div id="subjects"></div>
+  </div>
+
+
+  <div class="card">
+    <h2>📅 Son 28 Gün</h2>
+
+    <div id="calendar" class="calendar"></div>
+  </div>
+
+
+  <div class="card">
+    <h2>📈 Genel İstatistikler</h2>
+
+    <div class="stat">
+      <span>Toplam çalışma</span>
+      <strong id="totalTime">0 saat</strong>
+    </div>
+
+    <div class="stat">
+      <span>Toplam soru</span>
+      <strong id="totalQuestions">0</strong>
+    </div>
+
+    <div class="stat">
+      <span>Çalışılan gün</span>
+      <strong id="studyDays">0</strong>
+    </div>
+
+    <div class="stat">
+      <span>En uzun gün</span>
+      <strong id="longestDay">0 saat</strong>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- TIMER -->
+
+<div id="timerOverlay">
+
+  <div class="timerBox">
+
+    <div class="timerSubject" id="timerSubject">
+      Ders
+    </div>
+
+    <div class="bigTimer" id="bigTimer">
+      00:00
+    </div>
+
+    <div class="timerActions">
+
+      <button
+        class="secondary"
+        onclick="stopTimer()">
+        Bitir
+      </button>
+
+      <button
+        onclick="openFloatingTimer()">
+        🪟 Yüzen Sayaç
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const DAILY_GOAL = 8 * 60 * 60;
+
+const subjects = [
+  "Türkçe",
+  "Matematik",
+  "Tarih",
+  "Coğrafya",
+  "Vatandaşlık",
+  "Güncel Bilgiler"
+];
+
+let swReg = null;
+
+let timer = null;
+
+let timerInterval = null;
+
+let notificationInterval = null;
+
+
+/* =========================
+   TARİH
+========================= */
+
+function todayKey(){
+
+  const d = new Date();
+
+  const y = d.getFullYear();
+
+  const m = String(d.getMonth()+1).padStart(2,"0");
+
+  const day = String(d.getDate()).padStart(2,"0");
+
+  return `${y}-${m}-${day}`;
+}
+
+
+/* =========================
+   LOCAL STORAGE
+========================= */
+
+function getDay(key = todayKey()){
+
+  const raw = localStorage.getItem("kpss_" + key);
+
+  if(raw){
+
+    try{
+      return JSON.parse(raw);
+    }catch(e){}
+  }
+
+  return {
+    time:{},
+    questions:{}
+  };
+}
+
+
+function saveDay(data,key=todayKey()){
+
+  localStorage.setItem(
+    "kpss_" + key,
+    JSON.stringify(data)
+  );
+}
+
+
+/* =========================
+   FORMAT
+========================= */
+
+function formatTime(seconds){
+
+  seconds = Math.max(0,Math.round(seconds));
+
+  const h = Math.floor(seconds/3600);
+
+  const m = Math.floor((seconds%3600)/60);
+
+  const s = seconds%60;
+
+  if(h > 0){
+
+    return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+
+  }
+
+  return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+}
+
+
+function formatMinutes(seconds){
+
+  const mins = Math.round(seconds/60);
+
+  if(mins < 60){
+
+    return mins + " dk";
+  }
+
+  const h = Math.floor(mins/60);
+
+  const m = mins%60;
+
+  return `${h}s ${m}dk`;
+}
+
+
+/* =========================
+   SERVICE WORKER
+========================= */
+
+async function registerSW(){
+
+  if(!("serviceWorker" in navigator)){
+
+    console.log("Service Worker desteklenmiyor.");
+
+    return;
+  }
+
+  try{
+
+    swReg = await navigator.serviceWorker.register(
+      "./sw.js",
+      {scope:"./"}
+    );
+
+    await navigator.serviceWorker.ready;
+
+    console.log("Service Worker aktif.");
+
+  }catch(error){
+
+    console.log(
+      "Service Worker kaydı başarısız:",
+      error
+    );
+
+  }
+}
+
+
+/* =========================
+   BİLDİRİM
+========================= */
+
+function notificationSupported(){
+
+  return "Notification" in window;
+}
+
+
+function updateNotificationStatus(){
+
+  const el =
+    document.getElementById("notifyStatus");
+
+  if(!notificationSupported()){
+
+    el.textContent =
+      "Bu tarayıcı bildirim desteklemiyor.";
+
+    return;
+  }
+
+  if(Notification.permission === "granted"){
+
+    el.textContent =
+      "Bildirimler aktif ✓";
+
+  }else if(Notification.permission === "denied"){
+
+    el.textContent =
+      "Bildirimler engellenmiş.";
+
+  }else{
+
+    el.textContent =
+      "Bildirimler kapalı.";
+  }
+}
+
+
+async function requestNotifications(){
+
+  if(!notificationSupported()){
+
+    alert(
+      "Bu tarayıcı bildirimleri desteklemiyor."
+    );
+
+    return;
+  }
+
+  try{
+
+    const permission =
+      await Notification.requestPermission();
+
+    updateNotificationStatus();
+
+    if(permission === "granted"){
+
+      await sendNotification(
+        "KPSS Odak Merkezi 🎯",
+        "Bildirimler aktif edildi."
+      );
+
+    }
+
+  }catch(error){
+
+    console.log(error);
+
+    alert(
+      "Bildirim izni alınamadı."
+    );
+  }
+}
+
+
+async function sendNotification(title,body){
+
+  if(
+    !notificationSupported() ||
+    Notification.permission !== "granted"
+  ){
+
+    return;
+  }
+
+  try{
+
+    const reg =
+      swReg ||
+      await navigator.serviceWorker.ready;
+
+    if(reg && reg.active){
+
+      reg.active.postMessage({
+
+        type:"NOTIFY",
+
+        title:title,
+
+        body:body
+
+      });
+
+      return;
+    }
+
+  }catch(error){
+
+    console.log(
+      "SW bildirim hatası:",
+      error
+    );
+
+  }
+
+
+  /* Fallback */
+
+  try{
+
+    new Notification(
+      title,
+      {
+        body:body,
+        tag:"kpss-timer"
+      }
+    );
+
+  }catch(error){
+
+    console.log(error);
+  }
+}
+
+
+/* =========================
+   DERSLERİ OLUŞTUR
+========================= */
+
+function renderSubjects(){
+
+  const container =
+    document.getElementById("subjects");
+
+  container.innerHTML = "";
+
+  subjects.forEach((subject,index)=>{
+
+    const div =
+      document.createElement("div");
+
+    div.className = "subject";
+
+    div.innerHTML = `
+
+      <div class="subject-title">
+        ${subject}
+      </div>
+
+      <div class="timer-buttons">
+
+        <button
+          onclick="startTimer(${index},900)">
+          15 dk
+        </button>
+
+        <button
+          onclick="startTimer(${index},1500)">
+          25 dk
+        </button>
+
+        <button
+          onclick="startTimer(${index},2700)">
+          45 dk
+        </button>
+
+      </div>
+
+      <div style="margin-top:12px">
+
+        <label>
+          Çözülen soru
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          placeholder="Soru sayısı"
+          id="q_${index}"
+        >
+
+        <button
+          style="margin-top:8px;width:100%"
+          onclick="addQuestions(${index})">
+
+          Soruları Kaydet
+
+        </button>
+
+      </div>
+    `;
+
+    container.appendChild(div);
+
+  });
+}
+
+
+/* =========================
+   SORU EKLE
+========================= */
+
+function addQuestions(index){
+
+  const input =
+    document.getElementById(
+      "q_" + index
+    );
+
+  const value =
+    Number(input.value);
+
+  if(!value || value < 1){
+
+    alert(
+      "Lütfen soru sayısını gir."
+    );
+
+    return;
+  }
+
+  const data = getDay();
+
+  const subject = subjects[index];
+
+  data.questions[subject] =
+    (data.questions[subject] || 0) +
+    value;
+
+  saveDay(data);
+
+  input.value = "";
+
+  updateAll();
+
+}
+
+
+/* =========================
+   TIMER BAŞLAT
+========================= */
+
+function startTimer(index,total){
+
+  if(timer){
+
+    alert(
+      "Zaten çalışan bir sayaç var."
+    );
+
+    return;
+  }
+
+  const subject =
+    subjects[index];
+
+  timer = {
+
+    id:index,
+
+    subject:subject,
+
+    total:total,
+
+    startedAt:Date.now(),
+
+    elapsed:0,
+
+    remain:total,
+
+    running:true
+
+  };
+
+
+  localStorage.setItem(
+    "kpss_active_timer",
+    JSON.stringify(timer)
+  );
+
+
+  document.getElementById(
+    "timerSubject"
+  ).textContent =
+    subject;
+
+
+  document.getElementById(
+    "timerOverlay"
+  ).style.display =
+    "flex";
+
+
+  updateTimer();
+
+
+  timerInterval =
+    setInterval(
+      updateTimer,
+      250
+    );
+
+
+  startNotificationTicker();
+
+
+  sendNotification(
+
+    "KPSS Odak Merkezi 🎯",
+
+    `${subject} başladı • ${formatTime(total)} süre`
+
+  );
+
+}
+
+
+/* =========================
+   TIMER HESAPLA
+========================= */
+
+function calculateTimer(){
+
+  if(!timer || !timer.running){
+
+    return;
+  }
+
+  const elapsed =
+    Math.min(
+      timer.total,
+      Math.max(
+        0,
+        (Date.now() -
+        timer.startedAt) / 1000
+      )
+    );
+
+  timer.elapsed =
+    elapsed;
+
+  timer.remain =
+    Math.max(
+      0,
+      timer.total -
+      elapsed
+    );
+}
+
+
+/* =========================
+   TIMER GÜNCELLE
+========================= */
+
+function updateTimer(){
+
+  if(!timer) return;
+
+  calculateTimer();
+
+  document.getElementById(
+    "bigTimer"
+  ).textContent =
+    formatTime(
+      Math.ceil(timer.remain)
+    );
+
+
+  localStorage.setItem(
+    "kpss_active_timer",
+    JSON.stringify(timer)
+  );
+
+
+  if(timer.remain <= 0){
+
+    finishTimer();
+
+  }
+
+}
+
+
+/* =========================
+   BİLDİRİM GÜNCELLEYİCİ
+========================= */
+
+function startNotificationTicker(){
+
+  stopNotificationTicker();
+
+
+  notificationInterval =
+    setInterval(()=>{
+
+      if(
+        !timer ||
+        !timer.running
+      ){
+
+        return;
+      }
+
+      calculateTimer();
+
+
+      if(timer.remain <= 0){
+
+        return;
+      }
+
+
+      /*
+       * Aynı bildirimi sürekli spamlamamak
+       * için 1 dakikada bir güncelliyoruz.
+       *
+       * Sayfa arka planda tamamen askıya alınırsa
+       * tarayıcı bu intervali durdurabilir.
+       */
+
+      sendNotification(
+
+        "KPSS Odak Merkezi 🎯",
+
+        `${timer.subject} • ${formatTime(Math.ceil(timer.remain))} kaldı`
+
+      );
+
+    },60000);
+
+}
+
+
+function stopNotificationTicker(){
+
+  if(notificationInterval){
+
+    clearInterval(
+      notificationInterval
+    );
+
+    notificationInterval = null;
+  }
+
+}
+
+
+/* =========================
+   TIMER BİTİR
+========================= */
+
+function finishTimer(){
+
+  if(!timer) return;
+
+
+  calculateTimer();
+
+
+  const subject =
+    timer.subject;
+
+  const total =
+    timer.total;
+
+
+  const data =
+    getDay();
+
+
+  data.time[subject] =
+    (data.time[subject] || 0) +
+    total;
+
+
+  saveDay(data);
+
+
+  clearInterval(
+    timerInterval
+  );
+
+  timerInterval = null;
+
+
+  stopNotificationTicker();
+
+
+  timer.running = false;
+
+
+  localStorage.removeItem(
+    "kpss_active_timer"
+  );
+
+
+  sendNotification(
+
+    "🎯 Çalışma tamamlandı!",
+
+    `${subject} çalışması tamamlandı. ${formatMinutes(total)} çalıştın.`
+
+  );
+
+
+  timer = null;
+
+
+  document.getElementById(
+    "timerOverlay"
+  ).style.display =
+    "none";
+
+
+  updateAll();
+
+
+  alert(
+    `🎯 ${subject} çalışması tamamlandı!`
+  );
+
+}
+
+
+/* =========================
+   TIMER DURDUR
+========================= */
+
+function stopTimer(){
+
+  if(!timer) return;
+
+
+  calculateTimer();
+
+
+  const elapsed =
+    Math.floor(
+      timer.elapsed
+    );
+
+
+  if(elapsed > 0){
+
+    const data =
+      getDay();
+
+
+    data.time[timer.subject] =
+      (data.time[timer.subject] || 0) +
+      elapsed;
+
+
+    saveDay(data);
+
+  }
+
+
+  clearInterval(
+    timerInterval
+  );
+
+  timerInterval = null;
+
+
+  stopNotificationTicker();
+
+
+  localStorage.removeItem(
+    "kpss_active_timer"
+  );
+
+
+  timer = null;
+
+
+  document.getElementById(
+    "timerOverlay"
+  ).style.display =
+    "none";
+
+
+  updateAll();
+
+}
+
+
+/* =========================
+   TIMER GERİ YÜKLE
+========================= */
+
+function restoreTimer(){
+
+  const raw =
+    localStorage.getItem(
+      "kpss_active_timer"
+    );
+
+
+  if(!raw) return;
+
+
+  try{
+
+    const saved =
+      JSON.parse(raw);
+
+
+    if(
+      !saved ||
+      !saved.running
+    ){
+
+      return;
+    }
+
+
+    timer = saved;
+
+
+    calculateTimer();
+
+
+    if(timer.remain <= 0){
+
+      finishTimer();
+
+      return;
+    }
+
+
+    document.getElementById(
+      "timerSubject"
+    ).textContent =
+      timer.subject;
+
+
+    document.getElementById(
+      "timerOverlay"
+    ).style.display =
+      "flex";
+
+
+    updateTimer();
+
+
+    timerInterval =
+      setInterval(
+        updateTimer,
+        250
+      );
+
+
+    startNotificationTicker();
+
+
+  }catch(error){
+
+    localStorage.removeItem(
+      "kpss_active_timer"
+    );
+
+  }
+
+}
+
+
+/* =========================
+   ARKA PLANA GİDİNCE
+========================= */
+
+document.addEventListener(
+  "visibilitychange",
+  ()=>{
+
+    if(!document.hidden){
+
+      if(timer && timer.running){
+
+        calculateTimer();
+
+        if(timer.remain <= 0){
+
+          finishTimer();
+
+        }else{
+
+          updateTimer();
+
+        }
+
+      }
+
+    }
+
+  }
+);
+
+
+/* =========================
+   SAYFA KAPANMADAN
+========================= */
+
+window.addEventListener(
+  "pagehide",
+  ()=>{
+
+    if(timer && timer.running){
+
+      calculateTimer();
+
+      localStorage.setItem(
+        "kpss_active_timer",
+        JSON.stringify(timer)
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================
+   YÜZEN SAYAÇ
+========================= */
+
+async function openFloatingTimer(){
+
+  if(!timer){
+
+    alert(
+      "Önce bir sayaç başlat."
+    );
+
+    return;
+  }
+
+
+  if(
+    !("documentPictureInPicture" in window)
+  ){
+
+    alert(
+      "Bu tarayıcı yüzen sayaç özelliğini desteklemiyor. Sayaç normal ekranda çalışmaya devam eder."
+    );
+
+    return;
+  }
+
+
+  try{
+
+    const win =
+      await document
+      .documentPictureInPicture
+      .requestWindow({
+
+        width:330,
+
+        height:190
+
+      });
+
+
+    const style =
+      document.createElement("style");
+
+
+    style.textContent = `
+
+      body{
+
+        margin:0;
+
+        background:#07111f;
+
+        color:white;
+
+        font-family:Arial;
+
+        display:flex;
+
+        flex-direction:column;
+
+        align-items:center;
+
+        justify-content:center;
+
+        height:100vh;
+
+      }
+
+      #subject{
+
+        font-size:16px;
+
+        opacity:.8;
+
+      }
+
+      #time{
+
+        font-size:48px;
+
+        font-weight:bold;
+
+        margin-top:10px;
+
+      }
+
+    `;
+
+
+    win.document.head.appendChild(
+      style
+    );
+
+
+    const subject =
+      win.document.createElement(
+        "div"
+      );
+
+
+    subject.id = "subject";
+
+
+    const time =
+      win.document.createElement(
+        "div"
+      );
+
+
+    time.id = "time";
+
+
+    win.document.body.appendChild(
+      subject
+    );
+
+
+    win.document.body.appendChild(
+      time
+    );
+
+
+    function updatePiP(){
+
+      if(
+        !timer ||
+        !timer.running
+      ){
+
+        return;
+      }
+
+
+      calculateTimer();
+
+
+      subject.textContent =
+        timer.subject;
+
+
+      time.textContent =
+        formatTime(
+          Math.ceil(timer.remain)
+        );
+
+    }
+
+
+    const pipInterval =
+      setInterval(
+        updatePiP,
+        250
+      );
+
+
+    win.addEventListener(
+      "pagehide",
+      ()=>{
+        clearInterval(
+          pipInterval
+        );
+      }
+    );
+
+
+    updatePiP();
+
+
+  }catch(error){
+
+    console.log(
+      "Yüzen sayaç açılamadı:",
+      error
+    );
+
+    alert(
+      "Yüzen sayaç açılamadı. Tarayıcın bu özelliği desteklemiyor olabilir."
+    );
+
+  }
+
+}
+
+
+/* =========================
+   BUGÜNÜ GÜNCELLE
+========================= */
+
+function updateToday(){
+
+  const data =
+    getDay();
+
+
+  let totalTime = 0;
+
+  let totalQuestions = 0;
+
+
+  subjects.forEach(
+    subject=>{
+
+      totalTime +=
+        Number(
+          data.time[subject] || 0
+        );
+
+
+      totalQuestions +=
+        Number(
+          data.questions[subject] || 0
+        );
+
+    }
+  );
+
+
+  document.getElementById(
+    "todayTime"
+  ).textContent =
+    formatMinutes(totalTime);
+
+
+  document.getElementById(
+    "todayQuestions"
+  ).textContent =
+    totalQuestions;
+
+
+  const percent =
+    Math.min(
+      100,
+      (totalTime /
+      DAILY_GOAL) *
+      100
+    );
+
+
+  document.getElementById(
+    "progressBar"
+  ).style.width =
+    percent + "%";
+
+
+  document.getElementById(
+    "progressText"
+  ).textContent =
+    "%" +
+    Math.round(percent) +
+    " tamamlandı";
+
+}
+
+
+/* =========================
+   TAKVİM
+========================= */
+
+function renderCalendar(){
+
+  const container =
+    document.getElementById(
+      "calendar"
+    );
+
+
+  container.innerHTML = "";
+
+
+  const today =
+    new Date();
+
+
+  for(let i=0;i<28;i++){
+
+    const d =
+      new Date(today);
+
+
+    d.setDate(
+      today.getDate() + i
+    );
+
+
+    const key =
+      d.getFullYear() +
+      "-" +
+      String(
+        d.getMonth()+1
+      ).padStart(2,"0") +
+      "-" +
+      String(
+        d.getDate()
+      ).padStart(2,"0");
+
+
+    const data =
+      getDay(key);
+
+
+    let total = 0;
+
+
+    subjects.forEach(
+      s=>{
+        total +=
+          Number(
+            data.time[s] || 0
+          );
+      }
+    );
+
+
+    const div =
+      document.createElement(
+        "div"
+      );
+
+
+    div.className = "day";
+
+
+    if(key === todayKey()){
+
+      div.classList.add(
+        "today"
+      );
+
+    }
+
+
+    if(total >= DAILY_GOAL){
+
+      div.classList.add(
+        "goal"
+      );
+
+    }else if(total > 0){
+
+      div.classList.add(
+        "partial"
+      );
+
+    }
+
+
+    div.innerHTML = `
+
+      <strong>
+        ${d.getDate()}
+      </strong>
+
+      <br>
+
+      ${formatMinutes(total)}
+
+    `;
+
+
+    container.appendChild(
+      div
+    );
+
+  }
+
+}
+
+
+/* =========================
+   GENEL İSTATİSTİK
+========================= */
+
+function updateStats(){
+
+  let totalTime = 0;
+
+  let totalQuestions = 0;
+
+  let studyDays = 0;
+
+  let longestDay = 0;
+
+
+  for(let i=0;i<28;i++){
+
+    const d =
+      new Date();
+
+
+    d.setDate(
+      d.getDate() - i
+    );
+
+
+    const key =
+      d.getFullYear() +
+      "-" +
+      String(
+        d.getMonth()+1
+      ).padStart(2,"0") +
+      "-" +
+      String(
+        d.getDate()
+      ).padStart(2,"0");
+
+
+    const data =
+      getDay(key);
+
+
+    let dayTime = 0;
+
+
+    subjects.forEach(
+      s=>{
+
+        dayTime +=
+          Number(
+            data.time[s] || 0
+          );
+
+
+        totalQuestions +=
+          Number(
+            data.questions[s] || 0
+          );
+
+      }
+    );
+
+
+    totalTime +=
+      dayTime;
+
+
+    if(dayTime > 0){
+
+      studyDays++;
+
+    }
+
+
+    longestDay =
+      Math.max(
+        longestDay,
+        dayTime
+      );
+
+  }
+
+
+  document.getElementById(
+    "totalTime"
+  ).textContent =
+    formatMinutes(totalTime);
+
+
+  document.getElementById(
+    "totalQuestions"
+  ).textContent =
+    totalQuestions;
+
+
+  document.getElementById(
+    "studyDays"
+  ).textContent =
+    studyDays;
+
+
+  document.getElementById(
+    "longestDay"
+  ).textContent =
+    formatMinutes(longestDay);
+
+}
+
+
+/* =========================
+   HER ŞEYİ GÜNCELLE
+========================= */
+
+function updateAll(){
+
+  updateToday();
+
+  renderCalendar();
+
+  updateStats();
+
+}
+
+
+/* =========================
+   BAŞLAT
+========================= */
+
+async function init(){
+
+  updateNotificationStatus();
+
+  renderSubjects();
+
+  updateAll();
+
+  await registerSW();
+
+  restoreTimer();
+
+}
+
+
+init();
+
+</script>
+
+</body>
+</html>
