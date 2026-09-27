@@ -663,6 +663,173 @@ h1{
     align-items:flex-start;
   }
 }
+.wrong-mini{
+  margin-top:14px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px 13px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.wrong-mini b{
+  display:block;
+  font-size:12px;
+}
+
+.wrong-mini span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.wrong-mini button{
+  border:1px solid #34405a;
+  background:#141a24;
+  border-radius:9px;
+  padding:8px 11px;
+  font-size:11px;
+  font-weight:750;
+}
+.wrong-book{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:#05070b;
+  display:none;
+  flex-direction:column;
+}
+
+.wrong-book.show{
+  display:flex;
+}
+
+.wrong-top{
+  height:58px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 14px;
+  border-bottom:1px solid #202838;
+  background:#080b11;
+}
+
+.wrong-top button{
+  border:1px solid #283142;
+  background:#10151d;
+  color:white;
+  border-radius:9px;
+  padding:7px 11px;
+}
+
+.wrong-top b{
+  font-size:13px;
+}
+
+.wrong-top span{
+  color:var(--muted);
+  font-size:10px;
+}
+
+.wrong-feed{
+  flex:1;
+  overflow-y:auto;
+  scroll-snap-type:y mandatory;
+  overscroll-behavior-y:contain;
+}
+
+.wrong-card{
+  height:calc(100vh - 58px);
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+  display:flex;
+  flex-direction:column;
+  padding:14px;
+  overflow:hidden;
+}
+
+.wrong-card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.wrong-subject{
+  font-size:12px;
+  font-weight:800;
+}
+
+.wrong-date{
+  color:var(--muted);
+  font-size:9px;
+}
+
+.wrong-image-wrap{
+  flex:1;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#090d14;
+  border:1px solid #202838;
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.wrong-image{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.wrong-bottom{
+  padding-top:10px;
+}
+
+.wrong-hint{
+  text-align:center;
+  color:var(--muted);
+  font-size:10px;
+  margin-bottom:8px;
+}
+
+.wrong-actions{
+  display:flex;
+  gap:7px;
+}
+
+.wrong-actions button{
+  flex:1;
+  height:38px;
+  border-radius:9px;
+  border:1px solid #283142;
+  background:#10151d;
+  color:white;
+  font-weight:750;
+  font-size:11px;
+}
+
+.wrong-actions .learned{
+  color:var(--green);
+  border-color:#275344;
+  background:#10251f;
+}
+
+.wrong-empty{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:var(--muted);
+  padding:30px;
+}
 </style>
 </head>
 
@@ -759,42 +926,15 @@ h1{
 
 
 <section class="subjects" id="subjects"></section>
-
-<section class="section">
-  <div class="section-title">
-    <h2>📕 Yanlış Defteri</h2>
-    <span id="wrongCount">0 yanlış</span>
+<section class="wrong-mini">
+  <div>
+    <b>📕 Yanlış Defteri</b>
+    <span id="wrongMiniText">Yanlışlarını kaydet ve tekrar et</span>
   </div>
 
-  <div class="stat" style="text-align:center;">
-    <div style="font-size:28px;margin-bottom:6px;">📸</div>
-
-    <div style="font-weight:750;font-size:13px;">
-      Yanlış yaptığın soruyu fotoğrafla kaydet
-    </div>
-
-    <div style="font-size:10px;color:var(--muted);margin:5px 0 10px;">
-      Yazmak yok. Fotoğrafı seç, dersini seç, kaydet.
-    </div>
-
-    <input
-      id="wrongPhoto"
-      type="file"
-      accept="image/*"
-      capture="environment"
-      style="display:none;"
-    >
-
-    <button
-      id="addWrong"
-      class="notify-btn"
-      type="button"
-    >
-      📸 Yanlış Ekle
-    </button>
-  </div>
-
-  <div id="wrongList"></div>
+  <button id="openWrongBook">
+    Aç →
+  </button>
 </section>
 <section class="notify-card">
 
@@ -967,7 +1107,52 @@ h1{
 
 </section>
 
+<div id="wrongBook" class="wrong-book">
 
+  <div class="wrong-top">
+
+  <button id="wrongBack">
+    ‹ Geri
+  </button>
+
+  <b>📕 Yanlış Defteri</b>
+
+  <div style="display:flex;align-items:center;gap:7px;">
+
+    <button
+      id="addWrong"
+      style="
+        border:1px solid #34405a;
+        background:#141a24;
+        color:white;
+        border-radius:8px;
+        padding:7px 9px;
+        font-size:11px;
+        font-weight:750;
+      "
+    >
+      ＋ Ekle
+    </button>
+
+    <span id="wrongPosition">
+      0 / 0
+    </span>
+
+  </div>
+
+</div>
+
+<input
+  id="wrongPhoto"
+  type="file"
+  accept="image/*"
+  capture="environment"
+  style="display:none;"
+>
+
+  <div id="wrongFeed" class="wrong-feed"></div>
+
+</div>
 <script>
   if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -2548,7 +2733,7 @@ document.addEventListener(
 
 /* ==================================================
    BAŞLAT
-================================================== */
+================================================== */          
 /* ==================================================
    YANLIŞ DEFTERİ
 ================================================== */
@@ -2558,7 +2743,9 @@ function getWrongQuestions(){
   try{
 
     return JSON.parse(
-      localStorage.getItem('kpss_wrong_questions')
+      localStorage.getItem(
+        'kpss_wrong_questions'
+      )
     ) || [];
 
   }catch{
@@ -2580,257 +2767,267 @@ function saveWrongQuestions(list){
 }
 
 
-function compressWrongImage(file){
-
-  return new Promise((resolve,reject)=>{
-
-    const reader=new FileReader();
-
-    reader.onload=()=>{
-
-      const img=new Image();
-
-      img.onload=()=>{
-
-        const max=1200;
-
-        let w=img.width;
-        let h=img.height;
-
-        if(w>max || h>max){
-
-          if(w>h){
-
-            h=Math.round(
-              h*max/w
-            );
-
-            w=max;
-
-          }else{
-
-            w=Math.round(
-              w*max/h
-            );
-
-            h=max;
-
-          }
-
-        }
-
-        const canvas=
-          document.createElement('canvas');
-
-        canvas.width=w;
-        canvas.height=h;
-
-        const ctx=
-          canvas.getContext('2d');
-
-        ctx.drawImage(
-          img,
-          0,
-          0,
-          w,
-          h
-        );
-
-        resolve(
-          canvas.toDataURL(
-            'image/jpeg',
-            0.65
-          )
-        );
-
-      };
-
-      img.onerror=reject;
-
-      img.src=reader.result;
-
-    };
-
-    reader.onerror=reject;
-
-    reader.readAsDataURL(file);
-
-  });
-
-}
+let wrongIndex=0;
 
 
-function renderWrongQuestions(){
+function renderWrongBook(){
 
   const list=
     getWrongQuestions();
 
-  $('wrongCount').textContent=
-    list.length+' yanlış';
+  const feed=
+    $('wrongFeed');
 
-  const box=
-    $('wrongList');
+  $('wrongMiniText').textContent=
+    list.length
+      ? list.length+' yanlış • Tekrar et'
+      : 'Henüz yanlış eklenmedi';
 
-  box.innerHTML='';
+  if(!list.length){
 
-  list
-    .slice()
-    .reverse()
-    .forEach((wrong,index)=>{
+    feed.innerHTML=`
+      <div class="wrong-empty">
+        <div>
+          <div style="font-size:35px;">
+            📕
+          </div>
 
-      const card=
-        document.createElement('div');
+          <b>Yanlış defterin boş.</b>
 
-      card.className='stat';
+          <div style="margin-top:7px;">
+            Yanlış yaptığın soruları<br>
+            buraya ekleyebilirsin.
+          </div>
+        </div>
+      </div>
+    `;
 
-      card.style.marginTop='8px';
+    $('wrongPosition').textContent=
+      '0 / 0';
 
-      card.innerHTML=`
+    return;
 
-        <div style="
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-          margin-bottom:8px;
-        ">
+  }
 
-          <b>📕 ${wrong.subject}</b>
+
+  if(wrongIndex>=list.length)
+    wrongIndex=list.length-1;
+
+  feed.innerHTML='';
+
+
+  list.forEach((wrong,i)=>{
+
+    const card=
+      document.createElement('article');
+
+    card.className='wrong-card';
+
+    card.innerHTML=`
+
+      <div class="wrong-card-head">
+
+        <div class="wrong-subject">
+          📚 ${wrong.subject}
+        </div>
+
+        <div class="wrong-date">
+          ${wrong.date}
+        </div>
+
+      </div>
+
+
+      <div class="wrong-image-wrap">
+
+        <img
+          class="wrong-image"
+          src="${wrong.image}"
+          alt="Yanlış soru"
+        >
+
+      </div>
+
+
+      <div class="wrong-bottom">
+
+        <div class="wrong-hint">
+          👆 Soruyu tekrar çözmeye çalış
+        </div>
+
+        <div class="wrong-actions">
 
           <button
-            class="wrong-delete"
-            data-id="${wrong.id}"
-            style="
-              border:0;
-              background:transparent;
-              color:#ff6682;
-              font-size:18px;
-            "
+            class="learned"
+            data-learned="${wrong.id}"
           >
-            ×
+            ✓ Öğrendim
+          </button>
+
+          <button
+            data-repeat="${wrong.id}"
+          >
+            🔄 Tekrar sor
           </button>
 
         </div>
 
-        <img
-          src="${wrong.image}"
-          style="
-            width:100%;
-            max-height:420px;
-            object-fit:contain;
-            border-radius:10px;
-            background:#07090d;
-            display:block;
-          "
-        >
+      </div>
 
-        <div style="
-          margin-top:8px;
-          font-size:10px;
-          color:var(--muted);
-        ">
-          ${wrong.date}
-        </div>
+    `;
 
-      `;
+    feed.appendChild(card);
 
-      box.appendChild(card);
+  });
 
-    });
+
+  updateWrongPosition();
 
 }
 
 
-$('addWrong').onclick=()=>{
+function updateWrongPosition(){
 
-  $('wrongPhoto').click();
+  const cards=
+    document.querySelectorAll(
+      '.wrong-card'
+    );
+
+  if(!cards.length)
+    return;
+
+  let closest=0;
+  let distance=Infinity;
+
+  cards.forEach((card,i)=>{
+
+    const d=
+      Math.abs(
+        card.getBoundingClientRect().top
+      );
+
+    if(d<distance){
+
+      distance=d;
+      closest=i;
+
+    }
+
+  });
+
+  wrongIndex=closest;
+
+  $('wrongPosition').textContent=
+    (closest+1)+' / '+
+    cards.length;
+
+}
+
+
+$('openWrongBook').onclick=()=>{
+
+  renderWrongBook();
+
+  $('wrongBook')
+    .classList.add('show');
+
+  document.body.style.overflow='hidden';
 
 };
 
 
-$('wrongPhoto').addEventListener(
-  'change',
-  async e=>{
+$('wrongBack').onclick=()=>{
 
-    const file=
-      e.target.files[0];
+  $('wrongBook')
+    .classList.remove('show');
 
-    if(!file)
-      return;
+  document.body.style.overflow='';
 
-    const image=
-      await compressWrongImage(file);
+};
 
-    const subject=
-      prompt(
-        'Hangi ders?\\n\\nTürkçe / Matematik / Tarih / Coğrafya / Vatandaşlık / Güncel'
+
+$('wrongFeed').addEventListener(
+  'scroll',
+  ()=>{
+    updateWrongPosition();
+  }
+);
+
+
+$('wrongFeed').addEventListener(
+  'click',
+  e=>{
+
+    const learned=
+      e.target.closest(
+        '[data-learned]'
       );
 
-    if(!subject){
+    const repeat=
+      e.target.closest(
+        '[data-repeat]'
+      );
 
-      e.target.value='';
-
+    if(!learned && !repeat)
       return;
 
-    }
+    const id=
+      Number(
+        (learned || repeat)
+          .dataset[
+            learned
+              ? 'learned'
+              : 'repeat'
+          ]
+      );
 
     const list=
       getWrongQuestions();
 
-    list.push({
+    const item=
+      list.find(
+        x=>x.id===id
+      );
 
-      id:Date.now(),
-
-      subject:subject,
-
-      image:image,
-
-      date:new Date().toLocaleDateString(
-        'tr-TR'
-      )
-
-    });
-
-    saveWrongQuestions(list);
-
-    renderWrongQuestions();
-
-    e.target.value='';
-
-  }
-);
-
-
-$('wrongList').addEventListener(
-  'click',
-  e=>{
-
-    const btn=
-      e.target.closest('.wrong-delete');
-
-    if(!btn)
+    if(!item)
       return;
 
-    const id=
-      Number(btn.dataset.id);
 
-    const list=
-      getWrongQuestions()
-      .filter(x=>x.id!==id);
+    if(learned){
 
-    saveWrongQuestions(list);
+      item.learned=true;
 
-    renderWrongQuestions();
+      item.learnedAt=
+        new Date().toLocaleDateString(
+          'tr-TR'
+        );
+
+      saveWrongQuestions(list);
+
+      renderWrongBook();
+
+    }
+
+
+    if(repeat){
+
+      item.repeat=true;
+
+      saveWrongQuestions(list);
+
+      e.target.textContent=
+        '✓ Tekrar listesinde';
+
+    }
 
   }
 );
-
-renderWrongQuestions();
-  
 render();
 
 updateNotificationStatus();
 
 restoreTimer();
+
 
 </script>
 
