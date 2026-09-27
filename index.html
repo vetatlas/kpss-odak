@@ -830,6 +830,41 @@ h1{
   color:var(--muted);
   padding:30px;
 }
+  /* Yanlış Defteri - Reels hissi */
+.wrong-feed{
+  overflow:hidden !important;
+  position:relative;
+  touch-action:none;
+}
+
+.wrong-card{
+  position:absolute;
+  inset:0;
+  height:100% !important;
+  min-height:0 !important;
+  opacity:0;
+  transform:translateY(100%);
+  transition:
+    transform .28s cubic-bezier(.22,.61,.36,1),
+    opacity .22s ease;
+  pointer-events:none;
+}
+
+.wrong-card.active{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+.wrong-card.prev{
+  opacity:1;
+  transform:translateY(-100%);
+}
+
+.wrong-card.next{
+  opacity:1;
+  transform:translateY(100%);
+}
 </style>
 </head>
 
@@ -3170,6 +3205,132 @@ $('wrongPhoto').addEventListener(
     e.target.value='';
 
   }
+);
+/* Yanlış Defteri - Reels swipe */
+
+let wrongTouchStartY = 0;
+let wrongTouchStartX = 0;
+let wrongSwipeLocked = false;
+
+function showWrongCard(index, direction = 1){
+
+  const cards =
+    document.querySelectorAll('.wrong-card');
+
+  if(!cards.length) return;
+
+  if(index < 0) index = 0;
+  if(index >= cards.length)
+    index = cards.length - 1;
+
+  wrongIndex = index;
+
+  cards.forEach((card, i)=>{
+
+    card.classList.remove(
+      'active',
+      'prev',
+      'next'
+    );
+
+    if(i === index){
+      card.classList.add('active');
+    }
+
+    else if(i < index){
+      card.classList.add('prev');
+    }
+
+    else{
+      card.classList.add('next');
+    }
+
+  });
+
+  $('wrongPosition').textContent =
+    (index + 1) + ' / ' + cards.length;
+}
+
+
+$('wrongFeed').addEventListener(
+  'touchstart',
+  e=>{
+
+    if(!e.touches.length) return;
+
+    wrongTouchStartY =
+      e.touches[0].clientY;
+
+    wrongTouchStartX =
+      e.touches[0].clientX;
+
+    wrongSwipeLocked = false;
+
+  },
+  {passive:true}
+);
+
+
+$('wrongFeed').addEventListener(
+  'touchend',
+  e=>{
+
+    if(wrongSwipeLocked) return;
+
+    const touch =
+      e.changedTouches[0];
+
+    if(!touch) return;
+
+    const dy =
+      touch.clientY - wrongTouchStartY;
+
+    const dx =
+      touch.clientX - wrongTouchStartX;
+
+    /* Yatay hareketse swipe kabul etme */
+    if(Math.abs(dx) > Math.abs(dy))
+      return;
+
+    /* Çok küçük hareketleri yok say */
+    if(Math.abs(dy) < 50)
+      return;
+
+    wrongSwipeLocked = true;
+
+    const cards =
+      document.querySelectorAll(
+        '.wrong-card'
+      );
+
+    if(dy < 0){
+
+      // Yukarı kaydır → sonraki
+      if(wrongIndex < cards.length - 1){
+
+        showWrongCard(
+          wrongIndex + 1,
+          1
+        );
+
+      }
+
+    }else{
+
+      // Aşağı kaydır → önceki
+      if(wrongIndex > 0){
+
+        showWrongCard(
+          wrongIndex - 1,
+          -1
+        );
+
+      }
+
+    }
+
+  },
+  {passive:true}
 );
 render();
 
