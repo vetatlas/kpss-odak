@@ -1768,32 +1768,45 @@ $('enableNotify').onclick=
   requestNotifications;
 
 
-/* ==================================================
-   BİLDİRİM GÖNDER
-================================================== */
-
-function sendNotification(
+async function sendNotification(
   title,
   body
 ){
 
   if(
     !notificationSupported() ||
-    Notification.permission!=='granted'
-  )
+    Notification.permission !== 'granted'
+  ){
     return;
+  }
 
   try{
 
-    new Notification(
+    const registration =
+      await navigator.serviceWorker.ready;
+
+    await registration.showNotification(
       title,
       {
-        body:body,
-        tag:'kpss-timer'
+        body: body,
+        tag: 'kpss-timer',
+        renotify: true,
+        vibrate: [200,100,200]
       }
     );
 
-  }catch(e){}
+    console.log(
+      'BİLDİRİM GÖNDERİLDİ'
+    );
+
+  }catch(error){
+
+    console.error(
+      'BİLDİRİM HATASI:',
+      error
+    );
+
+  }
 
 }
 
