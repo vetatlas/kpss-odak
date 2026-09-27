@@ -1248,7 +1248,23 @@ function renderSubjects(d){
               <button class="preset" data-min="45">
                 45 dk
               </button>
-
+              <input
+                  class="custom-min"
+                  type="number"
+                  min="1"
+                  max="300"
+                  inputmode="numeric"
+                  placeholder="Dakika"
+                  style="width:90px;height:36px;border:1px solid #2a3345;background:#10151e;color:#fff;border-radius:9px;padding:0 9px;"
+                >
+                
+                <button
+                  class="custom-start"
+                  type="button"
+                  style="height:36px;padding:0 11px;border-radius:9px;border:1px solid #2a3345;background:#141a24;color:#fff;font-weight:750;"
+                >
+                  Başlat
+                </button>
             </div>
 
           </div>
@@ -1337,7 +1353,36 @@ $('subjects').addEventListener(
 
       return;
     }
-
+    const customStart =
+      e.target.closest('.custom-start');
+    
+    if (customStart) {
+    
+      const subject =
+        customStart.closest('.subject');
+    
+      const input =
+        subject.querySelector('.custom-min');
+    
+      const minutes =
+        Number(input.value);
+    
+      if (
+        !minutes ||
+        minutes < 1 ||
+        minutes > 300
+      ) {
+        alert('1 ile 300 dakika arasında bir süre gir.');
+        return;
+      }
+    
+      startTimer(
+        subject.dataset.id,
+        minutes * 60
+      );
+    
+      return;
+    }
     const save=
       e.target.closest('[data-save]');
 
