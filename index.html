@@ -3022,6 +3022,155 @@ $('wrongFeed').addEventListener(
 
   }
 );
+
+$('addWrong').onclick=()=>{
+
+  $('wrongPhoto').click();
+
+};
+
+
+function compressWrongImage(file){
+
+  return new Promise((resolve,reject)=>{
+
+    const reader=new FileReader();
+
+    reader.onload=()=>{
+
+      const img=new Image();
+
+      img.onload=()=>{
+
+        const max=1400;
+
+        let w=img.width;
+        let h=img.height;
+
+        if(w>max || h>max){
+
+          if(w>h){
+
+            h=Math.round(h*max/w);
+            w=max;
+
+          }else{
+
+            w=Math.round(w*max/h);
+            h=max;
+
+          }
+
+        }
+
+        const canvas=
+          document.createElement('canvas');
+
+        canvas.width=w;
+        canvas.height=h;
+
+        const ctx=
+          canvas.getContext('2d');
+
+        ctx.drawImage(
+          img,
+          0,
+          0,
+          w,
+          h
+        );
+
+        resolve(
+          canvas.toDataURL(
+            'image/jpeg',
+            0.65
+          )
+        );
+
+      };
+
+      img.onerror=reject;
+      img.src=reader.result;
+
+    };
+
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+
+  });
+
+}
+
+
+$('wrongPhoto').addEventListener(
+  'change',
+  async e=>{
+
+    const file=e.target.files[0];
+
+    if(!file)
+      return;
+
+    const subject=
+      prompt(
+        'Dersini yaz:\\n\\nTarih / Türkçe / Matematik / Coğrafya / Vatandaşlık / Güncel'
+      );
+
+    if(!subject){
+
+      e.target.value='';
+      return;
+
+    }
+
+    try{
+
+      const image=
+        await compressWrongImage(file);
+
+      const list=
+        getWrongQuestions();
+
+      list.push({
+
+        id:Date.now(),
+
+        subject:subject,
+
+        image:image,
+
+        date:new Date()
+          .toLocaleDateString('tr-TR'),
+
+        repeat:false,
+        learned:false
+
+      });
+
+      saveWrongQuestions(list);
+
+      wrongIndex=
+        list.length-1;
+
+      renderWrongBook();
+
+      $('wrongFeed').scrollTo({
+        top:0,
+        behavior:'smooth'
+      });
+
+    }catch(error){
+
+      alert(
+        'Fotoğraf kaydedilemedi.'
+      );
+
+    }
+
+    e.target.value='';
+
+  }
+);
 render();
 
 updateNotificationStatus();
