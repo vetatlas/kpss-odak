@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="tr">
+<!DOCTYPE html><html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>KPSS Tarih Testi</title>
-
-<style>
+<title>KPSS Tarih Testi</title><style>
 * {
     box-sizing: border-box;
 }
@@ -19,9 +15,10 @@ body {
 }
 
 .container {
+    width: 100%;
     max-width: 850px;
     margin: auto;
-    padding: 15px;
+    padding: 12px;
 }
 
 /* HEADER */
@@ -43,6 +40,65 @@ header h1 {
     display: flex;
     justify-content: space-between;
     font-size: 14px;
+}
+
+/* BAŞLANGIÇ */
+
+.start-screen {
+    background: white;
+    border-radius: 20px;
+    padding: 30px 22px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,.06);
+}
+
+.start-screen h2 {
+    font-size: 27px;
+    margin-top: 0;
+}
+
+.file-box {
+    margin: 25px 0;
+    padding: 22px;
+    border: 2px dashed #93c5fd;
+    background: #eff6ff;
+    border-radius: 15px;
+}
+
+.file-label {
+    display: inline-block;
+    background: #2563eb;
+    color: white;
+    padding: 14px 22px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#jsonFile {
+    display: none;
+}
+
+.file-status {
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.start-btn {
+    border: none;
+    background: #2563eb;
+    color: white;
+    padding: 16px 35px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.start-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
 }
 
 /* PROGRESS */
@@ -75,7 +131,7 @@ header h1 {
     transition: width .3s ease;
 }
 
-/* CARD */
+/* QUESTION */
 
 .question-card {
     background: white;
@@ -88,6 +144,22 @@ header h1 {
     color: #2563eb;
     font-weight: bold;
     margin-bottom: 12px;
+}
+
+.question-meta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    background: #eef2ff;
+    color: #3730a3;
+    padding: 5px 9px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 .question {
@@ -121,11 +193,9 @@ header h1 {
     height: 32px;
     border-radius: 50%;
     background: #eef2ff;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     font-weight: bold;
 }
 
@@ -152,15 +222,11 @@ header h1 {
 
 .explanation {
     display: none;
-
     margin-top: 18px;
     padding: 15px;
-
     background: #f8fafc;
-
     border-left: 4px solid #2563eb;
     border-radius: 8px;
-
     line-height: 1.6;
 }
 
@@ -176,9 +242,7 @@ button {
     border: 0;
     padding: 14px 20px;
     border-radius: 12px;
-
     cursor: pointer;
-
     font-size: 15px;
     font-weight: bold;
 }
@@ -198,61 +262,50 @@ button {
     background: #e5e7eb;
 }
 
-/* START */
+/* RESULT */
 
-.start-screen,
 .result-screen {
     background: white;
-
     border-radius: 20px;
-
-    padding: 35px 25px;
-
+    padding: 30px 22px;
     text-align: center;
-
     box-shadow: 0 5px 20px rgba(0,0,0,.06);
 }
 
-.start-screen h2,
 .result-screen h2 {
     font-size: 27px;
 }
 
-.start-btn {
-    background: #2563eb;
-    color: white;
-
-    padding: 16px 35px;
-
-    font-size: 17px;
-}
-
-/* RESULTS */
-
 .stats {
     display: grid;
-
     grid-template-columns: repeat(3, 1fr);
-
     gap: 12px;
-
     margin: 25px 0;
 }
 
 .stat {
     padding: 20px;
-
     background: #f8fafc;
-
     border-radius: 14px;
 }
 
 .stat strong {
     display: block;
-
     font-size: 28px;
-
     margin-bottom: 5px;
+}
+
+.net-box {
+    padding: 20px;
+    background: #eff6ff;
+    border-radius: 14px;
+    margin-bottom: 20px;
+}
+
+.net-box strong {
+    display: block;
+    font-size: 35px;
+    color: #2563eb;
 }
 
 /* MOBILE */
@@ -260,7 +313,7 @@ button {
 @media(max-width:600px) {
 
     .container {
-        padding: 10px;
+        padding: 8px;
     }
 
     .question-card {
@@ -279,141 +332,84 @@ button {
         flex-direction: column;
         gap: 5px;
     }
+
+    .buttons {
+        flex-direction: column;
+    }
+
+    .back-btn,
+    .next-btn {
+        width: 100%;
+    }
 }
-</style>
-</head>
+</style></head><body><div class="container"><header>
+    <h1>📚 KPSS Tarih Testi</h1><div class="header-info">
+    <span>Ortaöğretim</span>
+    <span id="timer">⏱️ 00:00</span>
+</div>
 
+</header><!-- BAŞLANGIÇ EKRANI --><div id="startScreen" class="start-screen"><h2>KPSS Tarih Testi</h2>
 
-<body>
+<p>
+    JSON dosyanı yükle ve teste başla.
+</p>
 
-<div class="container">
+<div class="file-box">
 
-<header>
+    <label class="file-label" for="jsonFile">
+        📂 JSON Dosyasını Seç
+    </label>
 
-    <h1>📚 KPSS Tarih Testi</h1>
+    <input
+        type="file"
+        id="jsonFile"
+        accept=".json,application/json"
+    >
 
-    <div class="header-info">
+    <div
+        id="fileStatus"
+        class="file-status">
+        Henüz dosya seçilmedi.
+    </div>
 
-        <span>Ortaöğretim</span>
+</div>
 
-        <span id="timer">
-            ⏱️ 00:00
+<p>
+    Toplam soru:
+    <strong id="totalQuestionText">0</strong>
+</p>
+
+<br>
+
+<button
+    id="startButton"
+    class="start-btn"
+    onclick="startTest()"
+    disabled>
+    TESTE BAŞLA
+</button>
+
+</div><!-- TEST EKRANI --><div
+    id="testScreen"
+    style="display:none;"><div class="progress-box">
+
+    <div class="progress-top">
+
+        <span id="questionCounter">
+            1 / 100
+        </span>
+
+        <span id="percent">
+            0%
         </span>
 
     </div>
 
-</header>
-
-
-<!-- BAŞLANGIÇ -->
-
-<div id="startScreen" class="start-screen">
-
-    <h2>KPSS Tarih Testi</h2>
-
-    <p>
-        Toplam
-        <strong id="totalQuestionText">0</strong>
-        soru
-    </p>
-
-    <p>
-        Soruları cevapla ve test sonunda sonuçlarını gör.
-    </p>
-
-    <br>
-
-    <button
-        class="start-btn"
-        onclick="startTest()">
-
-        TESTE BAŞLA
-
-    </button>
-
-</div>
-
-
-<!-- TEST -->
-
-<div
-    id="testScreen"
-    style="display:none;">
-
-    <div class="progress-box">
-
-        <div class="progress-top">
-
-            <span id="questionCounter">
-                1 / 100
-            </span>
-
-            <span id="percent">
-                0%
-            </span>
-
-        </div>
-
-        <div class="progress">
-
-            <div
-                id="progressBar"
-                class="progress-bar">
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="question-card">
+    <div class="progress">
 
         <div
-            id="questionNumber"
-            class="question-number">
-
-            Soru 1
-
-        </div>
-
-
-        <div
-            id="questionText"
-            class="question">
-        </div>
-
-
-        <div id="options"></div>
-
-
-        <div
-            id="explanation"
-            class="explanation">
-        </div>
-
-
-        <div class="buttons">
-
-            <button
-                id="backButton"
-                class="back-btn"
-                onclick="previousQuestion()">
-
-                ← Önceki
-
-            </button>
-
-
-            <button
-                id="nextButton"
-                class="next-btn"
-                onclick="nextQuestion()"
-                disabled>
-
-                Sonraki →
-
-            </button>
-
+            id="progressBar"
+            class="progress-bar">
         </div>
 
     </div>
@@ -421,86 +417,108 @@ button {
 </div>
 
 
-<!-- SONUÇ -->
+<div class="question-card">
 
-<div
+    <div
+        id="questionNumber"
+        class="question-number">
+        Soru 1
+    </div>
+
+
+    <div
+        id="questionMeta"
+        class="question-meta">
+    </div>
+
+
+    <div
+        id="questionText"
+        class="question">
+    </div>
+
+
+    <div id="options"></div>
+
+
+    <div
+        id="explanation"
+        class="explanation">
+    </div>
+
+
+    <div class="buttons">
+
+        <button
+            id="backButton"
+            class="back-btn"
+            onclick="previousQuestion()">
+
+            ← Önceki
+
+        </button>
+
+
+        <button
+            id="nextButton"
+            class="next-btn"
+            onclick="nextQuestion()"
+            disabled>
+
+            Sonraki →
+
+        </button>
+
+    </div>
+
+</div>
+
+</div><!-- SONUÇ EKRANI --><div
     id="resultScreen"
     class="result-screen"
-    style="display:none;">
+    style="display:none;"><h2>🎉 Test Tamamlandı</h2>
 
-    <h2>
-        🎉 Test Tamamlandı
-    </h2>
-
-
-    <div class="stats">
-
-        <div class="stat">
-
-            <strong id="correctResult">
-                0
-            </strong>
-
-            Doğru
-
-        </div>
-
-
-        <div class="stat">
-
-            <strong id="wrongResult">
-                0
-            </strong>
-
-            Yanlış
-
-        </div>
-
-
-        <div class="stat">
-
-            <strong id="emptyResult">
-                0
-            </strong>
-
-            Boş
-
-        </div>
-
-    </div>
-
+<div class="stats">
 
     <div class="stat">
-
-        <strong id="netResult">
-            0
-        </strong>
-
-        Net
-
+        <strong id="correctResult">0</strong>
+        Doğru
     </div>
 
+    <div class="stat">
+        <strong id="wrongResult">0</strong>
+        Yanlış
+    </div>
 
-    <br>
-
-
-    <button
-        class="start-btn"
-        onclick="restartTest()">
-
-        🔄 Yeniden Başla
-
-    </button>
-
-</div>
+    <div class="stat">
+        <strong id="emptyResult">0</strong>
+        Boş
+    </div>
 
 </div>
 
 
-<script>
+<div class="net-box">
+
+    <strong id="netResult">0</strong>
+
+    NET
+
+</div>
+
+
+<button
+    class="start-btn"
+    onclick="restartTest()">
+
+    🔄 Yeniden Başla
+
+</button>
+
+</div></div><script>
 
 /* =====================================================
-   JSON DOSYASINDAN SORULARI ÇEK
+   DEĞİŞKENLER
    ===================================================== */
 
 let sorular = [];
@@ -509,49 +527,148 @@ let mevcutSoru = 0;
 
 let cevaplar = {};
 
-let testBasladi = false;
-
 let saniye = 0;
 
 let timerInterval;
 
 
 /* =====================================================
-   JSON YÜKLE
+   JSON DOSYASINI SEÇ
    ===================================================== */
 
-async function sorulariYukle() {
+document
+.getElementById("jsonFile")
+.addEventListener("change", function(event) {
 
-    try {
+    const dosya = event.target.files[0];
 
-        const cevap = await fetch("sorular.json");
+    if (!dosya) {
+        return;
+    }
 
-        if (!cevap.ok) {
 
-            throw new Error(
-                "sorular.json bulunamadı."
-            );
+    const okuyucu = new FileReader();
+
+
+    okuyucu.onload = function(e) {
+
+        try {
+
+            const veri =
+                JSON.parse(e.target.result);
+
+
+            if (!Array.isArray(veri)) {
+
+                throw new Error(
+                    "JSON bir dizi olmalı."
+                );
+
+            }
+
+
+            if (veri.length === 0) {
+
+                throw new Error(
+                    "JSON dosyasında soru yok."
+                );
+
+            }
+
+
+            /*
+             * Soruları kontrol et
+             */
+
+            veri.forEach((soru, index) => {
+
+                if (
+                    !soru.soru ||
+                    !soru.secenekler ||
+                    !soru.cevap
+                ) {
+
+                    throw new Error(
+                        `${index + 1}. soruda eksik alan var.`
+                    );
+
+                }
+
+            });
+
+
+            sorular = veri;
+
+
+            document.getElementById(
+                "totalQuestionText"
+            ).textContent =
+                sorular.length;
+
+
+            document.getElementById(
+                "fileStatus"
+            ).textContent =
+                "✅ " +
+                dosya.name +
+                " yüklendi";
+
+
+            document.getElementById(
+                "fileStatus"
+            ).style.color =
+                "#16a34a";
+
+
+            document.getElementById(
+                "startButton"
+            ).disabled = false;
+
+
+        } catch (hata) {
+
+            sorular = [];
+
+
+            document.getElementById(
+                "totalQuestionText"
+            ).textContent = "0";
+
+
+            document.getElementById(
+                "startButton"
+            ).disabled = true;
+
+
+            document.getElementById(
+                "fileStatus"
+            ).textContent =
+                "❌ JSON hatası: " +
+                hata.message;
+
+
+            document.getElementById(
+                "fileStatus"
+            ).style.color =
+                "#dc2626";
 
         }
 
-        sorular = await cevap.json();
+    };
 
 
-        document.getElementById(
-            "totalQuestionText"
-        ).textContent = sorular.length;
-
-
-    } catch (hata) {
+    okuyucu.onerror = function() {
 
         alert(
-            "Sorular yüklenemedi!\n\n" +
-            "index.html ile sorular.json aynı klasörde olmalı."
+            "JSON dosyası okunamadı."
         );
 
-        console.error(hata);
-    }
-}
+    };
+
+
+    okuyucu.readAsText(dosya, "UTF-8");
+
+});
 
 
 /* =====================================================
@@ -562,7 +679,9 @@ function startTest() {
 
     if (sorular.length === 0) {
 
-        alert("Henüz soru yüklenmedi.");
+        alert(
+            "Önce JSON dosyasını seç."
+        );
 
         return;
     }
@@ -573,8 +692,6 @@ function startTest() {
     cevaplar = {};
 
     saniye = 0;
-
-    testBasladi = true;
 
 
     document.getElementById(
@@ -595,29 +712,36 @@ function startTest() {
     clearInterval(timerInterval);
 
 
-    timerInterval = setInterval(() => {
+    timerInterval =
+        setInterval(function() {
 
-        saniye++;
-
-        let dakika =
-            Math.floor(saniye / 60);
-
-        let saniyeKismi =
-            saniye % 60;
+            saniye++;
 
 
-        document.getElementById(
-            "timer"
-        ).textContent =
-            "⏱️ " +
-            String(dakika).padStart(2,"0") +
-            ":" +
-            String(saniyeKismi).padStart(2,"0");
+            const dakika =
+                Math.floor(
+                    saniye / 60
+                );
 
-    }, 1000);
+
+            const saniyeKismi =
+                saniye % 60;
+
+
+            document.getElementById(
+                "timer"
+            ).textContent =
+                "⏱️ " +
+                String(dakika).padStart(2, "0") +
+                ":" +
+                String(saniyeKismi).padStart(2, "0");
+
+
+        }, 1000);
 
 
     soruyuGoster();
+
 }
 
 
@@ -662,7 +786,8 @@ function soruyuGoster() {
     document.getElementById(
         "questionNumber"
     ).textContent =
-        "Soru " + (mevcutSoru + 1);
+        "Soru " +
+        (mevcutSoru + 1);
 
 
     document.getElementById(
@@ -671,8 +796,53 @@ function soruyuGoster() {
         soru.soru;
 
 
+    /* KONU BİLGİLERİ */
+
+    const meta =
+        document.getElementById(
+            "questionMeta"
+        );
+
+
+    meta.innerHTML = "";
+
+
+    if (soru.konu) {
+
+        meta.innerHTML +=
+            `<span class="badge">
+                ${soru.konu}
+            </span>`;
+
+    }
+
+
+    if (soru.altKonu) {
+
+        meta.innerHTML +=
+            `<span class="badge">
+                ${soru.altKonu}
+            </span>`;
+
+    }
+
+
+    if (soru.zorluk) {
+
+        meta.innerHTML +=
+            `<span class="badge">
+                ${soru.zorluk}
+            </span>`;
+
+    }
+
+
+    /* SEÇENEKLER */
+
     const options =
-        document.getElementById("options");
+        document.getElementById(
+            "options"
+        );
 
 
     options.innerHTML = "";
@@ -682,7 +852,7 @@ function soruyuGoster() {
         ["A", "B", "C", "D", "E"];
 
 
-    harfler.forEach(harf => {
+    harfler.forEach(function(harf) {
 
         if (
             soru.secenekler[harf] === undefined
@@ -711,8 +881,11 @@ function soruyuGoster() {
         `;
 
 
-        div.onclick = () =>
-            cevapSec(harf, div);
+        div.onclick = function() {
+
+            cevapSec(harf);
+
+        };
 
 
         options.appendChild(div);
@@ -741,80 +914,16 @@ function soruyuGoster() {
         mevcutSoru === 0;
 
 
-    /*
-       Daha önce cevaplandıysa
-       cevabı tekrar göster
-    */
+    /* ÖNCEKİ CEVABI GÖSTER */
 
     if (
         cevaplar[mevcutSoru]
     ) {
 
-        const eskiCevap =
-            cevaplar[mevcutSoru];
+        cevabiGoster(
+            cevaplar[mevcutSoru]
+        );
 
-
-        const secenekler =
-            document.querySelectorAll(
-                ".option"
-            );
-
-
-        secenekler.forEach(option => {
-
-            const harf =
-                option
-                .querySelector(
-                    ".option-letter"
-                )
-                .textContent
-                .trim();
-
-
-            option.classList.add(
-                "disabled"
-            );
-
-
-            if (
-                harf === soru.cevap
-            ) {
-
-                option.classList.add(
-                    "correct"
-                );
-
-            }
-
-
-            if (
-                harf === eskiCevap &&
-                eskiCevap !== soru.cevap
-            ) {
-
-                option.classList.add(
-                    "wrong"
-                );
-
-            }
-
-        });
-
-
-        document.getElementById(
-            "explanation"
-        ).textContent =
-            "💡 " + soru.aciklama;
-
-
-        document.getElementById(
-            "explanation"
-        ).style.display = "block";
-
-
-        document.getElementById(
-            "nextButton"
-        ).disabled = false;
     }
 
 }
@@ -824,21 +933,34 @@ function soruyuGoster() {
    CEVAP SEÇ
    ===================================================== */
 
-function cevapSec(harf, secilenElement) {
+function cevapSec(harf) {
 
     if (
         cevaplar[mevcutSoru]
     ) {
+
         return;
+
     }
-
-
-    const soru =
-        sorular[mevcutSoru];
 
 
     cevaplar[mevcutSoru] =
         harf;
+
+
+    cevabiGoster(harf);
+
+}
+
+
+/* =====================================================
+   CEVABI GÖSTER
+   ===================================================== */
+
+function cevabiGoster(harf) {
+
+    const soru =
+        sorular[mevcutSoru];
 
 
     const secenekler =
@@ -847,7 +969,7 @@ function cevapSec(harf, secilenElement) {
         );
 
 
-    secenekler.forEach(option => {
+    secenekler.forEach(function(option) {
 
         option.classList.add(
             "disabled"
@@ -891,12 +1013,15 @@ function cevapSec(harf, secilenElement) {
     document.getElementById(
         "explanation"
     ).textContent =
-        "💡 " + soru.aciklama;
+        "💡 " +
+        (soru.aciklama ||
+        "Açıklama bulunmuyor.");
 
 
     document.getElementById(
         "explanation"
-    ).style.display = "block";
+    ).style.display =
+        "block";
 
 
     document.getElementById(
@@ -913,6 +1038,15 @@ function cevapSec(harf, secilenElement) {
 function nextQuestion() {
 
     if (
+        !cevaplar[mevcutSoru]
+    ) {
+
+        return;
+
+    }
+
+
+    if (
         mevcutSoru <
         sorular.length - 1
     ) {
@@ -921,7 +1055,9 @@ function nextQuestion() {
 
         soruyuGoster();
 
-    } else {
+    }
+
+    else {
 
         testiBitir();
 
@@ -936,7 +1072,9 @@ function nextQuestion() {
 
 function previousQuestion() {
 
-    if (mevcutSoru > 0) {
+    if (
+        mevcutSoru > 0
+    ) {
 
         mevcutSoru--;
 
@@ -964,7 +1102,7 @@ function testiBitir() {
 
 
     sorular.forEach(
-        (soru, index) => {
+        function(soru, index) {
 
             const cevap =
                 cevaplar[index];
@@ -994,10 +1132,7 @@ function testiBitir() {
     );
 
 
-    /*
-       KPSS sistemi:
-       4 yanlış = 1 doğru
-    */
+    /* KPSS NET */
 
     const net =
         dogru -
@@ -1050,6 +1185,7 @@ function restartTest() {
 
     clearInterval(timerInterval);
 
+
     mevcutSoru = 0;
 
     cevaplar = {};
@@ -1076,14 +1212,5 @@ function restartTest() {
 
 }
 
-
-/* =====================================================
-   SAYFA AÇILINCA JSON'U YÜKLE
-   ===================================================== */
-
-sorulariYukle();
-
-</script>
-
-</body>
+</script></body>
 </html>
