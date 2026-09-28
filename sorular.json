@@ -2,18 +2,35 @@
   {
     "id": 1,
     "konu": "İlk Türk Devletleri",
-    "altKonu": "Türk Adı",
+    "altKonu": "Asya Hun Devleti",
     "zorluk": "orta",
     "tip": "bilgi",
-    "soru": "Türk adı ile ilgili aşağıdaki bilgilerden hangisi doğrudur?",
+    "soru": "Asya Hun Devleti'nin en parlak dönemini yaşatan hükümdar aşağıdakilerden hangisidir?",
     "secenekler": {
-      "A": "......",
-      "B": "......",
-      "C": "......",
-      "D": "......",
-      "E": "......"
+      "A": "Teoman",
+      "B": "Mete Han",
+      "C": "Attila",
+      "D": "Balamir",
+      "E": "Uldız"
     },
-    "cevap": "C",
-    "aciklama": "Doğru cevap C seçeneğidir. ......"
+    "cevap": "B",
+    "aciklama": "Asya Hun Devleti'nin en parlak dönemini Mete Han yaşatmıştır."
+  },
+  {
+    "id": 2,
+    "konu": "İlk Türk Devletleri",
+    "altKonu": "Uygurlar",
+    "zorluk": "orta",
+    "tip": "bilgi",
+    "soru": "Uygurlar ile ilgili aşağıdakilerden hangisi doğrudur?",
+    "secenekler": {
+      "A": "Çav adı verilen kâğıt para kullanmışlardır.",
+      "B": "İlk Onlu Ordu sistemini kurmuşlardır.",
+      "C": "Kavimler Göçü'nü başlatmışlardır.",
+      "D": "Roma İmparatorluğu'nu ikiye ayırmışlardır.",
+      "E": "Anadolu'da kurulmuşlardır."
+    },
+    "cevap": "A",
+    "aciklama": "Uygurlar döneminde Çav adı verilen kâğıt para kullanılmıştır."
   }
 ]
