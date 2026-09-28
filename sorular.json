@@ -1,1702 +1,512 @@
 [
-{
-"id": 1,
-"konu": "Türk Adı, Kültür Çevreleri ve İskitler",
-"altKonu": "Türk Kelimesinin Anlamı",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Türk kelimesinin anlamıyla ilgili eşleştirmelerden hangisi doğru verilmiştir?",
-"secenekler": {
-"A": "Kaşgarlı Mahmut - Kanun ve nizam sahibi",
-"B": "Ziya Gökalp - Olgunluk çağı",
-"C": "Uygur kaynakları - Miğfer",
-"D": "Çin kaynakları - Güç, kuvvet",
-"E": "İran kaynakları - Güzel insan"
-},
-"cevap": "E",
-"aciklama": "Verilen bilgilere göre İran kaynaklarında Türk kelimesi 'Güzel insan' anlamında kullanılmıştır. Kaşgarlı Mahmut 'Olgunluk çağı', Ziya Gökalp 'Kanun ve nizam sahibi', Çin kaynakları 'Miğfer', Uygur kaynakları ise 'Güç, kuvvet' olarak açıklamıştır."
-},
-{
-"id": 2,
-"konu": "Türk Adı, Kültür Çevreleri ve İskitler",
-"altKonu": "Türk Adının Kullanımı",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Türkiye ifadesi coğrafi bir terim olarak ilk kez VI. yüzyılda hangi devletin kaynaklarında yer almıştır?",
-"secenekler": {
-"A": "Çin",
-"B": "Bizans",
-"C": "İran",
-"D": "Rusya",
-"E": "Arap"
-},
-"cevap": "B",
-"aciklama": "Metne göre 'Türkiye' ifadesi coğrafi bir terim olarak VI. yüzyılda ilk kez Bizans kaynaklarında geçmiştir."
-},
-{
-"id": 3,
-"konu": "Türk Adı, Kültür Çevreleri ve İskitler",
-"altKonu": "Orta Asya Kültür Çevreleri",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Orta Asya kültür çevreleri ve belirgin özellikleri dikkate alındığında aşağıdakilerden hangisi yanlıştır?",
-"secenekler": {
-"A": "Anav - Orta Asya’nın en eski kültür merkezidir.",
-"B": "Afanesyevo - Orta Asya’da Türklere ait en eski kültür merkezidir.",
-"C": "Andronova - En geniş alana yayılan kültür bölgesidir.",
-"D": "Karasuk - Orta Asya’nın en gelişmiş kültür merkezidir.",
-"E": "Kelteminar - Yerleşik yaşam unsurlarının görüldüğü alandır."
-},
-"cevap": "D",
-"aciklama": "Metne göre Karasuk 'Demir madeninin ilk kez işlendiği merkezdir'. Orta Asya’nın en gelişmiş kültür merkezi ise Tagar'dır."
-},
-{
-"id": 4,
-"konu": "Türk Adı, Kültür Çevreleri ve İskitler",
-"altKonu": "Türk Göçlerinin Nedenleri",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. İklim değişikliği ve kuraklık\nII. Hızlı nüfus artışı ve otlak yetersizliği\nIII. Türk cihan hakimiyeti düşüncesi\n\nYukarıdakilerden hangileri Orta Asya'dan yapılan Türk göçlerinin sebepleri arasında yer alır?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "Yalnız II",
-"C": "I ve II",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Türk göçlerinin nedenleri arasında iklim değişikliği, kuraklık, otlak yetersizliği, hızlı nüfus artışı, salgın hastalıklar, boylar arası mücadeleler, dış baskılar ve Türk cihan hakimiyeti düşüncesi yer almaktadır."
-},
-{
-"id": 5,
-"konu": "Türk Adı, Kültür Çevreleri ve İskitler",
-"altKonu": "İskitler (Sakalar)",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "İskitlerle ilgili verilen;\n\nI. Tarihte bilinen ilk Türk topluluğu olmaları,\nII. Kadın hükümdarlarının Tomris olması,\nIII. 'Bozkırın Kuyumcuları' olarak anılmaları\n\nbilgilerinden hangileri doğrudur?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Verilen öncüllerin tamamı İskitler (Sakalar) hakkında metinde geçen doğru bilgilerdir."
-},
-{
-"id": 6,
-"konu": "Asya Hun Devleti ve Kavimler Göçü",
-"altKonu": "Asya Hun Devleti",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Tarihte bilinen ilk Türk devleti olan ve merkezi Ötüken olan Asya Hun Devleti'nin kurucusu aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Teoman",
-"B": "Mete Han",
-"C": "Balamir",
-"D": "Ho-han-yeh",
-"E": "Çi-çi"
-},
-"cevap": "A",
-"aciklama": "Metne göre Asya Hun Devleti'nin kurucusu Teoman'dır."
-},
-{
-"id": 7,
-"konu": "Asya Hun Devleti ve Kavimler Göçü",
-"altKonu": "Mete Han Dönemi",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Türk siyasi birliğini sağlaması\nII. İlk Onlu Ordu Sistemini kurması\nIII. Çin'i vergiye bağlaması\n\nYukarıdaki gelişmelerden hangileri Asya Hun Devleti hükümdarı Mete Han döneminde gerçekleşmiştir?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Mete Han dönemi Asya Hun Devleti'nin en parlak dönemidir; Türk siyasi birliğini sağlamış, Onlu Ordu sistemini kurmuş, vatan sevgisinden ilk kez bahsetmiş ve Çin'i vergiye bağlamıştır."
-},
-{
-"id": 8,
-"konu": "Asya Hun Devleti ve Kavimler Göçü",
-"altKonu": "Kavimler Göçü",
-"zorluk": "orta",
-"tip": "neden_sonuc",
-"soru": "Kuzey Hunlarının Balamir komutasında batıya hareketiyle başlayan Kavimler Göçü'nün sonuçları arasında aşağıdakilerden hangisi gösterilemez?",
-"secenekler": {
-"A": "Roma İmparatorluğu ikiye ayrılmıştır.",
-"B": "Avrupa Hun Devleti kurulmuştur.",
-"C": "Feodalite (derebeylik) ortaya çıkmıştır.",
-"D": "Skolastik düşünce güçlenmiştir.",
-"E": "Musevilik yaygınlaşmıştır."
-},
-"cevap": "E",
-"aciklama": "Metne göre Kavimler Göçü'nün sonuçları arasında Roma'nın ikiye ayrılması, Avrupa Hun Devleti'nin kurulması, feodalitenin ortaya çıkması, skolastik düşüncenin güçlenmesi ve günümüz Avrupa milletlerinin temelinin atılması yer alır. Musevilik ise Hazarlar tarafından benimsenmiştir."
-},
-{
-"id": 9,
-"konu": "Avrupa Hun Devleti",
-"altKonu": "Dış Politika ve Hükümdarlar",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Avrupa Hun Devleti hükümdarları ve icraatları eşleştirmesinde aşağıdakilerden hangisi doğrudur?",
-"secenekler": {
-"A": "Balamir - Margos Antlaşması'nı imzalamıştır.",
-"B": "Uldız - Türklerin ilk kez Anadolu'ya ayak basmasını sağlamıştır.",
-"C": "Attila - Etzelburg merkezli devleti kurmuştur.",
-"D": "Uldız - Galya ve İtalya seferlerini düzenlemiştir.",
-"E": "Balamir - Anatolios Antlaşması ile Bizans'ı vergiye bağlamıştır."
-},
-"cevap": "B",
-"aciklama": "Metne göre Uldız döneminde Türkler ilk kez Anadolu'ya ayak basmıştır. Devleti Etzelburg merkezli kuran Balamir; Margos, Anatolios antlaşmaları ve Galya/İtalya seferlerini gerçekleştiren ise Attila'dır."
-},
-{
-"id": 10,
-"konu": "Avrupa Hun Devleti",
-"altKonu": "Attila'nın Unvanları",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Hristiyanlar tarafından 'Tanrı’nın Kamçısı', Almanların Nibelungen destanında ise 'Etzel' olarak adlandırılan Türk hükümdarı aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Mete Han",
-"B": "Balamir",
-"C": "Attila",
-"D": "Uldız",
-"E": "Bumin Kağan"
-},
-"cevap": "C",
-"aciklama": "Metne göre Hristiyanlarca 'Tanrı'nın Kamçısı', Nibelungen destanında ise 'Etzel' olarak anılan hükümdar Attila'dır."
-},
-{
-"id": 11,
-"konu": "Hazar Devleti",
-"altKonu": "Hazar Devleti Özellikleri",
-"zorluk": "orta",
-"tip": "analiz",
-"soru": "Hazar Devleti ile ilgili verilen;\n\nI. Ordusunda ücretli asker barındıran tek eski Türk devleti olmaları,\nII. Museviliği benimseyen tek Türk devleti olmaları,\nIII. Belencer Savaşı ile İslamiyet'in Kafkaslar'a yayılmasını engellemeleri\n\nbilgilerinden hangileri Hazarları diğer eski Türk devletlerinden ayıran kendilerine özgü özelliklerdendir?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "Yalnız II",
-"C": "I ve II",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "C",
-"aciklama": "I ve II. öncüllerdeki 'ücretli asker barındıran tek eski Türk devleti' ve 'Museviliği benimseyen tek Türk devleti' olma özellikleri metinde doğrudan Hazarları diğerlerinden ayıran tekil özellikler olarak belirtilmiştir. Belencer Savaşı ise başka bir devletle yapılan savaştır ancak 'tek' olma ifadesi ilk iki öncüldedir. Dolayısıyla I ve II ayırt edici tekil durumlardır."
-},
-{
-"id": 12,
-"konu": "Hazar Devleti",
-"altKonu": "Pax Hazaria",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Hazarların ticaret yollarında sağladıkları huzur ortama verilen ad aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Pax Hazaria",
-"B": "Deşt-i Kıpçak",
-"C": "Balık",
-"D": "Kengeş",
-"E": "Ayuki"
-},
-"cevap": "A",
-"aciklama": "Hazarların ticaret yollarında sağladıkları huzur ortamına metne göre 'Pax Hazaria' (Hazar Barış Çağı) denir."
-},
-{
-"id": 13,
-"konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Avarlar",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İstanbul'u kuşatan ilk Türk devleti aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Avarlar",
-"B": "Peçenekler",
-"C": "Uzlar",
-"D": "Bulgarlar",
-"E": "Kıpçaklar"
-},
-"cevap": "A",
-"aciklama": "Metinde Avarların hem Asya hem Avrupa'da devlet kurdukları ve İstanbul'u kuşatan ilk Türk devleti oldukları belirtilmiştir."
-},
-{
-"id": 14,
-"konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Kıpçaklar (Kumanlar)",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "Kıpçaklar (Kumanlar) ile ilgili;\n\nI. Yaşadıkları bölgenin Deşt-i Kıpçak olarak adlandırılması,\nII. Codex Cumanicus adlı Türkçe-Latince sözlüğü hazırlamaları,\nIII. Rusların İgor Destanı'na konu olmaları\n\nbilgilerinden hangileri doğrudur?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Kıpçaklar Karadeniz'in kuzeyinde (Deşt-i Kıpçak) yaşamış, Codex Cumanicus'u hazırlamış ve İgor Destanı'na konu olmuşlardır."
-},
-{
-"id": 15,
-"konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Uzlar ve Peçenekler",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Uzlar ve Peçeneklerin ortak özelliği aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Museviliği benimsemeleri",
-"B": "İstanbul'u birlikte kuşatmaları",
-"C": "Bizans ordusunda paralı askerlik yaparken Malazgirt Savaşı'nda Selçuklu tarafına geçmeleri",
-"D": "Dünyada ilk kez Türkoloji Enstitüsünü kurmaları",
-"E": "Tuna ve İtil olmak üzere ikiye ayrılmaları"
-},
-"cevap": "C",
-"aciklama": "Metne göre Uzlar ve Peçenekler Bizans ordusunda paralı askerlik yaparken Malazgirt Savaşı'nda Selçuklu tarafına geçmişlerdir."
-},
-{
-"id": 16,
-"konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Bulgarlar",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Bulgarların ikiye ayrılmasından sonra dini gelişimleri hakkında aşağıdakilerden hangisi söylenebilir?",
-"secenekler": {
-"A": "Tuna Bulgarları İslamiyet'i kabul etmiş, İtil Bulgarları Hristiyanlaşmıştır.",
-"B": "Tuna Bulgarları Hristiyanlaşarak Slavlaşmış, İtil Bulgarları Almış Han döneminde İslamiyet'i benimsemiştir.",
-"C": "Her iki Bulgar kolu da Museviliği benimsemiştir.",
-"D": "İtil Bulgarları Budizm'e geçmiş, Tuna Bulgarları Gök Tanrı inancını korumuştur.",
-"E": "Tuna Bulgarları Manihaizm'i kabul etmiş, İtil Bulgarları Hristiyanlaşmıştır."
-},
-"cevap": "B",
-"aciklama": "Metne göre Tuna Bulgarları Hristiyanlaşarak Slavlaşmış; İtil (Volga) Bulgarları ise Almış Han döneminde İslamiyet'i kabul etmiştir."
-},
-{
-"id": 17,
-"konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Macarlar",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Dünyada ilk kez Türkoloji Enstitüsünü kuran Türk topluluğu aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Macarlar",
-"B": "Avarlar",
-"C": "Peçenekler",
-"D": "Kıpçaklar",
-"E": "Bulgarlar"
-},
-"cevap": "A",
-"aciklama": "Metne göre Macarlar, dünyada ilk kez Türkoloji Enstitüsünü kurmuşlardır."
-},
-{
-"id": 18,
-"konu": "Kök Türk Devletleri",
-"altKonu": "I. Kök Türk Devleti",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Kök Türk Devleti ile ilgili;\n\nI. 'Türk' adıyla kurulan ilk devlet olması,\nII. Bumin Kağan tarafından Ötüken merkezli kurulması,\nIII. Tapo Kağan döneminde Budizm'in kabul edilmesi sebebiyle tepki çekilmesi\n\nbilgilerinden hangileri doğrudur?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "I. Kök Türk Devleti Türk adıyla kurulan ilk devlettir, Bumin Kağan tarafından Ötüken merkezli kurulmuştur ve Tapo Kağan Budizm'i kabul ettiği için tepki çekmiştir."
-},
-{
-"id": 19,
-"konu": "Kök Türk Devletleri",
-"altKonu": "Kürşad Ayaklanması",
-"zorluk": "orta",
-"tip": "neden_sonuc",
-"soru": "I. Kök Türk Devleti'nin yıkılmasından sonra yaşanan Çin esareti döneminde bağımsızlık elde etmek amacıyla gerçekleştirilen girişim aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Kürşad Ayaklanması",
-"B": "Belencer Savaşı",
-"C": "Talas Savaşı",
-"D": "Nibelungen İsyanı",
-"E": "Baga Tarkan İsyanı"
-},
-"cevap": "A",
-"aciklama": "Metne göre Çin esareti döneminde bağımsızlık için Kürşad Ayaklanması yaşanmıştır."
-},
-{
-"id": 20,
-"konu": "Kök Türk Devletleri",
-"altKonu": "II. Kök Türk (Kutluk) Devleti",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "II. Kök Türk (Kutluk) Devleti ile ilgili olarak;\n\nI. Kutluk Kağan'ın 'İlteriş' unvanını alarak devleti kurması,\nII. Vezir Tonyukuk, Kül Tigin ve Bilge Kağan döneminin en güçlü dönem olması,\nIII. Orhun Kitabeleri'nin bu dönemde dikilmesi\n\nifadelerinden hangileri doğrudur?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Kutluk Kağan İlteriş unvanıyla devleti kurmuş, Tonyukuk, Kül Tigin ve Bilge Kağan döneminde en güçlü zamana ulaşılmış ve Orhun Kitabeleri bu dönemde dikilmiştir."
-},
-{
-"id": 21,
-"konu": "Uygur Devleti",
-"altKonu": "Uygur Devleti Kuruluşu ve Dini",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Uygur Devleti'nde Bögü Kağan Dönemi'nde resmi din olarak kabul edilen inanç aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Gök Tanrı",
-"B": "Manihaizm",
-"C": "Budizm",
-"D": "Hristiyanlık",
-"E": "İslamiyet"
-},
-"cevap": "B",
-"aciklama": "Metne göre Bögü Kağan döneminde Manihaizm dini resmi din olarak kabul edilmiştir."
-},
-{
-"id": 22,
-"konu": "Uygur Devleti",
-"altKonu": "Manihaizmin Etkileri",
-"zorluk": "orta",
-"tip": "neden_sonuc",
-"soru": "Uygurların Manihaizm dinini benimsemelerinin sonuçları arasında aşağıdakilerden hangisi yer almaktadır?",
-"secenekler": {
-"A": "Savaşçı özelliklerinin güçlenmesi",
-"B": "Türk tarihinde yerleşik hayata geçen ilk devlet olmaları",
-"C": "Hapis cezalarının uzun süreli hale gelmesi",
-"D": "İkili teşkilatın tamamen kaldırılması",
-"E": "Ücretli askerlik sistemine geçilmesi"
-},
-"cevap": "B",
-"aciklama": "Manihaizmde et yemek ve savaşmak yasaklandığı için savaşçı özellikler zayıflamış ve Uygurlar Türk tarihinde yerleşik hayata geçen ilk devlet olmuşlardır."
-},
-{
-"id": 23,
-"konu": "Uygur Devleti",
-"altKonu": "Uygur Yenilikleri",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Kâğıt para (Çav)\nII. Örgün eğitim ve vakıf sistemi\nIII. Tiyatro (Orta Oyunu)\n\nYukarıdaki kültürel yeniliklerden hangileri Türk tarihinde ilk kez Uygurlar Dönemi'nde görülmüştür?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Şehirler (Balık), tapınak/saray mimarisi, matbaa, kütüphane, kâğıt para (Çav), tiyatro (Orta Oyunu), örgün eğitim ve vakıf sistemi ilk kez Uygurlarda görülmüştür."
-},
-{
-"id": 24,
-"konu": "Orta Asya'daki Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Kırgızlar",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "Kırgızlar ile ilgili verilen;\n\nI. Cengiz Han'a itaat eden ilk Türk devleti olmaları,\nII. Ötüken merkezli kurulmaları,\nIII. Manas Destanı ve Yenisey Yazıtları'nı oluşturmaları\n\nbilgilerinden hangileri doğrudur?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Verilen üç öncül de Kırgızlar hakkında metinde geçen doğru bilgilerdir."
-},
-{
-"id": 25,
-"konu": "Orta Asya'daki Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Karluklar ve Türgişler",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Karluklar ve Türgişlerin İslamiyet ile ilişkileri bakımından karşılaştırılması aşağıdakilerin hangisinde doğru verilmiştir?",
-"secenekler": {
-"A": "Karluklar Talas Savaşı'nda Araplarla savaşmış, Türgişler İslamiyet'i kabul etmiştir.",
-"B": "Karluklar İslamiyet'i kabul eden ilk Türk boyu olmuş, Türgişler ise Emevilerle savaşarak İslam'ın Orta Asya'ya girmesini geciktirmiştir.",
-"C": "Türgişler Talas Savaşı'nda Müslümanları desteklemiş, Karluklar Emevilerle savaşmıştır.",
-"D": "Her iki boy da Emevilerle savaşarak İslamiyet'in yayılmasını engellemiştir.",
-"E": "Karluklar Belencer Savaşı ile İslam'ı engellemiş, Türgişler Almış Han döneminde Müslüman olmuştur."
-},
-"cevap": "B",
-"aciklama": "Metne göre Karluklar Talas Savaşı'nda Müslüman Arapları destekleyip İslamiyet'i kabul eden ilk Türk boyu olmuş; Türgişler ise Sulu Kağan döneminde Emevilerle savaşarak İslam'ın Orta Asya'ya girmesini geciktirmiştir."
-},
-{
-"id": 26,
-"konu": "Orta Asya'daki Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Türgişler",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Kendi adına para bastıran ilk Türk hükümdarı aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Baga Tarkan",
-"B": "Sulu Kağan",
-"C": "Bumin Kağan",
-"D": "Mete Han",
-"E": "Kutluk Kağan"
-},
-"cevap": "A",
-"aciklama": "Metne göre Baga Tarkan kendi adına para bastıran ilk Türk hükümdarıdır."
-},
-{
-"id": 27,
-"konu": "İlk Türk Devletlerinde Devlet Yönetimi",
-"altKonu": "Kut Anlayışı",
-"zorluk": "orta",
-"tip": "neden_sonuc",
-"soru": "İlk Türk devletlerinde yönetme yetkisinin Tanrı tarafından hükümdara verildiğine inanılması ve bu yetkinin kan yoluyla hanedan üyelerine geçmesi aşağıdakilerden hangisine doğrudan neden olmuştur?",
-"secenekler": {
-"A": "Veraset belirsizliğine ve taht kavgalarına",
-"B": "Düzenli ordu sisteminin bozulmasına",
-"C": "Kurultayın bağlayıcı kararlar almasına",
-"D": "Ücretli askerlik sisteminin yaygınlaşmasına",
-"E": "Yazılı hukuk kurallarının oluşturulmasına"
-},
-"cevap": "A",
-"aciklama": "Metinde Kut anlayışının kan yoluyla hanedan üyelerine geçmesinin veraset belirsizliğine ve taht kavgalarına neden olduğu açıkça belirtilmiştir."
-},
-{
-"id": 28,
-"konu": "İlk Türk Devletlerinde Devlet Yönetimi",
-"altKonu": "Hükümdarlık Sembolleri",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Otağ (Çadır)\nII. Nevbet (Davul)\nIII. Örgün (Taht)\n\nYukarıdakilerden hangileri ilk Türk devletlerinde hükümdarlık sembolleri arasında yer alır?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Hükümdarlık sembolleri metne göre: Otağ, Örgün, Tuğ, Nevbet, Kotuz/Sorguç, Kemer, Kama ve Yargı'dır."
-},
-{
-"id": 29,
-"konu": "İlk Türk Devletlerinde Devlet Yönetimi",
-"altKonu": "Hatun ve Tigin",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Hükümdarın eşi olan Hatun ve hükümdarın erkek çocukları olan Tiginler ile ilgili eşleştirmelerden hangisi doğrudur?",
-"secenekler": {
-"A": "Hatun - Tiginleri eğiten kişidir.",
-"B": "Tigin - Elçi kabul eder ve kurultaya katılır.",
-"C": "İnal / Ataman - Tiginleri eğiten kişidir.",
-"D": "Aygucı - Hatun'un vekillik yaptığı makamdır.",
-"E": "Buyruk - Tiginlere verilen askeri unvandır."
-},
-"cevap": "C",
-"aciklama": "Metne göre Tiginlerin (hükümdarın erkek çocukları) eğitiminden sorumlu kişilere İnal veya Ataman denir."
-},
-{
-"id": 30,
-"konu": "İkili Teşkilat, Kurultay ve Hükümet",
-"altKonu": "İkili Teşkilat",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "İkili teşkilat sisteminde ülkenin Doğu ve Batı yönetimleri arasındaki temel fark aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Doğu'da yabgu bulunur, Batı'yı asıl hükümdar yönetir.",
-"B": "Doğu'da asıl hükümdar (kağan) bulunur, Batı'yı hanedan üyesi (yabgu) yönetir.",
-"C": "Doğu'da hatun yönetimi vardır, Batı'da kurultay toplanır.",
-"D": "Doğu'da iç işleri yürütülür, Batı'da dış ilişkiler kâtibi bulunur.",
-"E": "Doğu'da din adamları yönetimi sağlar, Batı'da sü-başı görev yapar."
-},
-"cevap": "B",
-"aciklama": "İkili teşkilat uyarınca ülke Doğu (asıl hükümdar/kağan) ve Batı (hanedan üyesi/yabgu) olarak ikiye ayrılıp yönetilmektedir."
-},
-{
-"id": 31,
-"konu": "İkili Teşkilat, Kurultay ve Hükümet",
-"altKonu": "Ayuki ve Görevliler",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Ayuki (Hükümet) bünyesindeki görevliler ve tanımları eşleştirmesinden hangisi yanlıştır?",
-"secenekler": {
-"A": "Aygucı - Başbakan / Hükümet başkanı",
-"B": "Buyruk - Bakan",
-"C": "Tudun - Vergi memuru / Vali",
-"D": "Bitikçi - Dış yazışmalar ve kâtip",
-"E": "Şad - Din adamı"
-},
-"cevap": "E",
-"aciklama": "Metne göre Şad 'Hanedan üyesi vali/komutan' olarak tanımlanmıştır. Din adamlarına ise Kam/Şaman/Baksı denir."
-},
-{
-"id": 32,
-"konu": "İkili Teşkilat, Kurultay ve Hükümet",
-"altKonu": "Meclis İsimleri",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Türk devletleri ve meclis isimleri eşleştirmelerinden hangisi yanlıştır?",
-"secenekler": {
-"A": "Hazarlar - İhtiyarlar Meclisi",
-"B": "Peçenekler - Komenton Meclisi",
-"C": "Tuna Bulgarları - Millet Meclisi",
-"D": "Avrupa Hunları - Seçkinler Meclisi",
-"E": "Tabgaçlar - Kengeş Meclisi"
-},
-"cevap": "E",
-"aciklama": "Metne göre Tabgaçların meclisine 'Nazarlar Meclisi' adı verilir. Kengeş ise Kurultay'ın diğer isimlerinden biridir."
-},
-{
-"id": 33,
-"konu": "İlk Türk Devletlerinde Sosyal Hayat ve Hukuk",
-"altKonu": "Sosyal Yapı",
-"zorluk": "orta",
-"tip": "analiz",
-"soru": "Toplumsal sıralama göz önüne alındığında, küçükten büyüğe doğru sıralamada 'Boy' ile 'İl' arasında yer alan yapı birimi aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Oguş",
-"B": "Urug",
-"C": "Budun",
-"D": "Törün",
-"E": "Kün"
-},
-"cevap": "C",
-"aciklama": "Metindeki toplumsal sıralama küçükten büyüğe: Oguş (Aile) -> Urug (Sülale) -> Boy (Ok) -> Budun (Millet) -> İl (Devlet) şeklindedir. Dolayısıyla Boy ile İl arasındaki birim Budun'dur."
-},
-{
-"id": 34,
-"konu": "İlk Türk Devletlerinde Sosyal Hayat ve Hukuk",
-"altKonu": "Sosyal Hayat Kavramları",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İlk Türk devletlerinde anneye 'ög', babaya ise 'kang' denilmekteydi.\n\nBuna göre halka verilen ad aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Yurt",
-"B": "Kün",
-"C": "Törün",
-"D": "Şölen",
-"E": "Oguş"
-},
-"cevap": "B",
-"aciklama": "Metne göre düğünlere 'törün', halka 'kün', eğlencelere 'şölen', çadıra ise 'yurt' denir."
-},
-{
-"id": 35,
-"konu": "İlk Türk Devletlerinde Sosyal Hayat ve Hukuk",
-"altKonu": "Göçebe Yaşamın Etkileri",
-"zorluk": "orta",
-"tip": "neden_sonuc",
-"soru": "İlk Türk devletlerinde göçebe yaşam tarzının benimsenmesi aşağıdakilerden hangisine ortam hazırlamamıştır?",
-"secenekler": {
-"A": "Hapis cezalarının kısa süreli olmasına",
-"B": "Taşınabilir sanat eserlerinin yapılmasına",
-"C": "Toprak mülkiyetinin ve sınıf ayrımının gelişmemesine",
-"D": "Kalıcı mimari eserlerin yaygınlaşmasına",
-"E": "Ordu-millet anlayışının gelişmesine"
-},
-"cevap": "D",
-"aciklama": "Göçebe yaşam tarzı nedeniyle mimari eserler görülmemiş, taşınabilir sanat eserleri yapılmıştır."
-},
-{
-"id": 36,
-"konu": "İlk Türk Devletlerinde Sosyal Hayat ve Hukuk",
-"altKonu": "Törenin Kaynakları ve İlkeleri",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Könilik (Adalet)\nII. Tüzlük (Eşitlik)\nIII. Uzluk (İyilik)\n\nKutadgu Bilig'e göre yukarıdakilerden hangileri Töre'nin değişmeyen ilkeleri arasında yer alır?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Törenin değişmeyen 4 ilkesi: Könilik (Adalet), Uzluk (İyilik), Tüzlük (Eşitlik) ve Kişilik (İnsanlık)'tir."
-},
-{
-"id": 37,
-"konu": "İlk Türk Devletlerinde Sosyal Hayat ve Hukuk",
-"altKonu": "Hukuk Kavramları",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Hunlar ve Kök Türklerde yüksek mahkemeye ve bu mahkemenin yargıcına verilen adlar aşağıdakilerin hangisinde doğru eşleştirilmiştir?",
-"secenekler": {
-"A": "Yargu - Yargan",
-"B": "Ayuki - Aygucı",
-"C": "Kurultay - Toygun",
-"D": "Töreli - Bitikçi",
-"E": "Tudun - Tarkan"
-},
-"cevap": "A",
-"aciklama": "Metne göre Hunlar ve Kök Türklerde yüksek mahkemeye 'yargu', yargıca ise 'yargan' denir."
-},
-{
-"id": 38,
-"konu": "İlk Türk Devletlerinde Ordu, Din ve İnanış",
-"altKonu": "Onlu Sistem",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Mete Han tarafından kurulan Onlu Sistem'deki birlik ve komutan eşleştirmelerinden hangisi yanlıştır?",
-"secenekler": {
-"A": "Tümen (10.000) - Tümenbaşı",
-"B": "Tabur (1.000) - Binbaşı",
-"C": "Bölük (100) - Yüzbaşı",
-"D": "Takım (10) - Onbaşı",
-"E": "Tümen (100) - Tarkan"
-},
-"cevap": "E",
-"aciklama": "Onlu sistemde Tümen 10.000 kişiliktir ve başında Tümenbaşı bulunur. Tarkan ise genel ordu komutanına verilen addır."
-},
-{
-"id": 39,
-"konu": "İlk Türk Devletlerinde Ordu, Din ve İnanış",
-"altKonu": "Askeri Kavramlar",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Böri: Kağan muhafızları\nII. Yelme: Düşmanı keşfetmek için gönderilen birlik\nIII. Sü: Asker\n\nYukarıdaki askeri kavram ve açıklama eşleştirmelerinden hangileri doğrudur?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Askere 'sü' veya 'er', kağan muhafızlarına 'Böri', düşmanı keşfetmek için gönderilen birliğe ise 'Yelme' denir."
-},
-{
-"id": 40,
-"konu": "İlk Türk Devletlerinde Ordu, Din ve İnanış",
-"altKonu": "Türk Askerliğinin Dünya Mimarisine Etkisi",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Onlu sistem ve Turan taktiği\nII. Üzengi kullanımı ve et konservesi\nIII. Ceket, pantolon ve çizme giyimi\n\nYukarıdakilerden hangileri Türklerin dünya askerliğini etkilediği unsurlar arasında yer alır?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Türkler dünya askerliğini onlu sistem, et konservesi, üzengi kullanımı, ceket/pantolon/çizme giyimi ve Turan taktiği ile etkilemiştir."
-},
-{
-"id": 41,
-"konu": "İlk Türk Devletlerinde Ordu, Din ve İnanış",
-"altKonu": "Dini Kavramlar",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "İlk Türk devletlerindeki inanç kavramları ile ilgili aşağıda verilen tanımlardan hangisi yanlıştır?",
-"secenekler": {
-"A": "Yuğ - Cenaze töreni",
-"B": "Uçmag - Cennet",
-"C": "Tamu - Cehennem",
-"D": "Balbal - Tapınak resmi",
-"E": "Sagu - Ağıt"
-},
-"cevap": "D",
-"aciklama": "Metne göre Balbal 'Mezar taşı'dır. Tapınak resimlerine ise fresk denir."
-},
-{
-"id": 42,
-"konu": "İlk Türk Devletlerinde Ordu, Din ve İnanış",
-"altKonu": "Uygur Dini Mimari Kavramları",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Uygurlarda görülen kubbeli tapınaklar ile Budist heykellerine verilen adlar sırasıyla aşağıdakilerin hangisinde doğru olarak verilmiştir?",
-"secenekler": {
-"A": "Stupa - Burkan",
-"B": "Kurgan - Balbal",
-"C": "Otağ - Fresk",
-"D": "Yurt - Kam",
-"E": "Örgün - Sorguç"
-},
-"cevap": "A",
-"aciklama": "Uygurlardaki kubbeli tapınaklara 'Stupa', Budist heykeli/mabedine ise 'Burkan' denir."
-},
-{
-"id": 43,
-"konu": "İlk Türk Devletlerinde Ekonomi",
-"altKonu": "Geçim Kaynakları ve Ticaret",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Asya Hunları - Çin sınırında Serbest Ticaret Pazarları kurma\nII. Avrupa Hunları - Margos Antlaşması ile sınır kasabalarında ticaret hakkı elde etme\nIII. Genel - İpek Yolu ve Kürk Yolu'nu kullanma\n\nYukarıdaki ekonomik faaliyet ve devlet/topluluk eşleştirmelerinden hangileri doğrudur?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Öncüllerde verilen üç ticari gelişme ve devlet eşleştirmesi de metinde yer alan doğrular arasındadır."
-},
-{
-"id": 44,
-"konu": "İlk Türk Devletlerinde Ekonomi",
-"altKonu": "Tarım ve Sulama Kanalları",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Hunlar ve Kök Türkler tarafından tarımsal sulama amacıyla kullanılan kanallar aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Tötö ve Aktura",
-"B": "Deşt-i Kıpçak",
-"C": "Balık ve Stupa",
-"D": "Çav ve Satır",
-"E": "Yarmak ve Kamdu"
-},
-"cevap": "A",
-"aciklama": "Metne göre Hunlar ve Kök Türkler Tötö ve Aktura sulama kanallarını kullanmışlardır."
-},
-{
-"id": 45,
-"konu": "İlk Türk Devletlerinde Ekonomi",
-"altKonu": "Para ve Çeşitleri",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "İlk Türk devletlerinde kullanılan para çeşitleri ve tanımları eşleştirmesinden hangisi yanlıştır?",
-"secenekler": {
-"A": "Yarmak - Madeni para",
-"B": "Çav - Kâğıt para",
-"C": "Satır - Gümüş para",
-"D": "Kamdu / Böz / Kuanpo - Mühürlü bez paralar",
-"E": "Yarmak - Uygurlara ait kâğıt para"
-},
-"cevap": "E",
-"aciklama": "Metne göre Yarmak 'Madeni para'dır. Kâğıt para ise Uygurlara ait 'Çav'dır."
-},
-{
-"id": 46,
-"konu": "İlk Türk Devletlerinde Bilim, Sanat ve Spor",
-"altKonu": "Tıp ve Bilim",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İlk Türk devletlerinde hekimlere verilen ad aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Otacı veya Emçi",
-"B": "Targacı",
-"C": "Bitikçi",
-"D": "Tudun",
-"E": "Aygucı"
-},
-"cevap": "A",
-"aciklama": "Metne göre Tıp alanında hekimlere Otacı veya Emçi adı verilmiştir. 'Tıb 120 Kodu' adlı tıp kitabı hazırlanmıştır."
-},
-{
-"id": 47,
-"konu": "İlk Türk Devletlerinde Bilim, Sanat ve Spor",
-"altKonu": "Sanat Eserleri ve Kurganlar",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Sanat eserleri ve çıkarıldıkları kurganlar eşleştirmesi aşağıdakilerin hangisinde doğru verilmiştir?",
-"secenekler": {
-"A": "Altın Elbiseli Adam - Pazırık Kurganı",
-"B": "Dünyanın bilinen en eski halısı - Esik Kurganı",
-"C": "Altın Elbiseli Adam - Esik Kurganı",
-"D": "Fresk - Yenisey Kurganı",
-"E": "Stupa - Karabalasagun Kurganı"
-},
-"cevap": "C",
-"aciklama": "Altın Elbiseli Adam Esik Kurganı'ndan, Pazırık Halısı ise Pazırık Kurganı'ndan çıkarılmıştır."
-},
-{
-"id": 48,
-"konu": "İlk Türk Devletlerinde Bilim, Sanat ve Spor",
-"altKonu": "Uygur Sanatı",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Fresk (duvar resmi) ve Minyatür\nII. Türk Üçgeni (kubbe geçiş mimarisi)\nIII. Çini ve tapınak mimarisi\n\nYukarıdaki sanat ve mimari unsurlardan hangileri Uygurlar döneminde gelişme göstermiştir?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Uygurlarda Fresk, Minyatür, çini, çadır sanatından gelişen Türk Üçgeni ve tapınak mimarisi görülür."
-},
-{
-"id": 49,
-"konu": "İlk Türk Devletlerinde Bilim, Sanat ve Spor",
-"altKonu": "Spor Dalları",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İlk Türk devletlerinde oynanan futbol benzeri oyunun adı aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Tepük",
-"B": "Mangala",
-"C": "Çevgan",
-"D": "Gökbörü",
-"E": "Cirit"
-},
-"cevap": "A",
-"aciklama": "Metinde 'Tepük (Futbol benzeri)' şeklinde ifade edilmiştir."
-},
-{
-"id": 50,
-"konu": "İlk Türk Devletlerinde Yazı, Dil ve Edebiyat",
-"altKonu": "Milli Alfabeler",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Türklerin kullandığı milli alfabeler ve harf sayıları eşleştirmesi aşağıdakilerin hangisinde doğru verilmiştir?",
-"secenekler": {
-"A": "Kök Türk Alfabesi (38 harfli) - Uygur Alfabesi (18 harfli)",
-"B": "Soğd Alfabesi (38 harfli) - Çin Alfabesi (18 harfli)",
-"C": "Kök Türk Alfabesi (18 harfli) - Uygur Alfabesi (38 harfli)",
-"D": "Arap Alfabesi (38 harfli) - Kiril Alfabesi (18 harfli)",
-"E": "Latin Alfabesi (38 harfli) - Fars Alfabesi (18 harfli)"
-},
-"cevap": "A",
-"aciklama": "Milli alfabelerimiz Kök Türk Alfabesi (38 harfli) ve Uygur Alfabesi (18 harfli)'dir."
-},
-{
-"id": 51,
-"konu": "İlk Türk Devletlerinde Yazı, Dil ve Edebiyat",
-"altKonu": "Destan - Devlet Eşleşmesi",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Destan ve ait olduğu devlet/topluluk eşleştirmelerinden hangisi yanlıştır?",
-"secenekler": {
-"A": "Oğuz Kağan Destanı - Asya Hunları",
-"B": "Ergenekon & Bozkurt Destanları - Kök Türkler",
-"C": "Türeyiş & Göç Destanları - Uygurlar",
-"D": "Manas Destanı - İskitler",
-"E": "Attila Destanı - Avrupa Hunları"
-},
-"cevap": "D",
-"aciklama": "Manas Destanı Kırgızlara aittir. İskitlere ait destanlar ise Alp Er Tunga ve Şu destanlarıdır."
-},
-{
-"id": 52,
-"konu": "İlk Türk Devletlerinde Yazı, Dil ve Edebiyat",
-"altKonu": "Orhun Yazıtları",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "Orhun Yazıtları ile ilgili;\n\nI. Tonyukuk, Kül Tigin ve Bilge Kağan adına dikilmesi,\nII. Yazanın Yollug Tigin olması,\nIII. Türk tarihinin ve edebiyatının ilk yazılı belgesi, ilk siyasetnamesi kabul edilmesi\n\nbilgilerinden hangileri doğrudur?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Verilen üç öncül de Orhun Yazıtları hakkında metinde bulunan doğru bilgilerdir."
-},
-{
-"id": 53,
-"konu": "İlk Türk Devletlerinde Yazı, Dil ve Edebiyat",
-"altKonu": "Orhun Yazıtlarının Çözülmesi",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Orhun Yazıtları'nı bulan İsveçli subay ve yazıtları çözen Danimarkalı dil bilimci sırasıyla aşağıdakilerin hangisinde verilmiştir?",
-"secenekler": {
-"A": "Strahlenberg - W. Thomsen",
-"B": "W. Thomsen - Strahlenberg",
-"C": "Baga Tarkan - Yollug Tigin",
-"D": "Alp Er Tunga - Tonyukuk",
-"E": "Bögü Kağan - Cengiz Han"
-},
-"cevap": "A",
-"aciklama": "Orhun Yazıtları İsveçli subay Strahlenberg tarafından bulunmuş, Danimarkalı dil bilimci W. Thomsen tarafından çözülmüştür."
-},
-{
-"id": 54,
-"konu": "İlk Türk Devletlerinde Yazı, Dil ve Edebiyat",
-"altKonu": "Uygur Dönemi Yazıtları",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Terhin (Taryat)\nII. Moyen-Çur (Şine Usu)\nIII. Karabalasagun\n\nYukarıdaki yazıtlardan hangileri Uygur Dönemi'ne aittir?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Uygur Dönemi Yazıtları Terhin (Taryat), Moyen-Çur (Şine Usu) ve Karabalasagun Yazıtlarıdır."
-},
-{
-"id": 55,
-"konu": "Türk Adı, Kültür Çevreleri ve İskitler",
-"altKonu": "Orta Asya Kültür Merkezleri",
-"zorluk": "orta",
-"tip": "analiz",
-"soru": "Orta Asya kültür merkezleri göz önüne alındığında, 'Orta Asya'nın en eski kültür merkezi' ile 'Türklere ait en eski kültür merkezi' sırasıyla aşağıdakilerin hangisinde doğru eşleştirilmiştir?",
-"secenekler": {
-"A": "Anav - Afanesyevo",
-"B": "Afanesyevo - Anav",
-"C": "Andronova - Karasuk",
-"D": "Kelteminar - Tagar",
-"E": "Tagar - Afanesyevo"
-},
-"cevap": "A",
-"aciklama": "Anav Orta Asya'nın en eski kültür merkezidir; Afanesyevo ise Orta Asya'da Türklere ait en eski kültür merkezidir. Dolayısıyla ikisinin ayrımı A şıkkında doğru sıralanmıştır."
-},
-{
-"id": 56,
-"konu": "Asya Hun Devleti ve Kavimler Göçü",
-"altKonu": "Asya Hun Devleti Yıkılış Süreci",
-"zorluk": "orta",
-"tip": "neden_sonuc",
-"soru": "Asya Hun Devleti'nde sarsılmaya ve zamanla Doğu-Batı, ardından Kuzey-Güney Hunları olarak bölünmeye yol açan temel gelişme aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Ho-han-yeh ve Çi-çi arasındaki anlaşmazlık",
-"B": "Mete Han'ın Çin'i vergiye bağlaması",
-"C": "Balamir'in batıya hareketi",
-"D": "Kürşad Ayaklanması'nın çıkması",
-"E": "Bögü Kağan'ın din değiştirmesi"
-},
-"cevap": "A",
-"aciklama": "Metinde 'Ho-han-yeh ve Çi-çi arasındaki anlaşmazlık devleti sarsmış; zamanla Doğu ve Batı, sonrasında Kuzey ve Güney Hunları olarak bölünüp yıkılmışlardır.' denmektedir."
-},
-{
-"id": 57,
-"konu": "Avrupa Hun Devleti",
-"altKonu": "Attila Seferleri",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Attila Dönemi'nde Doğu Roma (Bizans) ve Batı Roma ile olan ilişkiler değerlendirildiğinde aşağıdakilerden hangisi söylenebilir?",
-"secenekler": {
-"A": "Doğu Roma vergiye bağlanmış, Batı Roma üzerine Galya ve İtalya seferleri düzenlenmiştir.",
-"B": "Batı Roma ile Margos Antlaşması yapılmış, Doğu Roma yıkılmıştır.",
-"C": "Doğu Roma üzerine İtalya seferi düzenlenmiş, Batı Roma vergiye bağlanmıştır.",
-"D": "Her iki Roma İmparatorluğu ile de yalnızca serbest ticaret antlaşmaları yapılmıştır.",
-"E": "Doğu Roma Belencer Savaşı ile yenilmiş, Batı Roma ise kendiliğinden biat etmiştir."
-},
-"cevap": "A",
-"aciklama": "Metne göre Margos ve Anatolios Antlaşmaları ile Doğu Roma (Bizans) vergiye bağlanmış; Batı Roma üzerine ise Galya ve İtalya seferleri düzenlenmiştir."
-},
-{
-"id": 58,
-"konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Peçenekler",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Bizans ordusunda paralı askerlik yapıp Malazgirt Savaşı'nda taraf değiştiren Türk topluluklarından biri olmasına rağmen devlet teşkilatı kuramayan topluluk aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Peçenekler",
-"B": "Uzlar",
-"C": "Avarlar",
-"D": "Kıpçaklar",
-"E": "Macarlar"
-},
-"cevap": "A",
-"aciklama": "Metinde 'Peçenekler devlet teşkilatı kuramamıştır.' bilgisi yer almaktadır."
-},
-{
-"id": 59,
-"konu": "Kök Türk Devletleri",
-"altKonu": "I. Kök Türk Devleti En Parlak Dönem",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "I. Kök Türk Devleti en parlak dönemini hangi hükümdar zamanında yaşamıştır?",
-"secenekler": {
-"A": "Mukan Kağan",
-"B": "Bumin Kağan",
-"C": "İstemi Yabgu",
-"D": "Tapo Kağan",
-"E": "Kutluk Kağan"
-},
-"cevap": "A",
-"aciklama": "I. Kök Türk Devleti Mukan Kağan döneminde en parlak zamanını yaşamıştır."
-},
-{
-"id": 60,
-"konu": "Kök Türk Devletleri",
-"altKonu": "II. Kök Türk / Kutluk Devleti Unvan",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "II. Kök Türk Devleti'ni yeniden kurduğu için Kutluk Kağan'a verilen unvan aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "İlteriş",
-"B": "Baga Tarkan",
-"C": "Sulu Kağan",
-"D": "Aygucı",
-"E": "Ataman"
-},
-"cevap": "A",
-"aciklama": "Metne göre Kutluk Kağan, devleti yeniden kurduğu için 'İlteriş' unvanını almıştır."
-},
-{
-"id": 61,
-"konu": "Uygur Devleti",
-"altKonu": "Uygur Şehirleri",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Uygurlar döneminde kurulan şehirlere verilen ad aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Balık",
-"B": "Stupa",
-"C": "Balbal",
-"D": "Otağ",
-"E": "Yurt"
-},
-"cevap": "A",
-"aciklama": "Metne göre Uygurlarda şehirlere 'Balık' adı verilir."
-},
-{
-"id": 62,
-"konu": "İlk Türk Devletlerinde Devlet Yönetimi",
-"altKonu": "Hükümdarlık İdealleri",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Türk Cihan Hakimiyeti Anlayışı\nII. Nizam-ı Âlem\nIII. Kızıl Elma\n\nYukarıdakilerden hangileri ilk Türk devletlerindeki görüş ve idealler arasında yer alır?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Metinde Görüş ve İdealler başlığı altında Türk Cihan Hakimiyeti Anlayışı, Nizam-ı Âlem ve Kızıl Elma idealleri yer almaktadır."
-},
-{
-"id": 63,
-"konu": "İkili Teşkilat, Kurultay ve Hükümet",
-"altKonu": "Kurultay Üyeleri",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İlk Türk devletlerinde Kurultay (Toy) meclisinin üyelerine verilen ad aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Toygun",
-"B": "Buyruk",
-"C": "Tudun",
-"D": "Bitikçi",
-"E": "Yargan"
-},
-"cevap": "A",
-"aciklama": "Metne göre Kurultay (Toy / Kengeş) üyelerine 'Toygun' denir."
-},
-{
-"id": 64,
-"konu": "İlk Türk Devletlerinde Sosyal Hayat ve Hukuk",
-"altKonu": "Hanı Yağmalama Geleneği",
-"zorluk": "orta",
-"tip": "neden_sonuc",
-"soru": "İlk Türk devletlerinde toylarda 'hanı yağmalama' geleneği hangi olaylardan sonra uygulanmaktaydı?",
-"secenekler": {
-"A": "Başarılı sefer veya göçlerden sonra",
-"B": "Hükümdar vefat ettiğinde",
-"C": "Kut anlayışı değiştiğinde",
-"D": "Çin'e vergi ödendiğinde",
-"E": "Yeni bir meclis kurulduğunda"
-},
-"cevap": "A",
-"aciklama": "Metne göre 'Başarılı sefer veya göçlerden sonra toylarda hanı yağmalama geleneği uygulanır.'"
-},
-{
-"id": 65,
-"konu": "İlk Türk Devletlerinde Sosyal Hayat ve Hukuk",
-"altKonu": "Töre Kuralları",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Kağanın koyduğu kurallar\nII. Kurultay kararları\nIII. Halkın örf ve adetleri\n\nYukarıdakilerden hangileri yazılı olmayan sözlü hukuk kuralı olan Töre'nin kaynakları arasında yer alır?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Törenin kaynakları: Kağanın koyduğu kurallar, Kurultay kararları ve halkın örf/adetleridir."
-},
-{
-"id": 66,
-"konu": "İlk Türk Devletlerinde Ordu, Din ve İnanış",
-"altKonu": "Ordu-Millet Anlayışı",
-"zorluk": "orta",
-"tip": "neden_sonuc",
-"soru": "İlk Türk devletlerinde askerliğin ayrı bir meslek sayılmaması ve herkesin asker kabul edilmesi durumu aşağıdakilerden hangisiyle açıklanır?",
-"secenekler": {
-"A": "Ordu-millet anlayışı",
-"B": "Pax Hazaria çağı",
-"C": "İkili teşkilat yapısı",
-"D": "Kut anlayışının belirsizliği",
-"E": "Veraset sistemi"
-},
-"cevap": "A",
-"aciklama": "Metinde 'Ordu-millet anlayışı egemendir; askerlik ayrı bir meslek sayılmaz, herkes asker kabul edilir.' ifadesi yer almaktadır."
-},
-{
-"id": 67,
-"konu": "İlk Türk Devletlerinde Ordu, Din ve İnanış",
-"altKonu": "Türk Kara Kuvvetlerinin Kuruluşu",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Türk Kara Kuvvetlerinin kuruluşu olarak kabul edilen MÖ 209 tarihi aşağıdaki hangi gelişmeye dayanır?",
-"secenekler": {
-"A": "Mete Han'ın ilk düzenli orduyu kurması",
-"B": "Bumin Kağan'ın devleti kurması",
-"C": "Kavimler Göçü'nün başlaması",
-"D": "Attila'nın tahta geçmesi",
-"E": "Alp Er Tunga'nın hükümdar olması"
-},
-"cevap": "A",
-"aciklama": "Metne göre 'İlk düzenli orduyu MÖ 209'da Asya Hun Hükümdarı Mete Han kurmuştur (Türk Kara Kuvvetlerinin kuruluşu).'"
-},
-{
-"id": 68,
-"konu": "İlk Türk Devletlerinde Ekonomi",
-"altKonu": "Targacı",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İlk Türk devletlerinde tarımla uğraşan kişilere ne ad verilmekteydi?",
-"secenekler": {
-"A": "Targacı",
-"B": "Tudun",
-"C": "Otacı",
-"D": "Buyruk",
-"E": "Bitikçi"
-},
-"cevap": "A",
-"aciklama": "Metinde 'Tarımla uğraşanlara targacı denir.' bilgisi verilmiştir."
-},
-{
-"id": 69,
-"konu": "İlk Türk Devletlerinde Bilim, Sanat ve Spor",
-"altKonu": "Hayvan Üslubu",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İskitlerden itibaren hayvan figürlerinin eşyalara işlenmesiyle ortaya çıkan sanat tarzı aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Hayvan Üslubu",
-"B": "Fresk",
-"C": "Minyatür",
-"D": "Türk Üçgeni",
-"E": "Stupa"
-},
-"cevap": "A",
-"aciklama": "Metinde 'Hayvan Üslubu: İskitlerden itibaren hayvan figürlerinin eşyalara işlenmesidir.' yazmaktadır."
-},
-{
-"id": 70,
-"konu": "İlk Türk Devletlerinde Yazı, Dil ve Edebiyat",
-"altKonu": "Yenisey Yazıtları",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "VI. yüzyıldan kalma ilk mezar taşları olan ve Kırgızlara ait olan yazılı eser aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Yenisey Yazıtları",
-"B": "Orhun Yazıtları",
-"C": "Terhin Yazıtları",
-"D": "Moyen-Çur Yazıtları",
-"E": "Karabalasagun Yazıtları"
-},
-"cevap": "A",
-"aciklama": "Metne göre Yenisey Yazıtları Kırgızlara aittir ve VI. yüzyıldan kalma ilk mezar taşlarıdır."
-},
-{
-"id": 71,
-"konu": "Türk Adı, Kültür Çevreleri ve İskitler",
-"altKonu": "Kültür Çevreleri Özellikleri",
-"zorluk": "zor",
-"tip": "analiz",
-"soru": "Kültür çevreleri ve özellikleri eşleştirildiğinde;\n\nI. Demir madeninin ilk kez işlendiği merkez -> Karasuk\nII. En geniş alana yayılan kültür bölgesi -> Andronova\nIII. Orta Asya'nın en gelişmiş kültür merkezi -> Tagar\n\nverilenlerden hangileri doğrudur?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Öncüllerin üçü de metindeki kültür merkezleri ve spesifik nitelikleriyle tam olarak eşleşmektedir."
-},
-{
-"id": 72,
-"konu": "Asya Hun Devleti ve Kavimler Göçü",
-"altKonu": "Mete Han Vatan Sevgisi",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İlk Türk devletlerinde vatan sevgisinden ilk kez bahseden hükümdar aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Mete Han",
-"B": "Teoman",
-"C": "Attila",
-"D": "Bumin Kağan",
-"E": "Kutluk Kağan"
-},
-"cevap": "A",
-"aciklama": "Metinde Mete Han'ın 'vatan sevgisinden ilk kez bahsettiği' yazılıdır."
-},
-{
-"id": 73,
-"konu": "Avrupa Hun Devleti",
-"altKonu": "Uldız Dış Politikası",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "'Güneşin battığı yere kadar her yeri zaptedebilirim' diyerek Avrupa Hun Devleti'nin dış politikasının temellerini atan hükümdar kimdir?",
-"secenekler": {
-"A": "Uldız",
-"B": "Balamir",
-"C": "Attila",
-"D": "Mete Han",
-"E": "Baga Tarkan"
-},
-"cevap": "A",
-"aciklama": "Metne göre Uldız, bu sözü söyleyerek dış politikanın temellerini atmıştır."
-},
-{
-"id": 74,
-"konu": "Hazar Devleti",
-"altKonu": "İslamiyet'in Yayılmasına Engel Olma",
-"zorluk": "orta",
-"tip": "neden_sonuc",
-"soru": "Hazarlar Hz. Osman döneminde Müslüman Araplarla yaptıkları hangi savaş ile İslamiyet’in Kafkaslar’a yayılmasını engellemişlerdir?",
-"secenekler": {
-"A": "Belencer Savaşı",
-"B": "Talas Savaşı",
-"C": "Malazgirt Savaşı",
-"D": "İgor Savaşı",
-"E": "Margos Savaşı"
-},
-"cevap": "A",
-"aciklama": "Metne göre Hazarlar Hz. Osman döneminde Müslüman Araplarla ilk savaşları olan Belencer Savaşı'nı yaparak İslamiyet’in Kafkaslar’a yayılmasını engellemişlerdir."
-},
-{
-"id": 75,
-"konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Rus Destanına Konu Olma",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Rusların İgor Destanı'na konu olan Türk topluluğu aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Kıpçaklar (Kumanlar)",
-"B": "Peçenekler",
-"C": "Uzlar",
-"D": "Avarlar",
-"E": "Hazarlar"
-},
-"cevap": "A",
-"aciklama": "Metne göre Kıpçaklar Rusların İgor Destanı'na konu olmuşlardır."
-},
-{
-"id": 76,
-"konu": "Kök Türk Devletleri",
-"altKonu": "I. Kök Türk İkili Teşkilat",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "I. Kök Türk Devleti Ötüken merkezli Bumin Kağan tarafından kurulduğunda, Batı kanadını yöneten yabgu aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "İstemi Yabgu",
-"B": "Mukan Kağan",
-"C": "Tapo Kağan",
-"D": "Kutluk Kağan",
-"E": "Bilge Kağan"
-},
-"cevap": "A",
-"aciklama": "Metne göre devlet ikili teşkilat ile yönetilmiş, Batı'da İstemi Yabgu yer almıştır."
-},
-{
-"id": 77,
-"konu": "Uygur Devleti",
-"altKonu": "Yerleşik Hayat Töre İlişkisi",
-"zorluk": "orta",
-"tip": "neden_sonuc",
-"soru": "Töre kurallarının Uygurlar döneminde yazılı hale getirilmesinin temel nedeni aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Yerleşik hayata geçilmesiyle mülk edinme ve sözleşmelerin ortaya çıkması",
-"B": "Gök Tanrı inancının tamamen terk edilmesi",
-"C": "Çin ile savaşların sona ermesi",
-"D": "Onlu sistemin terk edilmesi",
-"E": "İkili teşkilatın sona ermesi"
-},
-"cevap": "A",
-"aciklama": "Metinde 'Töre kuralları Uygurlar döneminde yerleşik hayata geçilmesiyle (mülk edinme, sözleşmeler vb.) yazılı hale getirilmiştir.' yazılıdır."
-},
-{
-"id": 78,
-"konu": "Orta Asya'daki Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Talas Savaşı ve Karluklar",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Talas Savaşı'nda Müslüman Arapları destekleyerek İslamiyet'i kabul eden ilk Türk boyu aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Karluklar",
-"B": "Türgişler",
-"C": "Kırgızlar",
-"D": "Uygurlar",
-"E": "Kıpçaklar"
-},
-"cevap": "A",
-"aciklama": "Metne göre Karluklar Talas Savaşı'nda Müslüman Arapları desteklemiş ve İslamiyet'i kabul eden ilk Türk boyu olmuşlardır."
-},
-{
-"id": 79,
-"konu": "İlk Türk Devletlerinde Devlet Yönetimi",
-"altKonu": "Hükümdarlık Unvanları",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Tanhu ve Şanyü\nII. Han ve Hakan\nIII. Kağan ve İlteriş\n\nYukarıdakilerden hangileri ilk Türk devletlerinde hükümdarların kullandığı unvanlar arasında yer alır?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Metinde geçen hükümdarlık unvanları: Han, Hakan, Kağan, Yabgu, Tanhu, Şanyü, İlteriş vb."
-},
-{
-"id": 80,
-"konu": "İkili Teşkilat, Kurultay ve Hükümet",
-"altKonu": " Kurultay Niteliği",
-"zorluk": "zor",
-"tip": "analiz",
-"soru": "Kurultay meclisinin niteliği hakkında;\n\nI. Kağanın kararlarını bağlayıcı olabilmesi,\nII. Son söz kağana ait olduğunda danışma meclisi özelliği taşıması,\nIII. Siyasi, askerî ve ekonomik kararların alındığı yer olması\n\ndurumlarından hangileri Kurultay'ın durum ve şartlara göre farklı yetki seviyelerinde çalışabildiğini gösterir?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "B",
-"aciklama": "Kurultay'ın kararlarının kağanı bağlayabilmesi (karar meclisi) veya son sözün kağana ait olması (danışma meclisi) onun farklı yetki seviyelerinde işleyebildiğini gösterir (I ve II). III. öncül ise sadece alınan karar türlerini ifade eder."
-},
-{
-"id": 81,
-"konu": "İlk Türk Devletlerinde Sosyal Hayat ve Hukuk",
-"altKonu": "Toplumsal Birimler",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İlk Türk devletlerinde toplumun en küçük yapı birimi (aile) aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Oguş",
-"B": "Urug",
-"C": "Boy",
-"D": "Budun",
-"E": "İl"
-},
-"cevap": "A",
-"aciklama": "Metne göre toplumun en küçük yapı birimi Oguş (aile) tir."
-},
-{
-"id": 82,
-"konu": "İlk Türk Devletlerinde Ordu, Din ve İnanış",
-"altKonu": "Gökbörü ve Kızbörü",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İlk Türk devletlerinde ordu komutanına 'Tarkan', Oğuzlarda ordu komutanına 'Sü-başı' denilmekteydi.\n\nBuna göre kağan muhafızlarına verilen ad aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Böri",
-"B": "Yelme",
-"C": "Tümenbaşı",
-"D": "Subaşı",
-"E": "Yargan"
-},
-"cevap": "A",
-"aciklama": "Metne göre kağan muhafızlarına 'Böri' denir."
-},
-{
-"id": 83,
-"konu": "İlk Türk Devletlerinde Ekonomi",
-"altKonu": "Türklerde Para Basımı",
-"zorluk": "zor",
-"tip": "analiz",
-"soru": "Türk devletlerinde para kullanımı ve basımı ile ilgili;\n\nI. Parayı ticarette değişim aracı olarak ilk kullanan devlet -> Kök Türkler\nII. Kendi adına para bastıran ilk Türk hükümdarı -> Baga Tarkan\nIII. Kâğıt para (Çav) kullanan ilk Türk devleti -> Uygurlar\n\nbilgilerinden hangileri doğrudur?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Metne göre Kök Türkler ticarette değişimi parayla yapan ilk devlettir, Baga Tarkan kendi adına ilk para bastıran hükümdardır ve Çav kâğıt parası Uygurlara aittir. Üç öncül de doğrudur."
-},
-{
-"id": 84,
-"konu": "İlk Türk Devletlerinde Bilim, Sanat ve Spor",
-"altKonu": "Astronomi ve Takvim",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İlk Türk devletlerinde astronomi bilimi sayesinde oluşturulan takvim aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "On İki Hayvanlı Türk Takvimi",
-"B": "Hicri Takvim",
-"C": "Celali Takvim",
-"D": "Rumi Takvim",
-"E": "Miladi Takvim"
-},
-"cevap": "A",
-"aciklama": "Metne göre astronomi sayesinde 'On İki Hayvanlı Türk Takvimi' oluşturulmuştur."
-},
-{
-"id": 85,
-"konu": "İlk Türk Devletlerinde Yazı, Dil ve Edebiyat",
-"altKonu": "Sözlü Edebiyat Türleri",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Sav (Atasözü)\nII. Sagu (Ağıt)\nIII. Koşuk (Kopuz eşliğinde şiir)\n\nYukarıdakilerden hangileri ilk Türk devletlerindeki sözlü edebiyat ürünleridir?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Sözlü edebiyat türleri metne göre Sav (Atasözü), Sagu (Ağıt), Koşuk (Kopuz eşliğinde şiir) ve Destanlardır."
-},
-{
-"id": 86,
-"konu": "Türk Adı, Kültür Çevreleri ve İskitler",
-"altKonu": "İskitler Sanat Tarzı",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İskitlerin 'Bozkırın Kuyumcuları' olarak anılmalarının ve Hayvan Üslubu sanatını geliştirmelerinin temel nedeni hangi alandaki gelişimleriyle ilişkilidir?",
-"secenekler": {
-"A": "Maden işlemeciliği ve sanat",
-"B": "Yazılı hukuk kuralları",
-"C": "Kâğıt ve matbaa kullanımı",
-"D": "Deniz ticareti",
-"E": "Şehir mimarisi"
-},
-"cevap": "A",
-"aciklama": "Metne göre İskitler 'Bozkırın Kuyumcuları' olarak anılmış ve Hayvan Üslubu sanat tarzını geliştirmişlerdir. Bu durum madencilik ve sanatla ilgilidir."
-},
-{
-"id": 87,
-"konu": "Asya Hun Devleti ve Kavimler Göçü",
-"altKonu": "Kavimler Göçü Sonuçları",
-"zorluk": "zor",
-"tip": "analiz",
-"soru": "Kavimler Göçü'nün sonuçları düşünüldüğünde;\n\nI. Avrupa'nın siyasi yapısının değişmesi (Roma'nın ikiye ayrılması),\nII. Sosyo-ekonomik ve düşünsel yapının değişmesi (Feodalite ve Skolastik düşünce),\nIII. Türklerin din değiştirerek Museviliğe geçmesi\n\nyargılarından hangileri metindeki bilgilere göre doğrulanabilir?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "B",
-"aciklama": "I ve II. öncüller Kavimler Göçü'nün sonuçlarında yer alır (Roma ikiye ayrıldı, feodalite ve skolastik düşünce ortaya çıktı/güçlendi). Museviliği benimseyen ise Hazarlardır, Kavimler Göçü sonucu değildir."
-},
-{
-"id": 88,
-"konu": "Avrupa Hun Devleti",
-"altKonu": "Margos ve Anatolios Antlaşmaları",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Avrupa Hun Devleti Attila Dönemi'nde Margos ve Anatolios Antlaşmaları ile hangi devleti vergiye bağlamıştır?",
-"secenekler": {
-"A": "Doğu Roma (Bizans)",
-"B": "Batı Roma",
-"C": "Emeviler",
-"D": "Çin",
-"E": "Sasani"
-},
-"cevap": "A",
-"aciklama": "Metne göre Margos ve Anatolios Antlaşmaları ile Doğu Roma (Bizans) vergiye bağlanmıştır."
-},
-{
-"id": 89,
-"konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Codex Cumanicus",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Kıpçaklar (Kumanlar) tarafından hazırlanan Türkçe-Latince sözlüğün adı aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Codex Cumanicus",
-"B": "Orhun Kitabeleri",
-"C": "Yenisey Yazıtları",
-"D": "Kutadgu Bilig",
-"E": "Tıb 120 Kodu"
-},
-"cevap": "A",
-"aciklama": "Metne göre Kıpçaklar Türkçe-Latince sözlük olan Codex Cumanicus'u hazırlamışlardır."
-},
-{
-"id": 90,
-"konu": "Kök Türk Devletleri",
-"altKonu": "II. Kök Türk / Kutluk Devleti Yazıtları",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Türk tarihinin ve edebiyatının ilk yazılı belgeleri olan Orhun Kitabeleri hangi devlet döneminde dikilmiştir?",
-"secenekler": {
-"A": "II. Kök Türk (Kutluk) Devleti",
-"B": "I. Kök Türk Devleti",
-"C": "Uygur Devleti",
-"D": "Asya Hun Devleti",
-"E": "Kırgızlar"
-},
-"cevap": "A",
-"aciklama": "Metne göre Orhun Kitabeleri II. Kök Türk (Kutluk) Devleti döneminde dikilmiştir."
-},
-{
-"id": 91,
-"konu": "Uygur Devleti",
-"altKonu": "Uygur Kültürel Gelişimi",
-"zorluk": "zor",
-"tip": "analiz",
-"soru": "Uygurların benimsediği Manihaizm inancının ve yerleşik hayata geçmelerinin sonuçları birlikte değerlendirildiğinde;\n\nI. Savaşçı niteliklerin zayıflaması,\nII. Mimari eserlerin (tapınak/saray) inşa edilmesi,\nIII. Sözlü töre kurallarının yazılı hale getirilmesi\n\ndurumlarından hangilerinin gerçekleştiği söylenebilir?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Metinde Manihaizm etkisiyle savaşçı niteliğin zayıfladığı, yerleşik hayata geçişle tapınak/saray mimarisinin başladığı ve töre kurallarının yazılı hale geldiği belirtilmiştir. Üçü de bu sürecin sonuçlarıdır."
-},
-{
-"id": 92,
-"konu": "Orta Asya'daki Diğer Türk Devletleri ve Toplulukları",
-"altKonu": "Emevilerle Savaşan Türk Devletleri",
-"zorluk": "zor",
-"tip": "analiz",
-"soru": "İslamiyet'in yayılmasına karşı mücadele eden Türk devletleri incelendiğinde;\n\nHazarlar -> Kafkaslar'a girişini engellemiş,\nTürgişler -> Orta Asya'ya girişini geciktirmiştir.\n\nBuna göre aşağıdakilerden hangisine ulaşılabilir?",
-"secenekler": {
-"A": "Farklı coğrafyalarda farklı Türk devletleri İslam'ın yayılışına karşı direnç göstermiştir.",
-"B": "Müslüman Araplarla hiçbir Türk boyu ittifak yapmamıştır.",
-"C": "Hazarlar ve Türgişler aynı dönemde aynı hükümdar tarafından yönetilmiştir.",
-"D": "Emeviler Türklerin tamamını egemenliği altına almıştır.",
-"E": "İslamiyet Türkler arasında hiçbir zaman kabul görmemiştir."
-},
-"cevap": "A",
-"aciklama": "Hazarlar Kafkaslar'da (Hz. Osman dönemi), Türgişler ise Orta Asya'da (Sulu Kağan dönemi Emevilerle) İslamiyet'in ilerleyişini engelleyip geciktirmişlerdir. Bu durum farklı coğrafyalarda direnç gösterildiğinin göstergesidir."
-},
-{
-"id": 93,
-"konu": "İlk Türk Devletlerinde Devlet Yönetimi",
-"altKonu": "Hükümdarlık Sembolleri",
-"zorluk": "orta",
-"tip": "karsilastirma_siniflandirma",
-"soru": "Aşağıdaki hükümdarlık sembolleri ve Türkçe karşılıkları eşleştirmesinden hangisi yanlıştır?",
-"secenekler": {
-"A": "Otağ - Çadır",
-"B": "Örgün - Taht",
-"C": "Tuğ - Sancak",
-"D": "Nevbet - Davul",
-"E": "Yargı - Hükümdar eşi"
-},
-"cevap": "E",
-"aciklama": "Metne göre Hükümdar eşi 'Hatun (Katun)'dur. Yargı ise hükümdarlık sembolleri arasında yer alan ayrı bir kavramdır."
-},
-{
-"id": 94,
-"konu": "İkili Teşkilat, Kurultay ve Hükümet",
-"altKonu": "Hükümet Görevlileri",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İlk Türk devletlerinde dış yazışmalardan sorumlu kâtip görevliye verilen ad aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Bitikçi (Tamgaçı)",
-"B": "Tudun",
-"C": "Buyruk",
-"D": "Aygucı",
-"E": "Şad"
-},
-"cevap": "A",
-"aciklama": "Metne göre Bitikçi (Tamgaçı) dış yazışmalar ve kâtip olarak görev yapar."
-},
-{
-"id": 95,
-"konu": "İlk Türk Devletlerinde Sosyal Hayat ve Hukuk",
-"altKonu": "Törenin İlkesi - Tüzlük",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Kutadgu Bilig'e göre Töre'nin değişmeyen ilkelerinden biri olan 'Tüzlük' ne anlama gelmektedir?",
-"secenekler": {
-"A": "Eşitlik",
-"B": "Adalet",
-"C": "İyilik",
-"D": "İnsanlık",
-"E": "Bağımsızlık"
-},
-"cevap": "A",
-"aciklama": "Metne göre Tüzlük 'Eşitlik' anlamına gelmektedir (Könilik: Adalet, Uzluk: İyilik, Kişilik: İnsanlık)."
-},
-{
-"id": 96,
-"konu": "İlk Türk Devletlerinde Ordu, Din ve İnanış",
-"altKonu": "Gök Tanrı ve Diğer İnançlar",
-"zorluk": "orta",
-"tip": "bilgi_gruplandirma",
-"soru": "I. Atalar Kültü\nII. Yer-Su-Gök inancı\nIII. Totemizm (Ongun)\n\nİlk Türk devletlerinde en yaygın inanç olan Gök Tanrı inancının yanında yukarıdaki inanç biçimlerinden hangileri de görülmekteydi?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Metinde Gök Tanrı inancının yanında Atalar Kültü, Yer-Su-Gök inancı ve Totemizm (Ongun) de görüldüğü ifade edilmiştir."
-},
-{
-"id": 97,
-"konu": "İlk Türk Devletlerinde Ekonomi",
-"altKonu": "Bez Paralar",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "İlk Türk devletlerinde kullanılan mühürlü bez paralara verilen adlar arasında aşağıdakilerden hangisi gösterilemez?",
-"secenekler": {
-"A": "Kamdu",
-"B": "Böz",
-"C": "Kuanpo",
-"D": "Çav",
-"E": "Kamdu ve Böz"
-},
-"cevap": "D",
-"aciklama": "Metne göre Kamdu, Böz ve Kuanpo mühürlü bez paralardır. Çav ise Uygurların kâğıt parasıdır."
-},
-{
-"id": 98,
-"konu": "İlk Türk Devletlerinde Bilim, Sanat ve Spor",
-"altKonu": "Matbaa ve Kâğıt",
-"zorluk": "kolay",
-"tip": "dogrudan_bilgi",
-"soru": "Ahşap/tahta harf kalıpları kullanarak matbaayı ve kâğıdı geliştiren Türk devleti aşağıdakilerden hangisidir?",
-"secenekler": {
-"A": "Uygurlar",
-"B": "Kök Türkler",
-"C": "Hunlar",
-"D": "Hazarlar",
-"E": "Avarlar"
-},
-"cevap": "A",
-"aciklama": "Metne göre 'Uygurlar ahşap/tahta harf kalıpları kullanarak matbaayı ve kâğıdı geliştirmişlerdir.'"
-},
-{
-"id": 99,
-"konu": "İlk Türk Devletlerinde Yazı, Dil ve Edebiyat",
-"altKonu": "Kök Türk Alfabesi",
-"zorluk": "zor",
-"tip": "analiz",
-"soru": "Milli alfabelerimizden biri olan 38 harfli Kök Türk Alfabesi ile yazılan ilk eserler değerlendirildiğinde;\n\nI. Orhun Kitabeleri'nin dikilmesi,\nII. Yollug Tigin tarafından yazılması,\nIII. Siyasetname niteliği taşıması\n\nyargılarından hangileri bu döneme ait yazılı edebiyat ürünlerinin özelliklerindendir?",
-"secenekler": {
-"A": "Yalnız I",
-"B": "I ve II",
-"C": "I ve III",
-"D": "II ve III",
-"E": "I, II ve III"
-},
-"cevap": "E",
-"aciklama": "Orhun Kitabeleri II. Kök Türk döneminde dikilmiş, Yollug Tigin tarafından yazılmış ve ilk siyasetname niteliğindedir. Üç yargı da doğrudur."
-},
-{
-"id": 100,
-"konu": "İlk Türk Devletlerinde Bilim, Sanat ve Spor",
-"altKonu": "Maden İşlemeciliği Eserleri",
-"zorluk": "zor",
-"tip": "analiz",
-"soru": "İlk Türk devletlerine ait sanat eserleri incelediğinde;\n\n- Esik Kurganı'ndan çıkarılan zırh/sanat eseri -> Altın Elbiseli Adam\n- Pazırık Kurganı'ndan çıkarılan dünyanın bilinen en eski halısı -> Pazırık Halısı\n\nBuna göre aşağıdaki yargılardan hangisine ulaşılabilir?",
-"secenekler": {
-"A": "Türklerde kurganlar önemli sanat ve maden eserlerinin günümüze ulaşmasını sağlayan mezar yapılarıdır.",
-"B": "Pazırık Halısı Uygurlar döneminde dokunmuştur.",
-"C": "Altın Elbiseli Adam bir tapınak duvar resmidir (fresk).",
-"D": "Eski Türklerde mezarlara eşya koyma geleneği yoktur.",
-"E": "Tüm sanat eserleri yerleşik hayata geçildikten sonra yapılmıştır."
-},
-"cevap": "A",
-"aciklama": "Metne göre Kurgan mezardır (eşyalarıyla gömülürler) ve Esik ile Pazırık kurganlarından çıkarılan Altın Elbiseli Adam ve Pazırık Halısı bu mezarlardan günümüze kalan önemli eserlerdir. Dolayısıyla A seçeneğindeki yargıya ulaşılır."
-}
+  {
+    "id": 1,
+    "konu": "Türk Adı, Kültür Çevreleri ve İskitler",
+    "altKonu": "Türk Kelimesinin Anlamı",
+    "zorluk": "kolay",
+    "tip": "dogrudan_bilgi",
+    "soru": "Türk kelimesinin anlamıyla ilgili eşleştirmelerden hangisi doğru verilmiştir?",
+    "secenekler": {
+      "A": "Kaşgarlı Mahmut - Kanun ve nizam sahibi",
+      "B": "Ziya Gökalp - Olgunluk çağı",
+      "C": "Uygur kaynakları - Miğfer",
+      "D": "Çin kaynakları - Güç, kuvvet",
+      "E": "İran kaynakları - Güzel insan"
+    },
+    "cevap": "E",
+    "aciklama": "Verilen bilgilere göre İran kaynaklarında Türk kelimesi 'Güzel insan' anlamında kullanılmıştır. Kaşgarlı Mahmut 'Olgunluk çağı', Ziya Gökalp 'Kanun ve nizam sahibi', Çin kaynakları 'Miğfer', Uygur kaynakları ise 'Güç, kuvvet' olarak açıklamıştır."
+  },
+  {
+    "id": 2,
+    "konu": "Türk Adı, Kültür Çevreleri ve İskitler",
+    "altKonu": "Türk Adının Kullanımı",
+    "zorluk": "kolay",
+    "tip": "dogrudan_bilgi",
+    "soru": "Türkiye ifadesi coğrafi bir terim olarak ilk kez VI. yüzyılda hangi devletin kaynaklarında yer almıştır?",
+    "secenekler": {
+      "A": "Çin",
+      "B": "Bizans",
+      "C": "İran",
+      "D": "Rusya",
+      "E": "Arap"
+    },
+    "cevap": "B",
+    "aciklama": "Metne göre 'Türkiye' ifadesi coğrafi bir terim olarak VI. yüzyılda ilk kez Bizans kaynaklarında geçmiştir."
+  },
+  {
+    "id": 3,
+    "konu": "Türk Adı, Kültür Çevreleri ve İskitler",
+    "altKonu": "Orta Asya Kültür Çevreleri",
+    "zorluk": "orta",
+    "tip": "karsilastirma_siniflandirma",
+    "soru": "Orta Asya kültür çevreleri ve belirgin özellikleri dikkate alındığında aşağıdakilerden hangisi yanlıştır?",
+    "secenekler": {
+      "A": "Anav - Orta Asya’nın en eski kültür merkezidir.",
+      "B": "Afanesyevo - Orta Asya’da Türklere ait en eski kültür merkezidir.",
+      "C": "Andronova - En geniş alana yayılan kültür bölgesidir.",
+      "D": "Karasuk - Orta Asya’nın en gelişmiş kültür merkezidir.",
+      "E": "Kelteminar - Yerleşik yaşam unsurlarının görüldüğü alandır."
+    },
+    "cevap": "D",
+    "aciklama": "Metne göre Karasuk 'Demir madeninin ilk kez işlendiği merkezdir'. Orta Asya’nın en gelişmiş kültür merkezi ise Tagar'dır."
+  },
+  {
+    "id": 4,
+    "konu": "Türk Adı, Kültür Çevreleri ve İskitler",
+    "altKonu": "Türk Göçlerinin Nedenleri",
+    "zorluk": "orta",
+    "tip": "bilgi_gruplandirma",
+    "soru": "I. İklim değişikliği ve kuraklık\nII. Hızlı nüfus artışı ve otlak yetersizliği\nIII. Türk cihan hakimiyeti düşüncesi\n\nYukarıdakilerden hangileri Orta Asya'dan yapılan Türk göçlerinin sebepleri arasında yer alır?",
+    "secenekler": {
+      "A": "Yalnız I",
+      "B": "Yalnız II",
+      "C": "I ve II",
+      "D": "II ve III",
+      "E": "I, II ve III"
+    },
+    "cevap": "E",
+    "aciklama": "Türk göçlerinin nedenleri arasında iklim değişikliği, kuraklık, otlak yetersizliği, hızlı nüfus artışı, salgın hastalıklar, boylar arası mücadeleler, dış baskılar ve Türk cihan hakimiyeti düşüncesi yer almaktadır."
+  },
+  {
+    "id": 5,
+    "konu": "Türk Adı, Kültür Çevreleri ve İskitler",
+    "altKonu": "İskitler (Sakalar)",
+    "zorluk": "orta",
+    "tip": "bilgi_gruplandirma",
+    "soru": "İskitlerle ilgili verilen;\n\nI. Tarihte bilinen ilk Türk topluluğu olmaları,\nII. Kadın hükümdarlarının Tomris olması,\nIII. 'Bozkırın Kuyumcuları' olarak anılmaları\n\nbilgilerinden hangileri doğrudur?",
+    "secenekler": {
+      "A": "Yalnız I",
+      "B": "I ve II",
+      "C": "I ve III",
+      "D": "II ve III",
+      "E": "I, II ve III"
+    },
+    "cevap": "E",
+    "aciklama": "Verilen öncüllerin tamamı İskitler (Sakalar) hakkında metinde geçen doğru bilgilerdir."
+  },
+  {
+    "id": 6,
+    "konu": "Asya Hun Devleti ve Kavimler Göçü",
+    "altKonu": "Asya Hun Devleti",
+    "zorluk": "kolay",
+    "tip": "dogrudan_bilgi",
+    "soru": "Tarihte bilinen ilk Türk devleti olan ve merkezi Ötüken olan Asya Hun Devleti'nin kurucusu aşağıdakilerden hangisidir?",
+    "secenekler": {
+      "A": "Teoman",
+      "B": "Mete Han",
+      "C": "Balamir",
+      "D": "Ho-han-yeh",
+      "E": "Çi-çi"
+    },
+    "cevap": "A",
+    "aciklama": "Metne göre Asya Hun Devleti'nin kurucusu Teoman'dır."
+  },
+  {
+    "id": 7,
+    "konu": "Asya Hun Devleti ve Kavimler Göçü",
+    "altKonu": "Mete Han Dönemi",
+    "zorluk": "orta",
+    "tip": "bilgi_gruplandirma",
+    "soru": "I. Türk siyasi birliğini sağlaması\nII. İlk Onlu Ordu Sistemini kurması\nIII. Çin'i vergiye bağlaması\n\nYukarıdaki gelişmelerden hangileri Asya Hun Devleti hükümdarı Mete Han döneminde gerçekleşmiştir?",
+    "secenekler": {
+      "A": "Yalnız I",
+      "B": "I ve II",
+      "C": "I ve III",
+      "D": "II ve III",
+      "E": "I, II ve III"
+    },
+    "cevap": "E",
+    "aciklama": "Mete Han dönemi Asya Hun Devleti'nin en parlak dönemidir; Türk siyasi birliğini sağlamış, Onlu Ordu sistemini kurmuş, vatan sevgisinden ilk kez bahsetmiş ve Çin'i vergiye bağlamıştır."
+  },
+  {
+    "id": 8,
+    "konu": "Asya Hun Devleti ve Kavimler Göçü",
+    "altKonu": "Kavimler Göçü",
+    "zorluk": "orta",
+    "tip": "neden_sonuc",
+    "soru": "Kuzey Hunlarının Balamir komutasında batıya hareketiyle başlayan Kavimler Göçü'nün sonuçları arasında aşağıdakilerden hangisi gösterilemez?",
+    "secenekler": {
+      "A": "Roma İmparatorluğu ikiye ayrılmıştır.",
+      "B": "Avrupa Hun Devleti kurulmuştur.",
+      "C": "Feodalite (derebeylik) ortaya çıkmıştır.",
+      "D": "Skolastik düşünce güçlenmiştir.",
+      "E": "Musevilik yaygınlaşmıştır."
+    },
+    "cevap": "E",
+    "aciklama": "Metne göre Kavimler Göçü'nün sonuçları arasında Roma'nın ikiye ayrılması, Avrupa Hun Devleti'nin kurulması, feodalitenin ortaya çıkması, skolastik düşüncenin güçlenmesi ve günümüz Avrupa milletlerinin temelinin atılması yer alır. Musevilik ise Hazarlar tarafından benimsenmiştir."
+  },
+  {
+    "id": 9,
+    "konu": "Avrupa Hun Devleti",
+    "altKonu": "Dış Politika ve Hükümdarlar",
+    "zorluk": "orta",
+    "tip": "karsilastirma_siniflandirma",
+    "soru": "Avrupa Hun Devleti hükümdarları ve icraatları eşleştirmesinde aşağıdakilerden hangisi doğrudur?",
+    "secenekler": {
+      "A": "Balamir - Margos Antlaşması'nı imzalamıştır.",
+      "B": "Uldız - Türklerin ilk kez Anadolu'ya ayak basmasını sağlamıştır.",
+      "C": "Attila - Etzelburg merkezli devleti kurmuştur.",
+      "D": "Uldız - Galya ve İtalya seferlerini düzenlemiştir.",
+      "E": "Balamir - Anatolios Antlaşması ile Bizans'ı vergiye bağlamıştır."
+    },
+    "cevap": "B",
+    "aciklama": "Metne göre Uldız döneminde Türkler ilk kez Anadolu'ya ayak basmıştır. Devleti Etzelburg merkezli kuran Balamir; Margos, Anatolios antlaşmaları ve Galya/İtalya seferlerini gerçekleştiren ise Attila'dır."
+  },
+  {
+    "id": 10,
+    "konu": "Avrupa Hun Devleti",
+    "altKonu": "Attila'nın Unvanları",
+    "zorluk": "kolay",
+    "tip": "dogrudan_bilgi",
+    "soru": "Hristiyanlar tarafından 'Tanrı’nın Kamçısı', Almanların Nibelungen destanında ise 'Etzel' olarak adlandırılan Türk hükümdarı aşağıdakilerden hangisidir?",
+    "secenekler": {
+      "A": "Mete Han",
+      "B": "Balamir",
+      "C": "Attila",
+      "D": "Uldız",
+      "E": "Bumin Kağan"
+    },
+    "cevap": "C",
+    "aciklama": "Metne göre Hristiyanlarca 'Tanrı'nın Kamçısı', Nibelungen destanında ise 'Etzel' olarak anılan hükümdar Attila'dır."
+  },
+  {
+    "id": 11,
+    "konu": "Hazar Devleti",
+    "altKonu": "Hazar Devleti Özellikleri",
+    "zorluk": "orta",
+    "tip": "analiz",
+    "soru": "Hazar Devleti ile ilgili verilen;\n\nI. Ordusunda ücretli asker barındıran tek eski Türk devleti olmaları,\nII. Museviliği benimseyen tek Türk devleti olmaları,\nIII. Belencer Savaşı ile İslamiyet'in Kafkaslar'a yayılmasını engellemeleri\n\nbilgilerinden hangileri Hazarları diğer eski Türk devletlerinden ayıran kendilerine özgü özelliklerdendir?",
+    "secenekler": {
+      "A": "Yalnız I",
+      "B": "Yalnız II",
+      "C": "I ve II",
+      "D": "II ve III",
+      "E": "I, II ve III"
+    },
+    "cevap": "C",
+    "aciklama": "I ve II. öncüllerdeki 'ücretli asker barındıran tek eski Türk devleti' ve 'Museviliği benimseyen tek Türk devleti' olma özellikleri metinde doğrudan Hazarları diğerlerinden ayıran tekil özellikler olarak belirtilmiştir. Belencer Savaşı ise başka bir devletle yapılan savaştır ancak 'tek' olma ifadesi ilk iki öncüldedir. Dolayısıyla I ve II ayırt edici tekil durumlardır."
+  },
+  {
+    "id": 12,
+    "konu": "Hazar Devleti",
+    "altKonu": "Pax Hazaria",
+    "zorluk": "kolay",
+    "tip": "dogrudan_bilgi",
+    "soru": "Hazarların ticaret yollarında sağladıkları huzur ortama verilen ad aşağıdakilerden hangisidir?",
+    "secenekler": {
+      "A": "Pax Hazaria",
+      "B": "Deşt-i Kıpçak",
+      "C": "Balık",
+      "D": "Kengeş",
+      "E": "Ayuki"
+    },
+    "cevap": "A",
+    "aciklama": "Hazarların ticaret yollarında sağladıkları huzur ortamına metne göre 'Pax Hazaria' (Hazar Barış Çağı) denir."
+  },
+  {
+    "id": 13,
+    "konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
+    "altKonu": "Avarlar",
+    "zorluk": "kolay",
+    "tip": "dogrudan_bilgi",
+    "soru": "İstanbul'u kuşatan ilk Türk devleti aşağıdakilerden hangisidir?",
+    "secenekler": {
+      "A": "Avarlar",
+      "B": "Peçenekler",
+      "C": "Uzlar",
+      "D": "Bulgarlar",
+      "E": "Kıpçaklar"
+    },
+    "cevap": "A",
+    "aciklama": "Metinde Avarların hem Asya hem Avrupa'da devlet kurdukları ve İstanbul'u kuşatan ilk Türk devleti oldukları belirtilmiştir."
+  },
+  {
+    "id": 14,
+    "konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
+    "altKonu": "Kıpçaklar (Kumanlar)",
+    "zorluk": "orta",
+    "tip": "bilgi_gruplandirma",
+    "soru": "Kıpçaklar (Kumanlar) ile ilgili;\n\nI. Yaşadıkları bölgenin Deşt-i Kıpçak olarak adlandırılması,\nII. Codex Cumanicus adlı Türkçe-Latince sözlüğü hazırlamaları,\nIII. Rusların İgor Destanı'na konu olmaları\n\nbilgilerinden hangileri doğrudur?",
+    "secenekler": {
+      "A": "Yalnız I",
+      "B": "I ve II",
+      "C": "I ve III",
+      "D": "II ve III",
+      "E": "I, II ve III"
+    },
+    "cevap": "E",
+    "aciklama": "Kıpçaklar Karadeniz'in kuzeyinde (Deşt-i Kıpçak) yaşamış, Codex Cumanicus'u hazırlamış ve İgor Destanı'na konu olmuşlardır."
+  },
+  {
+    "id": 15,
+    "konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
+    "altKonu": "Uzlar ve Peçenekler",
+    "zorluk": "orta",
+    "tip": "karsilastirma_siniflandirma",
+    "soru": "Uzlar ve Peçeneklerin ortak özelliği aşağıdakilerden hangisidir?",
+    "secenekler": {
+      "A": "Museviliği benimsemeleri",
+      "B": "İstanbul'u birlikte kuşatmaları",
+      "C": "Bizans ordusunda paralı askerlik yaparken Malazgirt Savaşı'nda Selçuklu tarafına geçmeleri",
+      "D": "Dünyada ilk kez Türkoloji Enstitüsünü kurmaları",
+      "E": "Tuna ve İtil olmak üzere ikiye ayrılmaları"
+    },
+    "cevap": "C",
+    "aciklama": "Metne göre Uzlar ve Peçenekler Bizans ordusunda paralı askerlik yaparken Malazgirt Savaşı'nda Selçuklu tarafına geçmişlerdir."
+  },
+  {
+    "id": 16,
+    "konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
+    "altKonu": "Bulgarlar",
+    "zorluk": "orta",
+    "tip": "karsilastirma_siniflandirma",
+    "soru": "Bulgarların ikiye ayrılmasından sonra dini gelişimleri hakkında aşağıdakilerden hangisi söylenebilir?",
+    "secenekler": {
+      "A": "Tuna Bulgarları İslamiyet'i kabul etmiş, İtil Bulgarları Hristiyanlaşmıştır.",
+      "B": "Tuna Bulgarları Hristiyanlaşarak Slavlaşmış, İtil Bulgarları Almış Han döneminde İslamiyet'i benimsemiştir.",
+      "C": "Her iki Bulgar kolu da Museviliği benimsemiştir.",
+      "D": "İtil Bulgarları Budizm'e geçmiş, Tuna Bulgarları Gök Tanrı inancını korumuştur.",
+      "E": "Tuna Bulgarları Manihaizm'i kabul etmiş, İtil Bulgarları Hristiyanlaşmıştır."
+    },
+    "cevap": "B",
+    "aciklama": "Metne göre Tuna Bulgarları Hristiyanlaşarak Slavlaşmış; İtil (Volga) Bulgarları ise Almış Han döneminde İslamiyet'i kabul etmiştir."
+  },
+  {
+    "id": 17,
+    "konu": "Avrupa'da Kurulan Diğer Türk Devletleri ve Toplulukları",
+    "altKonu": "Macarlar",
+    "zorluk": "kolay",
+    "tip": "dogrudan_bilgi",
+    "soru": "Dünyada ilk kez Türkoloji Enstitüsünü kuran Türk topluluğu aşağıdakilerden hangisidir?",
+    "secenekler": {
+      "A": "Macarlar",
+      "B": "Avarlar",
+      "C": "Peçenekler",
+      "D": "Kıpçaklar",
+      "E": "Bulgarlar"
+    },
+    "cevap": "A",
+    "aciklama": "Metne göre Macarlar, dünyada ilk kez Türkoloji Enstitüsünü kurmuşlardır."
+  },
+  {
+    "id": 18,
+    "konu": "Kök Türk Devletleri",
+    "altKonu": "I. Kök Türk Devleti",
+    "zorluk": "orta",
+    "tip": "bilgi_gruplandirma",
+    "soru": "I. Kök Türk Devleti ile ilgili;\n\nI. 'Türk' adıyla kurulan ilk devlet olması,\nII. Bumin Kağan tarafından Ötüken merkezli kurulması,\nIII. Tapo Kağan döneminde Budizm'in kabul edilmesi sebebiyle tepki çekilmesi\n\nbilgilerinden hangileri doğrudur?",
+    "secenekler": {
+      "A": "Yalnız I",
+      "B": "I ve II",
+      "C": "I ve III",
+      "D": "II ve III",
+      "E": "I, II ve III"
+    },
+    "cevap": "E",
+    "aciklama": "I. Kök Türk Devleti Türk adıyla kurulan ilk devlettir, Bumin Kağan tarafından Ötüken merkezli kurulmuştur ve Tapo Kağan Budizm'i kabul ettiği için tepki çekmiştir."
+  },
+  {
+    "id": 19,
+    "konu": "Kök Türk Devletleri",
+    "altKonu": "Kürşad Ayaklanması",
+    "zorluk": "orta",
+    "tip": "neden_sonuc",
+    "soru": "I. Kök Türk Devleti'nin yıkılmasından sonra yaşanan Çin esareti döneminde bağımsızlık elde etmek amacıyla gerçekleştirilen girişim aşağıdakilerden hangisidir?",
+    "secenekler": {
+      "A": "Kürşad Ayaklanması",
+      "B": "Belencer Savaşı",
+      "C": "Talas Savaşı",
+      "D": "Nibelungen İsyanı",
+      "E": "Baga Tarkan İsyanı"
+    },
+    "cevap": "A",
+    "aciklama": "Metne göre Çin esareti döneminde bağımsızlık için Kürşad Ayaklanması yaşanmıştır."
+  },
+  {
+    "id": 20,
+    "konu": "Kök Türk Devletleri",
+    "altKonu": "II. Kök Türk (Kutluk) Devleti",
+    "zorluk": "orta",
+    "tip": "bilgi_gruplandirma",
+    "soru": "II. Kök Türk (Kutluk) Devleti ile ilgili olarak;\n\nI. Kutluk Kağan'ın 'İlteriş' unvanını alarak devleti kurması,\nII. Vezir Tonyukuk, Kül Tigin ve Bilge Kağan döneminin en güçlü dönem olması,\nIII. Orhun Kitabeleri'nin bu dönemde dikilmesi\n\nifadelerinden hangileri doğrudur?",
+    "secenekler": {
+      "A": "Yalnız I",
+      "B": "I ve II",
+      "C": "I ve III",
+      "D": "II ve III",
+      "E": "I, II ve III"
+    },
+    "cevap": "E",
+    "aciklama": "Kutluk Kağan İlteriş unvanıyla devleti kurmuş, Tonyukuk, Kül Tigin ve Bilge Kağan döneminde en güçlü zamana ulaşılmış ve Orhun Kitabeleri bu dönemde dikilmiştir."
+  },
+  {
+    "id": 21,
+    "konu": "Uygur Devleti",
+    "altKonu": "Uygur Devleti Kuruluşu ve Dini",
+    "zorluk": "kolay",
+    "tip": "dogrudan_bilgi",
+    "soru": "Uygur Devleti'nde Bögü Kağan Dönemi'nde resmi din olarak kabul edilen inanç aşağıdakilerden hangisidir?",
+    "secenekler": {
+      "A": "Gök Tanrı",
+      "B": "Manihaizm",
+      "C": "Budizm",
+      "D": "Hristiyanlık",
+      "E": "İslamiyet"
+    },
+    "cevap": "B",
+    "aciklama": "Metne göre Bögü Kağan döneminde Manihaizm dini resmi din olarak kabul edilmiştir."
+  },
+  {
+    "id": 22,
+    "konu": "Uygur Devleti",
+    "altKonu": "Manihaizmin Etkileri",
+    "zorluk": "orta",
+    "tip": "neden_sonuc",
+    "soru": "Uygurların Manihaizm dinini benimsemelerinin sonuçları arasında aşağıdakilerden hangisi yer almaktadır?",
+    "secenekler": {
+      "A": "Savaşçı özelliklerinin güçlenmesi",
+      "B": "Türk tarihinde yerleşik hayata geçen ilk devlet olmaları",
+      "C": "Hapis cezalarının uzun süreli hale gelmesi",
+      "D": "İkili teşkilatın tamamen kaldırılması",
+      "E": "Ücretli askerlik sistemine geçilmesi"
+    },
+    "cevap": "B",
+    "aciklama": "Manihaizmde et yemek ve savaşmak yasaklandığı için savaşçı özellikler zayıflamış ve Uygurlar Türk tarihinde yerleşik hayata geçen ilk devlet olmuşlardır."
+  },
+  {
+    "id": 23,
+    "konu": "Uygur Devleti",
+    "altKonu": "Uygur Yenilikleri",
+    "zorluk": "orta",
+    "tip": "bilgi_gruplandirma",
+    "soru": "I. Kâğıt para (Çav)\nII. Örgün eğitim ve vakıf sistemi\nIII. Tiyatro (Orta Oyunu)\n\nYukarıdaki kültürel yeniliklerden hangileri Türk tarihinde ilk kez Uygurlar Dönemi'nde görülmüştür?",
+    "secenekler": {
+      "A": "Yalnız I",
+      "B": "I ve II",
+      "C": "I ve III",
+      "D": "II ve III",
+      "E": "I, II ve III"
+    },
+    "cevap": "E",
+    "aciklama": "Şehirler (Balık), tapınak/saray mimarisi, matbaa, kütüphane, kâğıt para (Çav), tiyatro (Orta Oyunu), örgün eğitim ve vakıf sistemi ilk kez Uygurlarda görülmüştür."
+  },
+  {
+    "id": 24,
+    "konu": "Orta Asya'daki Diğer Türk Devletleri ve Toplulukları",
+    "altKonu": "Kırgızlar",
+    "zorluk": "orta",
+    "tip": "bilgi_gruplandirma",
+    "soru": "Kırgızlar ile ilgili verilen;\n\nI. Cengiz Han'a itaat eden ilk Türk devleti olmaları,\nII. Ötüken merkezli kurulmaları,\nIII. Manas Destanı ve Yenisey Yazıtları'nı oluşturmaları\n\nbilgilerinden hangileri doğrudur?",
+    "secenekler": {
+      "A": "Yalnız I",
+      "B": "I ve II",
+      "C": "I ve III",
+      "D": "II ve III",
+      "E": "I, II ve III"
+    },
+    "cevap": "E",
+    "aciklama": "Verilen üç öncül de Kırgızlar hakkında metinde geçen doğru bilgilerdir."
+  },
+  {
+    "id": 25,
+    "konu": "Orta Asya'daki Diğer Türk Devletleri ve Toplulukları",
+    "altKonu": "Karluklar ve Türgişler",
+    "zorluk": "orta",
+    "tip": "karsilastirma_siniflandirma",
+    "soru": "Karluklar ve Türgişlerin İslamiyet ile ilişkileri bakımından karşılaştırılması aşağıdakilerin hangisinde doğru verilmiştir?",
+    "secenekler": {
+      "A": "Karluklar Talas Savaşı'nda Araplarla savaşmış, Türgişler İslamiyet'i kabul etmiştir.",
+      "B": "Karluklar İslamiyet'i kabul eden ilk Türk boyu olmuş, Türgişler ise Emevilerle savaşarak İslam'ın Orta Asya'ya girmesini geciktirmiştir.",
+      "C": "Türgişler Talas Savaşı'nda Müslümanları desteklemiş, Karluklar Emevilerle savaşmıştır.",
+      "D": "Her iki boy da Emevilerle savaşarak İslamiyet'in yayılmasını engellemiştir.",
+      "E": "Karluklar Belencer Savaşı ile İslam'ı engellemiş, Türgişler Almış Han döneminde Müslüman olmuştur."
+    },
+    "cevap": "B",
+    "aciklama": "Metne göre Karluklar Talas Savaşı'nda Müslüman Arapları destekleyip İslamiyet'i kabul eden ilk Türk boyu olmuş; Türgişler ise Sulu Kağan döneminde Emevilerle savaşarak İslam'ın Orta Asya'ya girmesini geciktirmiştir."
+  },
+  {
+    "id": 26,
+    "konu": "Orta Asya'daki Diğer Türk Devletleri ve Toplulukları",
+    "altKonu": "Türgişler",
+    "zorluk": "kolay",
+    "tip": "dogrudan_bilgi",
+    "soru": "Kendi adına para bastıran ilk Türk hükümdarı aşağıdakilerden hangisidir?",
+    "secenekler": {
+      "A": "Baga Tarkan",
+      "B": "Sulu Kağan",
+      "C": "Bumin Kağan",
+      "D": "Mete Han",
+      "E": "Kutluk Kağan"
+    },
+    "cevap": "A",
+    "aciklama": "Metne göre Baga Tarkan kendi adına para bastıran ilk Türk hükümdarıdır."
+  },
+  {
+    "id": 27,
+    "konu": "İlk Türk Devletlerinde Devlet Yönetimi",
+    "altKonu": "Kut Anlayışı",
+    "zorluk": "orta",
+    "tip": "neden_sonuc",
+    "soru": "İlk Türk devletlerinde yönetme yetkisinin Tanrı tarafından hükümdara verildiğine inanılması ve bu yetkinin kan yoluyla hanedan üyelerine geçmesi aşağıdakilerden hangisine doğrudan neden olmuştur?",
+    "secenekler": {
+      "A": "Veraset belirsizliğine ve taht kavgalarına",
+      "B": "Düzenli ordu sisteminin bozulmasına",
+      "C": "Kurultayın bağlayıcı kararlar almasına",
+      "D": "Ücretli askerlik sisteminin yaygınlaşmasına",
+      "E": "Yazılı hukuk kurallarının oluşturulmasına"
+    },
+    "cevap": "A",
+    "aciklama": "Metinde Kut anlayışının kan yoluyla hanedan üyelerine geçmesinin veraset belirsizliğine ve taht kavgalarına neden olduğu açıkça belirtilmiştir."
+  },
+  {
+    "id": 28,
+    "konu": "İlk Türk Devletlerinde Devlet Yönetimi",
+    "altKonu": "Hükümdarlık Sembolleri",
+    "zorluk": "orta",
+    "tip": "bilgi_gruplandirma",
+    "soru": "I. Otağ (Çadır)\nII. Nevbet (Davul)\nIII. Örgün (Taht)\n\nYukarıdakilerden hangileri ilk Türk devletlerinde hükümdarlık sembolleri arasında yer alır?",
+    "secenekler": {
+      "A": "Yalnız I",
+      "B": "I ve II",
+      "C": "I ve III",
+      "D": "II ve III",
+      "E": "I, II ve III"
+    },
+    "cevap": "E",
+    "aciklama": "Hükümdarlık sembolleri metne göre: Otağ, Örgün, Tuğ, Nevbet, Kotuz/Sorguç, Kemer, Kama ve Yargı'dır."
+  },
+  {
+    "id": 29,
+    "konu": "İlk Türk Devletlerinde Devlet Yönetimi",
+    "altKonu": "Hatun ve Tigin",
+    "zorluk": "orta",
+    "tip": "karsilastirma_siniflandirma",
+    "soru": "Hükümdarın eşi olan Hatun ve hükümdarın erkek çocukları olan Tiginler ile ilgili eşleştirmelerden hangisi doğrudur?",
+    "secenekler": {
+      "A": "Hatun - Tiginleri eğiten kişidir.",
+      "B": "Tigin - Elçi kabul eder ve kurultaya katılır.",
+      "C": "İnal / Ataman - Tiginleri eğiten kişidir.",
+      "D": "Aygucı - Hatun'un vekillik yaptığı makamdır.",
+      "E": "Buyruk - Tiginlere verilen askeri unvandır."
+    },
+    "cevap": "C",
+    "aciklama": "Metne göre Tiginlerin (hükümdarın erkek çocukları) eğitiminden sorumlu kişilere İnal veya Ataman denir."
+  },
+  {
+    "id": 30,
+    "konu": "İkili Teşkilat, Kurultay ve Hükümet",
+    "altKonu": "İkili Teşkilat",
+    "zorluk": "orta",
+    "tip": "karsilastirma_siniflandirma",
+    "soru": "İkili teşkilat sisteminde ülkenin Doğu ve Batı yönetimleri arasındaki temel fark aşağıdakilerden hangisidir?",
+    "secenekler": {
+      "A": "Doğu'da yabgu bulunur, Batı'yı asıl hükümdar yönetir.",
+      "B": "Doğu'da asıl hükümdar (kağan) bulunur, Batı'yı hanedan üyesi (yabgu) yönetir.",
+      "C": "Doğu'da hatun yönetimi vardır, Batı'da kurultay toplanır.",
+      "D": "Doğu'da iç işleri yürütülür, Batı'da dış ilişkiler kâtibi bulunur.",
+      "E": "Doğu'da din adamları yönetimi sağlar, Batı'da sü-başı görev yapar."
+    },
+    "cevap": "B",
+    "aciklama": "İkili teşkilat uyarınca ülke Doğu (asıl hükümdar/kağan) ve Batı (hanedan üyesi/yabgu) olarak ikiye ayrılıp yönetilmektedir."
+  }
 ]
