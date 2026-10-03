@@ -558,6 +558,87 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 @media (max-width:699px){
     .animal-card-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* =========================================================
+   KOMPAKT HAYVAN KARTI
+========================================================= */
+.animal-card-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:7px;
+}
+.animal-card-field{
+    min-width:0;
+    padding:8px 9px;
+    border-radius:10px;
+    overflow:hidden;
+}
+.animal-card-field-label{
+    font-size:8px;
+    letter-spacing:.55px;
+    white-space:nowrap;
+}
+.animal-card-field-value{
+    margin-top:3px;
+    font-size:11px;
+    line-height:1.2;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.animal-card-section{
+    padding:9px;
+    border-radius:11px;
+}
+.animal-card-section-title{
+    font-size:11px;
+    margin-bottom:7px;
+}
+.animal-card-action-grid{
+    gap:5px;
+}
+.animal-card-action-grid .nav-btn{
+    min-height:31px;
+    padding:5px 6px;
+    font-size:10px;
+}
+.animal-card-history{
+    max-height:110px;
+    overflow:auto;
+    font-size:10px;
+    line-height:1.35;
+}
+@media (min-width:700px) and (max-width:1200px){
+    .animal-card-grid{
+        grid-template-columns:repeat(4,minmax(0,1fr))!important;
+        gap:5px!important;
+    }
+    .animal-card-field{
+        padding:6px 7px!important;
+        border-radius:8px!important;
+    }
+    .animal-card-field-label{font-size:7px!important}
+    .animal-card-field-value{font-size:10px!important}
+    .animal-card-section{padding:7px!important}
+    .animal-card-action-grid{
+        grid-template-columns:repeat(5,minmax(0,1fr))!important;
+        gap:4px!important;
+    }
+    .animal-card-action-grid .nav-btn{
+        min-height:29px!important;
+        padding:4px 4px!important;
+        font-size:9px!important;
+    }
+    .animal-card-actions .nav-btn{
+        min-height:30px!important;
+        padding:5px 10px!important;
+        font-size:10px!important;
+    }
+}
+@media (max-width:699px){
+    .animal-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 </style>
 </head>
 
