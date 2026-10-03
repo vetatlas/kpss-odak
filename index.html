@@ -4513,13 +4513,66 @@ function checkPregnancy(id){
     addAnimalHealthRecord(cow,"Üreme",positive?"Gebelik kontrolü pozitif":"Gebelik kontrolü negatif");
     addNotification(positive?"Gebelik Pozitif":"Gebelik Negatif",positive?cow.name+" gebelik açısından pozitif. Tahmini doğum Gün "+r.expectedCalvingDay+".":cow.name+" gebelik açısından negatif. Yeni kızgınlık/tohumlama planlanmalı.",positive?"success":"warning",true);refreshAnimalCard(id);
 }
+function createCalf(mother){
+    const nextId=game.cows.reduce((max,c)=>Math.max(max,Number(c.id)||0),0)+1;
+    const male=Math.random()<0.5;
+    return {
+        id:nextId,
+        name:"Buzağı "+nextId,
+        earTag:"TR-"+String(nextId).padStart(4,"0"),
+        breed:mother.breed||"Holstein",
+        sex:male?"Erkek":"Dişi",
+        birthDate:"Gün "+game.day,
+        purchaseDate:"",
+        ageDays:0,
+        isCalf:true,
+        motherId:mother.id,
+        weight:male?42:38,
+        lactationDay:0,
+        lactationNumber:0,
+        milkPotential:0,
+        milkYield:0,
+        udderFill:0,
+        bcs:2.8,
+        health:100,
+        rumenPH:6.2,
+        saraRisk:0,
+        energyBalance:0,
+        diseaseRisk:0,
+        healthHistory:[],
+        milkHistory:[],
+        reproduction:{
+            status:"Buzağı",
+            heatDay:null,
+            inseminationDay:null,
+            pregnancyCheckDay:null,
+            pregnant:false,
+            expectedCalvingDay:null,
+            lastCalvingDay:null,
+            dryOffDay:null,
+            nextHeatDay:null
+        }
+    };
+}
+
 function recordCalving(id){
     const cow=getCowById(id);if(!cow)return;const r=cow.reproduction||{};
     if(!r.pregnant){addLog("⚠ "+cow.name+" kayıtlı gebe değil. Doğum kaydı için önce gebelik durumunu doğrula.");return;}
     r.status="Doğum Sonrası";r.lastCalvingDay=game.day;r.pregnant=false;r.expectedCalvingDay=null;r.inseminationDay=null;r.pregnancyCheckDay=null;r.heatDay=null;r.dryOffDay=null;r.nextHeatDay=game.day+REPRODUCTION_CONFIG.voluntaryWaitingDays;
     cow.lactationNumber=(cow.lactationNumber||1)+1;cow.lactationDay=1;cow.udderFill=0;cow.reproduction=r;
-    addAnimalHealthRecord(cow,"Üreme","Doğum kaydı oluşturuldu");
-    addNotification("Doğum Kaydı",cow.name+" için doğum kaydı oluşturuldu. Yeni laktasyon başladı.","success",true);refreshAnimalCard(id);
+
+    const calf=createCalf(cow);
+    game.cows.push(calf);
+
+    addAnimalHealthRecord(cow,"Üreme","Doğum kaydı oluşturuldu; "+calf.name+" sürüye katıldı");
+    addAnimalHealthRecord(calf,"Doğum",""+cow.name+" tarafından doğdu");
+    addNotification(
+        "Doğum ve Buzağı",
+        cow.name+" doğum yaptı. "+calf.name+" ("+calf.sex+") sürüye katıldı.",
+        "success",
+        true
+    );
+    refreshAnimalCard(id);
 }
 function recordDryOff(id){
     const cow=getCowById(id);if(!cow)return;const r=cow.reproduction||{};
