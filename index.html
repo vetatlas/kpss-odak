@@ -4119,61 +4119,84 @@ function createFarmNoiseBuffer(ctx){
     return buffer;
 }
 
-function playTone(ctx,master,type,startFreq,endFreq,duration,peak,filterFreq=900){
+/* =========================================================
+   DOĞAL ÇİFTLİK SES SİSTEMİ
+   Sentetik düşük frekans uğultusu kaldırıldı.
+========================================================= */
+
+function playNaturalTone(ctx,master,frequency,duration,volume=0.025){
     const now=ctx.currentTime;
     const osc=ctx.createOscillator();
     const gain=ctx.createGain();
     const filter=ctx.createBiquadFilter();
 
-    osc.type=type;
-    osc.frequency.setValueAtTime(Math.max(20,startFreq),now);
-    if(endFreq) osc.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq),now+duration);
-
-    filter.type="lowpass";
-    filter.frequency.value=filterFreq;
+    osc.type="sine";
+    osc.frequency.setValueAtTime(frequency,now);
+    filter.type="bandpass";
+    filter.frequency.value=Math.max(300,frequency);
+    filter.Q.value=1.1;
 
     gain.gain.setValueAtTime(0.0001,now);
-    gain.gain.exponentialRampToValueAtTime(Math.max(.0002,peak),now+.06);
-    gain.gain.setValueAtTime(Math.max(.0002,peak*.72),now+duration*.55);
-    gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+    gain.gain.linearRampToValueAtTime(volume,now+0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001,now+duration);
 
     osc.connect(filter);
     filter.connect(gain);
     gain.connect(master);
     osc.start(now);
-    osc.stop(now+duration+.03);
+    osc.stop(now+duration+0.03);
 }
 
+/* Daha yumuşak, nefesli bir inek çağrısı; düşük uğultu yok. */
 function playCowMoo(ctx,master){
     const now=ctx.currentTime;
     const osc=ctx.createOscillator();
+    const harmonic=ctx.createOscillator();
     const gain=ctx.createGain();
     const filter=ctx.createBiquadFilter();
 
-    osc.type="sawtooth";
-    const base=95+Math.random()*45;
+    const base=105+Math.random()*28;
+    osc.type="triangle";
+    harmonic.type="sine";
     osc.frequency.setValueAtTime(base,now);
-    osc.frequency.exponentialRampToValueAtTime(base*.62,now+.72);
-    osc.frequency.exponentialRampToValueAtTime(base*.82,now+1.18);
+    osc.frequency.linearRampToValueAtTime(base*.78,now+.48);
+    osc.frequency.linearRampToValueAtTime(base*.92,now+1.0);
+    harmonic.frequency.setValueAtTime(base*2.01,now);
+    harmonic.frequency.linearRampToValueAtTime(base*1.72,now+1.0);
 
     filter.type="lowpass";
-    filter.frequency.setValueAtTime(520,now);
-    filter.Q.value=2.2;
+    filter.frequency.value=900;
+    filter.Q.value=.7;
 
     gain.gain.setValueAtTime(.0001,now);
-    gain.gain.exponentialRampToValueAtTime(.14,now+.10);
-    gain.gain.setValueAtTime(.105,now+.52);
-    gain.gain.exponentialRampToValueAtTime(.0001,now+1.35);
+    gain.gain.linearRampToValueAtTime(.055,now+.10);
+    gain.gain.setValueAtTime(.045,now+.48);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+1.12);
 
     osc.connect(filter);
+    harmonic.connect(filter);
     filter.connect(gain);
     gain.connect(master);
     osc.start(now);
-    osc.stop(now+1.4);
+    harmonic.start(now);
+    osc.stop(now+1.15);
+    harmonic.stop(now+1.15);
 }
 
 function playCalfCall(ctx,master){
-    playTone(ctx,master,"triangle",220+Math.random()*50,155,0.65,.055,800);
+    const now=ctx.currentTime;
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.type="triangle";
+    osc.frequency.setValueAtTime(300+Math.random()*35,now);
+    osc.frequency.linearRampToValueAtTime(220+Math.random()*25,now+.42);
+    gain.gain.setValueAtTime(.0001,now);
+    gain.gain.linearRampToValueAtTime(.035,now+.06);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+.52);
+    osc.connect(gain);
+    gain.connect(master);
+    osc.start(now);
+    osc.stop(now+.55);
 }
 
 function playBirdCall(ctx,master){
@@ -4181,49 +4204,51 @@ function playBirdCall(ctx,master){
     const osc=ctx.createOscillator();
     const gain=ctx.createGain();
     osc.type="sine";
-    osc.frequency.setValueAtTime(1900+Math.random()*500,now);
-    osc.frequency.exponentialRampToValueAtTime(3000+Math.random()*700,now+.13);
-    osc.frequency.exponentialRampToValueAtTime(2200+Math.random()*500,now+.27);
+    osc.frequency.setValueAtTime(1900+Math.random()*400,now);
+    osc.frequency.linearRampToValueAtTime(2800+Math.random()*450,now+.11);
+    osc.frequency.linearRampToValueAtTime(2100+Math.random()*350,now+.24);
     gain.gain.setValueAtTime(.0001,now);
-    gain.gain.exponentialRampToValueAtTime(.045,now+.025);
-    gain.gain.exponentialRampToValueAtTime(.0001,now+.3);
+    gain.gain.linearRampToValueAtTime(.022,now+.02);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+.28);
     osc.connect(gain);
     gain.connect(master);
     osc.start(now);
-    osc.stop(now+.32);
+    osc.stop(now+.3);
 }
 
 function playRooster(ctx,master){
+    /* Tek keskin osilatör yerine kısa, üç parçalı ötüş. */
     const now=ctx.currentTime;
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-    osc.type="sawtooth";
-    osc.frequency.setValueAtTime(520,now);
-    osc.frequency.exponentialRampToValueAtTime(760,now+.18);
-    osc.frequency.exponentialRampToValueAtTime(260,now+.65);
-    gain.gain.setValueAtTime(.0001,now);
-    gain.gain.exponentialRampToValueAtTime(.035,now+.05);
-    gain.gain.exponentialRampToValueAtTime(.0001,now+.7);
-    osc.connect(gain);
-    gain.connect(master);
-    osc.start(now);
-    osc.stop(now+.75);
+    [0,0.16,0.31].forEach((offset,index)=>{
+        const osc=ctx.createOscillator();
+        const gain=ctx.createGain();
+        osc.type="triangle";
+        const f=620-index*55+Math.random()*35;
+        osc.frequency.setValueAtTime(f,now+offset);
+        osc.frequency.linearRampToValueAtTime(f*1.28,now+offset+.08);
+        gain.gain.setValueAtTime(.0001,now+offset);
+        gain.gain.linearRampToValueAtTime(.018,now+offset+.025);
+        gain.gain.exponentialRampToValueAtTime(.0001,now+offset+.16);
+        osc.connect(gain);
+        gain.connect(master);
+        osc.start(now+offset);
+        osc.stop(now+offset+.18);
+    });
 }
 
 function playWater(ctx,master){
-    /* Su yalak/çeşme hissi: kısa, düzensiz damla sesleri */
-    const count=3+Math.floor(Math.random()*4);
+    const count=2+Math.floor(Math.random()*3);
     for(let i=0;i<count;i++){
         setTimeout(()=>{
             if(!farmAudio || ctx.state==="closed") return;
-            playTone(ctx,master,"sine",850+Math.random()*450,520,.16,.018,1800);
-        },i*95);
+            playNaturalTone(ctx,master,1050+Math.random()*500,.11,.012);
+        },i*130);
     }
 }
 
 function startFarmAmbience(){
     if(farmAudio && farmAudio.ctx.state!=="closed"){
-        farmAudio.ctx.resume().catch(()=>{});
+        farmAudio.ctx.resume().then(()=>updateSoundUI(true)).catch(()=>{});
         return true;
     }
 
@@ -4233,64 +4258,43 @@ function startFarmAmbience(){
 
         const ctx=new AudioCtx();
         const master=ctx.createGain();
-        const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.42);
-        master.gain.value=Math.max(.05,Math.min(1,savedVolume));
+        const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.30);
+        master.gain.value=Math.max(0,Math.min(1,savedVolume));
         master.connect(ctx.destination);
 
-        /* Çok hafif doğal ahır/rüzgâr tabanı */
+        /* Çok hafif ortam sesi. Artık 52 Hz uğultu/bas motor sesi YOK. */
         const noise=ctx.createBufferSource();
         noise.buffer=createFarmNoiseBuffer(ctx);
         noise.loop=true;
-
         const noiseFilter=ctx.createBiquadFilter();
-        noiseFilter.type="lowpass";
-        noiseFilter.frequency.value=900;
-
+        noiseFilter.type="bandpass";
+        noiseFilter.frequency.value=650;
+        noiseFilter.Q.value=.45;
         const noiseGain=ctx.createGain();
-        noiseGain.gain.value=.055;
-
+        noiseGain.gain.value=.012;
         noise.connect(noiseFilter);
         noiseFilter.connect(noiseGain);
         noiseGain.connect(master);
         noise.start();
 
-        /* Hafif fan/ahır uğultusu */
-        const barnOsc=ctx.createOscillator();
-        const barnGain=ctx.createGain();
-        barnOsc.type="sine";
-        barnOsc.frequency.value=52;
-        barnGain.gain.value=.018;
-        barnOsc.connect(barnGain);
-        barnGain.connect(master);
-        barnOsc.start();
-
-        /* Arka planda müzik yerine hayvan/çiftlik olayları */
         const timers=[];
-
         const schedule=(fn,min,max)=>{
             const timer=setTimeout(function run(){
                 if(!farmAudio || ctx.state==="closed") return;
                 fn();
-                const next=min+Math.random()*(max-min);
-                const t=setTimeout(run,next);
-                timers.push(t);
+                timers.push(setTimeout(run,min+Math.random()*(max-min)));
             },min+Math.random()*(max-min));
             timers.push(timer);
         };
 
-        schedule(()=>playCowMoo(ctx,master),6500,14500);
-        schedule(()=>playCalfCall(ctx,master),9000,18000);
-        schedule(()=>playBirdCall(ctx,master),3500,8500);
-        schedule(()=>playWater(ctx,master),16000,30000);
-        schedule(()=>playRooster(ctx,master),45000,90000);
+        schedule(()=>playCowMoo(ctx,master),9000,18000);
+        schedule(()=>playCalfCall(ctx,master),14000,26000);
+        schedule(()=>playBirdCall(ctx,master),5000,11000);
+        schedule(()=>playWater(ctx,master),22000,40000);
+        schedule(()=>playRooster(ctx,master),60000,120000);
 
-        farmAudio={ctx,master,noise,barnOsc,timers};
-        ctx.resume().then(()=>{
-            updateSoundUI(true);
-        }).catch(()=>{
-            /* Tarayıcı sesi askıya alırsa kullanıcı ses düğmesine tekrar basabilir. */
-            updateSoundUI(false);
-        });
+        farmAudio={ctx,master,noise,timers};
+        ctx.resume().then(()=>updateSoundUI(true)).catch(()=>updateSoundUI(false));
         return true;
     }catch(error){
         console.warn("Çiftlik sesi başlatılamadı:",error);
