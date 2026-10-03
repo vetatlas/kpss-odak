@@ -1684,6 +1684,27 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 <!-- MUHASEBE -->
 
 <section class="glass p-5" data-menu-section="muhasebe">
+    <div class="flex justify-between items-center mb-4"><div><h2 class="font-bold">🏦 Çiftlik Bankası & Destekler</h2><p class="text-xs text-slate-500 mt-1">Kredi, taksit ve hibe başvuruları</p></div><span class="text-xs text-blue-300">Tarım Finansmanı</span></div>
+    <div class="grid md:grid-cols-3 gap-3 mb-4">
+        <div class="metric"><div class="text-xs text-slate-500">Toplam Borç</div><div id="bankDebt" class="font-bold text-red-300">0 ₺</div></div>
+        <div class="metric"><div class="text-xs text-slate-500">Aktif Krediler</div><div id="bankLoanCount" class="font-bold">0</div></div>
+        <div class="metric"><div class="text-xs text-slate-500">Alınan Hibe</div><div id="bankGrantTotal" class="font-bold text-green-300">0 ₺</div></div>
+    </div>
+    <div class="grid md:grid-cols-3 gap-2 mb-4">
+        <button onclick="bankApplyLoan('işletme')" class="nav-btn">💳 İşletme Kredisi<br><span class="text-xs">50.000 ₺'ye kadar</span></button>
+        <button onclick="bankApplyLoan('yatırım')" class="nav-btn">🏗️ Yatırım Kredisi<br><span class="text-xs">150.000 ₺'ye kadar</span></button>
+        <button onclick="bankApplyLoan('hayvancılık')" class="nav-btn">🐄 Hayvancılık Kredisi<br><span class="text-xs">100.000 ₺'ye kadar</span></button>
+    </div>
+    <div class="grid md:grid-cols-3 gap-2">
+        <button onclick="applyFarmGrant('genç')" class="nav-btn text-green-300">🎓 Genç Çiftçi Hibesi</button>
+        <button onclick="applyFarmGrant('hayvancılık')" class="nav-btn text-green-300">🐄 Hayvancılık Hibesi</button>
+        <button onclick="applyFarmGrant('mandıra')" class="nav-btn text-green-300">🥛 Mandıra Hibesi</button>
+    </div>
+    <div id="bankLoansList" class="mt-4 space-y-2"></div>
+    <div id="grantApplicationsList" class="mt-3 space-y-2"></div>
+</section>
+
+<section class="glass p-5" data-menu-section="muhasebe">
 
     <div class="flex justify-between items-center mb-4">
         <div>
@@ -2019,7 +2040,17 @@ let game = {
     todayMilk:0,
 
     rawMilkStock:0,
+    rawMilkTankCapacity:2000,
+    processingQueue:[],
+    coldStorage:{pasteurizedMilk:0,yogurt:0,cheese:0},
     processedProducts:{pasteurizedMilk:0,yogurt:0,cheese:0},
+    bank:{
+        loans:[],
+        grantApplications:[],
+        totalBorrowed:0,
+        totalRepaid:0,
+        totalGrantIncome:0
+    },
 
     income:0,
 
@@ -2362,6 +2393,14 @@ function loadGame(){
                 ...(old.milkingWorker||{})
             },
             rawMilkStock:Number(old.rawMilkStock)||0,
+            bank:{
+                loans:[],
+                grantApplications:[],
+                totalBorrowed:0,
+                totalRepaid:0,
+                totalGrantIncome:0,
+                ...(old.bank||{})
+            },
             rawMilkTankCapacity:Number(old.rawMilkTankCapacity)||2000,
             processingQueue:Array.isArray(old.processingQueue)?old.processingQueue:[],
             coldStorage:{pasteurizedMilk:0,yogurt:0,cheese:0,...(old.coldStorage||{})},
@@ -3710,6 +3749,7 @@ function advanceGameTime(minutes){
 
             game.todayMilk=0;
             expireProcessedProducts();
+            processBankDay();
 
             const worker=game.milkingWorker||{};
             if(worker.hired){
@@ -4139,6 +4179,58 @@ function accountingPayment(category,amount){
 }
 
 
+function bankApplyLoan(type){
+    game.bank=game.bank||{loans:[],grantApplications:[],totalBorrowed:0,totalRepaid:0,totalGrantIncome:0};
+    const cfg={
+        işletme:{name:"İşletme Kredisi",max:50000,rate:0.12,months:12,grace:7},
+        yatırım:{name:"Yatırım Kredisi",max:150000,rate:0.08,months:24,grace:14},
+        hayvancılık:{name:"Hayvancılık Kredisi",max:100000,rate:0.06,months:18,grace:10}
+    }[type];
+    if(!cfg)return;
+    const amount=Number(prompt(cfg.name+"\nTutar (₺):",Math.min(cfg.max,25000)));
+    if(!Number.isFinite(amount)||amount<=0||amount>cfg.max){addLog("⚠ Geçersiz kredi tutarı.");return;}
+    const total=amount*(1+cfg.rate);
+    const installment=total/cfg.months;
+    game.money+=amount;
+    game.bank.loans.push({id:"KRD-"+Date.now(),name:cfg.name,principal:amount,total,remaining:total,installment,monthsLeft:cfg.months,graceDays:cfg.grace,nextPaymentDay:game.day+cfg.grace});
+    game.bank.totalBorrowed=(Number(game.bank.totalBorrowed)||0)+amount;
+    recordAccounting("Gelir",cfg.name+" Kredi Kullanımı",amount);
+    addNotification("Kredi Onaylandı",amount.toLocaleString("tr-TR")+" ₺ işletme hesabına aktarıldı.","success",true);
+    render();saveGame();
+}
+function bankRepayLoan(index){
+    const loan=game.bank?.loans?.[index]; if(!loan)return;
+    const payment=Math.min(Number(loan.installment)||0,Number(loan.remaining)||0);
+    if(game.money<payment){addLog("⚠ Kredi taksiti için kasada yeterli para yok.");return;}
+    game.money-=payment; game.expenses+=payment; loan.remaining=Math.max(0,loan.remaining-payment); loan.monthsLeft=Math.max(0,(loan.monthsLeft||1)-1);
+    loan.nextPaymentDay=game.day+30; game.bank.totalRepaid=(Number(game.bank.totalRepaid)||0)+payment;
+    recordAccounting("Gider",loan.name+" Taksit Ödemesi",payment);
+    if(loan.remaining<=0.01) game.bank.loans.splice(index,1);
+    render();saveGame();
+}
+function applyFarmGrant(type){
+    game.bank=game.bank||{loans:[],grantApplications:[],totalBorrowed:0,totalRepaid:0,totalGrantIncome:0};
+    const cfg={
+        genç:{name:"Genç Çiftçi Yatırım Hibesi",amount:30000,days:2,prob:.70},
+        hayvancılık:{name:"Hayvancılık Modernizasyon Hibesi",amount:50000,days:3,prob:.60},
+        mandıra:{name:"Süt İşleme ve Pazarlama Hibesi",amount:75000,days:4,prob:.55}
+    }[type];
+    if(!cfg)return;
+    if(game.bank.grantApplications.some(a=>a.type===type&&a.status==="Beklemede")){addLog("⚠ Bu hibe için başvurunuz zaten değerlendirmede.");return;}
+    game.bank.grantApplications.push({type,status:"Beklemede",applyDay:game.day,payDay:game.day+cfg.days,amount:cfg.amount,name:cfg.name,prob:cfg.prob});
+    addNotification("Hibe Başvurusu","Başvurunuz değerlendirmeye alındı.","info",true); render();saveGame();
+}
+function processBankDay(){
+    game.bank=game.bank||{loans:[],grantApplications:[],totalBorrowed:0,totalRepaid:0,totalGrantIncome:0};
+    game.bank.grantApplications.forEach(a=>{
+        if(a.status==="Beklemede"&&game.day>=a.payDay){
+            if(Math.random()<Number(a.prob||.5)){game.money+=a.amount;game.income+=a.amount;game.bank.totalGrantIncome+=a.amount;a.status="Onaylandı";recordAccounting("Gelir",a.name,a.amount);addNotification("Hibe Onaylandı",a.amount.toLocaleString("tr-TR")+" ₺ hibe hesabınıza aktarıldı.","success",true);}
+            else {a.status="Reddedildi";addNotification("Hibe Başvurusu","Başvurunuz bu dönemde reddedildi.","warning",true);}
+        }
+    });
+    game.bank.loans.forEach(loan=>{if(game.day>=loan.nextPaymentDay&&loan.remaining>0.01){loan.nextPaymentDay=game.day+30;addNotification("Kredi Taksiti",loan.name+" için "+Number(loan.installment).toLocaleString("tr-TR")+" ₺ ödeme zamanı geldi.","warning",true);}});
+    game.bank.grantApplications=game.bank.grantApplications.slice(-20);
+}
 function recordAccounting(type,category,amount){
 
     game.accountingLedger=game.accountingLedger||[];
@@ -5331,6 +5423,14 @@ function render(){
     const tank=Number(game.rawMilkStock)||0;
     const cap=Number(game.rawMilkTankCapacity)||2000;
     [["rawMilkStock",tank.toFixed(1)+" / "+cap.toFixed(0)+" L"],["rawMilkKpi",tank.toFixed(1)+" L"],["pasteurizedMilkStock",(Number(cold.pasteurizedMilk)||0).toFixed(1)+" L"],["yogurtStock",(Number(cold.yogurt)||0).toFixed(1)+" kg"],["cheeseStock",(Number(cold.cheese)||0).toFixed(1)+" kg"]].forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value;});
+    const bank=game.bank||{loans:[],grantApplications:[],totalGrantIncome:0};
+    const loans=Array.isArray(bank.loans)?bank.loans:[];
+    const debt=loans.reduce((s,l)=>s+Number(l.remaining||0),0);
+    const bd=document.getElementById("bankDebt");if(bd)bd.textContent=debt.toLocaleString("tr-TR",{maximumFractionDigits:0})+" ₺";
+    const bl=document.getElementById("bankLoanCount");if(bl)bl.textContent=loans.length;
+    const bg=document.getElementById("bankGrantTotal");if(bg)bg.textContent=(Number(bank.totalGrantIncome)||0).toLocaleString("tr-TR")+" ₺";
+    const blist=document.getElementById("bankLoansList");if(blist)blist.innerHTML=loans.length?loans.map((l,i)=>'<div class="metric text-xs"><b>'+l.name+'</b> • Kalan: '+Number(l.remaining).toLocaleString("tr-TR",{maximumFractionDigits:0})+' ₺ • Taksit: '+Number(l.installment).toLocaleString("tr-TR",{maximumFractionDigits:0})+' ₺ <button onclick="bankRepayLoan('+i+')" class="nav-btn ml-2">Taksiti Öde</button></div>').join(""):'<div class="text-xs text-slate-500">Aktif kredi yok.</div>';
+    const glist=document.getElementById("grantApplicationsList");if(glist)glist.innerHTML=(bank.grantApplications||[]).slice(-5).reverse().map(a=>'<div class="metric text-xs">🎁 '+a.name+' • '+a.status+' • '+Number(a.amount).toLocaleString("tr-TR")+' ₺</div>').join("");
     const factory=document.getElementById("processingQueueText");
     if(factory) factory.textContent=queue.length?queue.map(j=>({pasteurizedMilk:"Pastörize",yogurt:"Yoğurt",cheese:"Peynir"}[j.product]||j.product)+" • "+Math.ceil((Number(j.remainingMinutes)||0)/60)+" sa").join(" | "):"Hazır";
     const nextMilkingElement=document.getElementById("nextMilkingText");
