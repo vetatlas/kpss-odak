@@ -1343,9 +1343,11 @@ function createCow(id){
 
         milkYield:potential,
 
-        udderFill:
-            30+
-            Math.random()*20,
+        /*
+          Yeni sürü güne ilk sağım için hazır başlar.
+          Sonraki doluluk, seçili sağım sıklığına göre dakika dakika oluşur.
+        */
+        udderFill:100,
 
         bcs:
             2.8+
@@ -2617,7 +2619,7 @@ function getAutomaticMilkingHours(){
 
     if(game.milkingStrategy===3) return [6,14,22];
 
-    return [6,10,14,18,22];
+    return [0,6,12,18];
 
 }
 
@@ -3959,6 +3961,8 @@ function boot(){
 
 
                             render();
+
+                            processAutomaticMilking();
 
                             realTimeLoop();
 
