@@ -386,6 +386,18 @@ select:focus{
 .milk-chart-track{height:92px;width:22px;border-radius:8px;background:#111b29;border:1px solid #203247;display:flex;align-items:flex-end;overflow:hidden}
 .milk-chart-bar{width:100%;border-radius:7px;background:linear-gradient(180deg,var(--green),var(--blue));min-height:5px}
 .milk-chart-label{font-size:7px;color:#71869a;text-align:center;line-height:1.2}
+.milk-performance-panel{overflow:hidden}
+.milk-daily-chart{display:flex;align-items:flex-end;gap:8px;height:150px;padding:10px 4px 0;border-top:1px solid #1b2b3c;border-bottom:1px solid #1b2b3c;overflow-x:auto}
+.milk-day-col{min-width:42px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px}
+.milk-day-value{font-size:8px;color:#9eb1c1}
+.milk-day-track{height:95px;width:24px;border-radius:8px;background:#111b29;border:1px solid #203247;display:flex;align-items:flex-end;overflow:hidden}
+.milk-day-bar{width:100%;border-radius:7px;background:linear-gradient(180deg,var(--green),var(--blue));min-height:5px}
+.milk-day-label{font-size:7px;color:#71869a;text-align:center;line-height:1.2}
+.milk-performance-row{display:grid;grid-template-columns:minmax(70px,1fr) 72px 72px minmax(110px,1.5fr);gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid #1b2b3c;font-size:10px}
+.milk-performance-row:last-child{border-bottom:0}
+.milk-performance-header{color:#71869a;font-size:9px;text-transform:uppercase;letter-spacing:.4px}
+.milk-cause{color:#a9bac8;line-height:1.35}
+@media(max-width:560px){.milk-performance-row{grid-template-columns:minmax(60px,1fr) 60px 60px minmax(100px,1.4fr);gap:5px}.milk-cause{font-size:9px}}
 @media(max-width:420px){.animal-card-grid{grid-template-columns:1fr}.animal-card-actions{flex-direction:column}.animal-card-section{grid-column:auto}.animal-card-action-grid{grid-template-columns:1fr}}
 @keyframes notificationToastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes notificationToastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(10px)}}
@@ -648,6 +660,17 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
         <div id="dashboardAlerts" class="space-y-1 text-xs text-slate-400">
             Sistem kontrol ediliyor...
         </div>
+    </div>
+    <div class="mt-4 metric milk-performance-panel">
+        <div class="flex items-center justify-between gap-3 mb-3">
+            <div>
+                <div class="text-xs font-bold text-slate-300">📊 Süt Verimi Raporu</div>
+                <div class="text-[10px] text-slate-500 mt-1">Günlük toplam süt, hayvan bazlı verim ve olası düşüş nedenleri</div>
+            </div>
+            <span id="milkPerformanceSummary" class="text-[10px] text-slate-500">Hesaplanıyor...</span>
+        </div>
+        <div id="milkDailyChart" class="milk-daily-chart"></div>
+        <div id="milkPerformanceTable" class="mt-3"></div>
     </div>
 </section>
 
@@ -4209,6 +4232,52 @@ function checkSmartNotifications(){
     Object.keys(s.milkDrop).forEach(id=>{if(!activeIds.has(id))delete s.milkDrop[id];});
 }
 
+function renderMilkPerformance(){
+    const chart=document.getElementById("milkDailyChart");
+    const table=document.getElementById("milkPerformanceTable");
+    const summary=document.getElementById("milkPerformanceSummary");
+    if(!chart||!table||!summary) return;
+    const daily={};
+    game.cows.forEach(cow=>{
+        (Array.isArray(cow.milkHistory)?cow.milkHistory:[]).forEach(item=>{
+            const day=Number(item.day);
+            const value=Number(item.yield)||0;
+            if(!day||value<=0) return;
+            daily[day]=(daily[day]||0)+value;
+        });
+    });
+    const days=Object.keys(daily).map(Number).sort((a,b)=>b-a).slice(0,8).reverse();
+    const maxDaily=Math.max(1,...days.map(day=>daily[day]));
+    chart.innerHTML=days.length
+        ? days.map(day=>{
+            const value=daily[day];
+            const height=Math.max(8,Math.round(value/maxDaily*100));
+            return '<div class="milk-day-col"><div class="milk-day-value">'+value.toFixed(1)+'</div><div class="milk-day-track"><div class="milk-day-bar" style="height:'+height+'%"></div></div><div class="milk-day-label">Gün '+day+'</div></div>';
+        }).join("")
+        : '<div class="notification-empty w-full">Sağım geçmişi oluştuğunda günlük süt grafiği burada görünecek.</div>';
+    const totalToday=Number(game.todayMilk)||0;
+    const herd=game.cows.length;
+    const avgPerCow=herd?totalToday/herd:0;
+    summary.textContent=herd ? totalToday.toFixed(1)+" L bugün • "+avgPerCow.toFixed(1)+" L/baş" : "Sürü yok";
+    const rows=game.cows.map(cow=>{
+        const history=(Array.isArray(cow.milkHistory)?cow.milkHistory:[]).map(item=>Number(item.yield)||0).filter(v=>v>0);
+        const latest=history[0]||0;
+        const previous=history.slice(1,7);
+        const previousAvg=previous.length?previous.reduce((a,b)=>a+b,0)/previous.length:0;
+        const drop=previousAvg>0?((previousAvg-latest)/previousAvg)*100:0;
+        const causes=[];
+        if(cow.saraRisk>=50) causes.push("SARA riski");
+        if(cow.health<80) causes.push("sağlık");
+        if(cow.energyBalance<0) causes.push("negatif enerji");
+        if(calculateDMI(cow)<10) causes.push("DMI düşük");
+        if(cow.udderFill>=100) causes.push("meme doluluğu");
+        if(!causes.length) causes.push("belirgin risk yok");
+        return {cow,latest,avg:history.length?history.reduce((a,b)=>a+b,0)/history.length:0,drop,causes:causes.slice(0,2).join(" • ")};
+    }).sort((a,b)=>b.latest-a.latest);
+    table.innerHTML='<div class="milk-performance-row milk-performance-header"><div>Hayvan</div><div>Son</div><div>Ort.</div><div>Analiz</div></div>'+
+        rows.map(row=>'<div class="milk-performance-row"><div><b>🐄 '+(row.cow.name||("İnek "+row.cow.id))+'</b></div><div class="green">'+row.latest.toFixed(1)+' L</div><div>'+row.avg.toFixed(1)+' L</div><div class="milk-cause '+(row.drop>=15?'red':'')+'">'+(row.drop>=15?'↓ %'+row.drop.toFixed(0)+' düşüş • ':'')+row.causes+'</div></div>').join("");
+}
+
 function render(){
 
     updateFarmAtmosphere();
@@ -4329,7 +4398,7 @@ function render(){
             const hh=Math.floor(diff/60);
             const mm=diff%60;
             const nextClock=formatMinutesToTime(next%1440);
-            nextMilkingElement.textContent=`${nextClock} • ${hh}s ${mm}dk`;
+            nextMilkingElement.textContent=`${nextClock} • ${hh} saat ${mm} dk`;
         }catch(e){
             nextMilkingElement.textContent="Program hazır";
         }
