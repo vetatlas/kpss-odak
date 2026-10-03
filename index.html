@@ -1839,7 +1839,7 @@ async function loadSharedAudioSettings(){
     }
 }
 
-async async function initSharedBackend(){
+async function initSharedBackend(){
     if(sharedBackend.ready) return;
     try{
         if(!window.supabase || !window.supabase.createClient){
