@@ -333,8 +333,46 @@ select:focus{
 .boot{display:none!important;}
 #systemMessageBox{animation:messageIn .45s ease-out both;}
 @keyframes messageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.notification-button{
+    position:relative;flex:0 0 auto;width:46px;height:46px;border-radius:14px;
+    border:1px solid var(--border);background:#111b29;color:#eaf3f8;
+    display:grid;place-items:center;font-size:20px;cursor:pointer;
+}
+.notification-button:hover{background:#172536;border-color:#31516b}
+.notification-badge{
+    position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;
+    border-radius:999px;background:var(--red);color:white;font-size:10px;font-weight:900;
+    display:grid;place-items:center;border:2px solid #070b12;
+}
+.notification-panel{
+    position:fixed;top:78px;left:12px;z-index:2147483646;
+    width:min(380px,calc(100vw - 24px));padding:16px;border:1px solid var(--border);
+    border-radius:18px;background:rgba(9,15,23,.98);backdrop-filter:blur(18px);
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+}
+.notification-item{
+    padding:11px 12px;border:1px solid #1b2b3c;border-radius:13px;background:#0b121c;
+}
+.notification-item-title{font-size:12px;font-weight:800;color:#eaf3f8}
+.notification-item-meta{font-size:9px;color:#71869a;margin-top:3px}
+.notification-item-text{font-size:11px;color:#a9bac8;margin-top:5px;line-height:1.45}
+.notification-empty{padding:24px 10px;text-align:center;color:#71869a;font-size:12px}
+.notification-toast{
+    position:fixed;right:14px;bottom:88px;z-index:2147483645;width:min(360px,calc(100vw - 28px));
+    display:flex;gap:10px;align-items:flex-start;padding:13px 14px;border:1px solid rgba(57,229,140,.25);
+    border-radius:16px;background:rgba(9,15,23,.96);backdrop-filter:blur(16px);
+    box-shadow:0 18px 50px rgba(0,0,0,.4);animation:notificationToastIn .35s ease-out both;
+}
+.notification-toast.hide{animation:notificationToastOut .5s ease-in both}
+@keyframes notificationToastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes notificationToastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(10px)}}
+@media(max-width:640px){
+    .notification-panel{top:72px}
+    .notification-toast{bottom:84px}
+}
 <style>
-.app-bottom-nav{position:fixed!important;left:0;right:0;bottom:0;z-index:9999;display:grid;grid-template-columns:repeat(6,1fr);gap:3px;padding:7px 6px calc(7px + env(safe-area-inset-bottom));background:rgba(7,11,18,.97);backdrop-filter:blur(18px);border-top:1px solid rgba(148,163,184,.16);box-shadow:0 -10px 30px rgba(0,0,0,.35)}
+.app-bottom-nav{position:fixed!important;left:0;right:0;bottom:0;z-index:9999;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;padding:7px 6px calc(7px + env(safe-area-inset-bottom));background:rgba(7,11,18,.97);backdrop-filter:blur(18px);border-top:1px solid rgba(148,163,184,.16);box-shadow:0 -10px 30px rgba(0,0,0,.35)}
 .app-bottom-nav .nav-btn{min-width:0;min-height:52px;border:0;border-radius:13px;background:transparent;color:#94a3b8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:4px 1px;font-size:19px;line-height:1;touch-action:manipulation}
 .app-bottom-nav .nav-btn span{font-size:9px;font-weight:800;line-height:1}
 .app-bottom-nav .nav-btn.active-menu{background:rgba(34,197,94,.16);color:#86efac}
@@ -387,7 +425,7 @@ html,body{min-height:100%;width:100%;overflow-x:hidden}
  transform:none!important;
  z-index:2147483647!important;
  display:grid!important;
- grid-template-columns:repeat(6,minmax(0,1fr))!important;
+ grid-template-columns:repeat(5,minmax(0,1fr))!important;
  align-items:stretch!important;
  gap:4px!important;
  padding:6px 6px calc(6px + env(safe-area-inset-bottom))!important;
@@ -444,7 +482,14 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 
     <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap gap-4 items-center justify-between">
 
-        <div>
+        <div class="flex items-center gap-3 min-w-0">
+
+            <button id="notificationButton" type="button" class="notification-button" aria-label="Bildirimleri aç" aria-expanded="false">
+                🔔
+                <span id="notificationBadge" class="notification-badge hidden">0</span>
+            </button>
+
+            <div class="min-w-0">
 
             <div class="text-xs text-slate-500 tracking-[3px] uppercase">
                 Dijital Hayvancılık
@@ -456,6 +501,8 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 
             <div class="text-xs text-slate-500 mt-1">
                 Zootekni ve Hayvancılık Yönetim Sistemi
+            </div>
+
             </div>
 
         </div>
@@ -483,6 +530,25 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 
 </header>
 
+<div id="notificationPanel" class="notification-panel hidden" aria-hidden="true">
+    <div class="flex items-center justify-between gap-3 mb-3">
+        <div>
+            <div class="font-black">🔔 Bildirimler</div>
+            <div id="notificationCountText" class="text-[10px] text-slate-500 mt-1">Yeni bildirim yok</div>
+        </div>
+        <button id="clearNotifications" type="button" class="nav-btn text-red-300 text-xs">Temizle</button>
+    </div>
+    <div id="notificationList" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
+</div>
+
+<div id="notificationToast" class="notification-toast hidden" role="status" aria-live="polite">
+    <div id="notificationToastIcon" class="text-xl">🔔</div>
+    <div class="min-w-0">
+        <div id="notificationToastTitle" class="font-bold"></div>
+        <div id="notificationToastText" class="text-xs text-slate-300 mt-1"></div>
+    </div>
+</div>
+
 
 <nav id="appMenu" class="app-bottom-nav" aria-label="Çiftlik menüsü">
 <button class="nav-btn menu-btn active-menu" data-menu="genel">🏠<span>Genel</span></button>
@@ -490,7 +556,6 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 <button class="nav-btn menu-btn" data-menu="besleme">🌾<span>Besleme</span></button>
 <button class="nav-btn menu-btn" data-menu="sagim">🥛<span>Sağım</span></button>
 <button class="nav-btn menu-btn" data-menu="muhasebe">🧾<span>Muhasebe</span></button>
-<button class="nav-btn menu-btn" data-menu="gunluk">📋<span>Günlük</span></button>
 </nav>
 
 <main class="max-w-7xl mx-auto px-4 py-6">
@@ -505,16 +570,6 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
             <div class="text-xs text-slate-500 tracking-[2px] uppercase">Çiftlik Kontrol Merkezi</div>
             <h2 class="text-2xl md:text-3xl font-black mt-1">Bugünkü Çiftlik Durumu</h2>
             <p class="text-sm text-slate-500 mt-1">Sürü, yem, süt, kasa ve bir sonraki sağım tek ekranda.</p>
-    <div id="systemMessageBox" class="mt-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
-        <div class="flex items-start gap-3">
-            <div class="text-2xl">📩</div>
-            <div class="min-w-0 flex-1">
-                <div id="systemMessageTitle" class="font-bold text-amber-300">Sistem Mesajı</div>
-                <div id="systemMessageText" class="text-sm text-slate-300 mt-1"></div>
-                <button id="systemMessageAction" type="button" class="nav-btn mt-3 text-green-300">🐄 İlk İneği Satın Al</button>
-            </div>
-        </div>
-    </div>
         </div>
         <div class="dashboard-clock">
             <div class="text-xs text-slate-500">Çiftlik Saati</div>
@@ -1378,20 +1433,6 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 </section>
 
 
-<!-- GÜNLÜK -->
-
-<section class="glass p-5" data-menu-section="gunluk">
-
-    <h2 class="font-bold mb-4">
-        📡 Sistem Günlüğü
-    </h2>
-
-    <div id="eventLog"
-         class="max-h-96 overflow-y-auto">
-    </div>
-
-</section>
-
 </div>
 
 </div>
@@ -1678,13 +1719,12 @@ function startFreshFarm(){
         amount:STARTING_DONATION
     });
 
-    game.messages.unshift({
-        id:Date.now(),
-        day:1,
-        time:"06:00",
-        title:"Sistem Desteği",
-        text:"Hoş geldin çiftlik sahibi. Çiftliğini sıfırdan kurabilmen için sistem hesabına 35.000 ₺ başlangıç bağışı yaptı. İlk hedefin: ilk ineğini satın almak ve küçük sürünü adım adım büyütmek."
-    });
+    addNotification(
+        "Sistem Desteği",
+        "Hoş geldin çiftlik sahibi. Çiftliğini sıfırdan kurabilmen için sistem hesabına 35.000 ₺ başlangıç bağışı yaptı. İlk hedefin: ilk ineğini satın almak ve küçük sürünü adım adım büyütmek.",
+        "success",
+        false
+    );
 
     localStorage.removeItem("ciftlikLogs");
     addLog("🎁 Sistem bağışı hesabına yatırıldı: 35.000 ₺");
@@ -3099,14 +3139,12 @@ function addCow(){
 
     game.onboardingStep=Math.max(game.onboardingStep||1,2);
 
-    game.messages.unshift({
-        id:Date.now(),
-        day:game.day,
-        time:formatGameTime(),
-        title:"Hayvan Alımı",
-        text:`İnek ${id} çiftliğine geldi. Şimdi ona düzenli yem ve bakım sağlayarak sürünü yavaş yavaş büyütebilirsin.`
-    });
-    game.messages=game.messages.slice(0,20);
+    addNotification(
+        "Hayvan Alımı",
+        `İnek ${id} çiftliğine geldi. Şimdi ona düzenli yem ve bakım sağlayarak sürünü yavaş yavaş büyütebilirsin.`,
+        "success",
+        true
+    );
 
     addLog(`🐄 İnek ${id} satın alındı. Maliyet: ${COW_PURCHASE_PRICE.toLocaleString("tr-TR")} ₺`);
     render();
@@ -3727,25 +3765,100 @@ function animateDashboardNumber(id,target,formatter,duration=650){
     requestAnimationFrame(frame);
 }
 
-function renderOnboarding(){
-    const box=document.getElementById("systemMessageBox");
-    const title=document.getElementById("systemMessageTitle");
-    const text=document.getElementById("systemMessageText");
-    const action=document.getElementById("systemMessageAction");
-    if(!box||!title||!text||!action) return;
+function addNotification(title,text,type="info",showToast=true){
+    if(!game.messages) game.messages=[];
+    const notification={
+        id:Date.now()+Math.random(),
+        day:game.day,
+        time:formatGameTime(),
+        title,
+        text,
+        type
+    };
+    game.messages.unshift(notification);
+    game.messages=game.messages.slice(0,30);
+    renderNotifications();
+    if(showToast) showNotificationToast(notification);
+}
 
-    const msg=game.messages?.[0];
-    if(msg){
-        title.textContent=msg.title;
-        text.textContent=msg.text;
-        box.classList.remove("hidden");
+let notificationToastTimer=null;
+
+function showNotificationToast(notification){
+    const toast=document.getElementById("notificationToast");
+    const icon=document.getElementById("notificationToastIcon");
+    const title=document.getElementById("notificationToastTitle");
+    const text=document.getElementById("notificationToastText");
+    if(!toast||!icon||!title||!text) return;
+
+    const icons={success:"✅",warning:"⚠️",danger:"🚨",info:"🔔"};
+    icon.textContent=icons[notification.type]||icons.info;
+    title.textContent=notification.title;
+    text.textContent=notification.text;
+
+    toast.classList.remove("hidden","hide");
+    clearTimeout(notificationToastTimer);
+    notificationToastTimer=setTimeout(()=>{
+        toast.classList.add("hide");
+        setTimeout(()=>toast.classList.add("hidden"),520);
+    },4200);
+}
+
+function renderNotifications(){
+    const list=document.getElementById("notificationList");
+    const badge=document.getElementById("notificationBadge");
+    const countText=document.getElementById("notificationCountText");
+    if(!list||!badge||!countText) return;
+
+    const messages=Array.isArray(game.messages)?game.messages:[];
+    badge.textContent=messages.length>99?"99+":String(messages.length);
+    badge.classList.toggle("hidden",messages.length===0);
+    countText.textContent=messages.length
+        ? messages.length+" kayıtlı bildirim"
+        : "Yeni bildirim yok";
+
+    if(!messages.length){
+        list.innerHTML='<div class="notification-empty">📭 Henüz bildirim yok.</div>';
+        return;
     }
 
-    action.textContent=game.cows.length===0
-        ? `🐄 İlk İneği Satın Al • ${COW_PURCHASE_PRICE.toLocaleString("tr-TR")} ₺`
-        : "🐄 Bir İnek Daha Al";
-    action.disabled=game.money<COW_PURCHASE_PRICE;
-    action.onclick=()=>addCow();
+    list.innerHTML=messages.map(msg=>
+        '<div class="notification-item">'+
+            '<div class="notification-item-title">'+(msg.title||"Bildirim")+'</div>'+
+            '<div class="notification-item-meta">Gün '+(msg.day||game.day)+' • '+(msg.time||"--:--")+'</div>'+
+            '<div class="notification-item-text">'+(msg.text||"")+'</div>'+
+        '</div>'
+    ).join("");
+}
+
+function setupNotifications(){
+    const button=document.getElementById("notificationButton");
+    const panel=document.getElementById("notificationPanel");
+    const clear=document.getElementById("clearNotifications");
+    if(!button||!panel||!clear) return;
+
+    button.addEventListener("click",()=>{
+        const opening=panel.classList.contains("hidden");
+        panel.classList.toggle("hidden",!opening);
+        panel.setAttribute("aria-hidden",String(!opening));
+        button.setAttribute("aria-expanded",String(opening));
+        if(opening) renderNotifications();
+    });
+
+    clear.addEventListener("click",()=>{
+        game.messages=[];
+        renderNotifications();
+        saveGame();
+    });
+
+    document.addEventListener("pointerdown",event=>{
+        if(panel.classList.contains("hidden")) return;
+        if(panel.contains(event.target)||button.contains(event.target)) return;
+        panel.classList.add("hidden");
+        panel.setAttribute("aria-hidden","true");
+        button.setAttribute("aria-expanded","false");
+    });
+
+    renderNotifications();
 }
 
 function render(){
@@ -3891,8 +4004,6 @@ function render(){
         dashboardNet.textContent=`${netNow.toLocaleString("tr-TR",{maximumFractionDigits:0})} ₺`;
         dashboardNet.className=netNow>=0 ? "green" : "red";
     }    
-    renderOnboarding();
-
     const dashboardAlerts=document.getElementById("dashboardAlerts");
     const alertCount=document.getElementById("alertCount");
     if(dashboardAlerts && alertCount){
@@ -4424,6 +4535,7 @@ function initFarmApp(){
     try{
         document.getElementById("app")?.classList.remove("hidden-screen");
         setupAppMenu();
+        setupNotifications();
         setupFarmSound();
         render();
         processAutomaticMilking();
