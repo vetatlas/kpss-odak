@@ -2972,6 +2972,10 @@ function calculateDMI(cow){
 
 function calculateMilkProduction(cow){
 
+    if(cow.isCalf || cow.sex==="Erkek"){
+        return 0;
+    }
+
     if(cow.reproduction?.status==="Kuru Dönem"){
         return 0;
     }
@@ -3301,6 +3305,9 @@ function getNextEstrousCycleDays(){
 }
 
 function processReproduction(cow){
+    if(cow.isCalf){
+        return;
+    }
     const r=cow.reproduction||(cow.reproduction={status:"Laktasyonda"});
     const state=game.notificationState?.reproduction||(game.notificationState.reproduction={});
     const id=String(cow.id);
@@ -3390,6 +3397,13 @@ function biologicalTick(){
 
     game.cows.forEach(
         cow=>{
+
+            if(cow.isCalf){
+                updateCowBiology(cow);
+                cow.milkYield=0;
+                cow.udderFill=0;
+                return;
+            }
 
             processReproduction(cow);
 
@@ -3535,7 +3549,35 @@ function advanceGameTime(minutes){
 
             game.cows.forEach(
                 cow=>{
-                    if(cow.reproduction?.status!=="Kuru Dönem"){
+                    if(cow.isCalf){
+                        cow.ageDays=(Number(cow.ageDays)||0)+1;
+
+                        if(cow.ageDays>=730){
+                            cow.isCalf=false;
+
+                            if(cow.sex==="Dişi"){
+                                cow.reproduction={
+                                    status:"Düve",
+                                    heatDay:null,
+                                    inseminationDay:null,
+                                    pregnancyCheckDay:null,
+                                    pregnant:false,
+                                    expectedCalvingDay:null,
+                                    lastCalvingDay:null,
+                                    dryOffDay:null,
+                                    nextHeatDay:game.day+getNextEstrousCycleDays()
+                                };
+                                cow.lactationNumber=0;
+                                cow.lactationDay=0;
+                                cow.milkPotential=28+Math.random()*8;
+                                cow.milkYield=0;
+                                addNotification("Düve Dönemi",cow.name+" 24 aylık oldu ve düve olarak sürüye katıldı.","success",true);
+                            }else{
+                                cow.reproduction.status="Boğa";
+                                addNotification("Erginlik",cow.name+" 24 aylık oldu ve ergin erkek hayvan olarak kaydedildi.","info",true);
+                            }
+                        }
+                    }else if(cow.reproduction?.status!=="Kuru Dönem" && cow.sex!=="Erkek"){
                         cow.lactationDay++;
                     }
                 }
