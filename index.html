@@ -748,6 +748,9 @@ main.accounting-overview-grid{display:grid;grid-template-columns:repeat(4,minmax
 .accounting-action-card b{display:block;font-size:12px}
 .accounting-action-card span{display:block;font-size:10px;color:#64748b;margin-top:2px}
 .accounting-action-card button{min-width:108px}
+.veterinary-invoice-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+@media(max-width:430px){.veterinary-invoice-row{align-items:flex-start;flex-direction:column}.veterinary-invoice-row button{width:100%}}
+
 #accountingLog{background:rgba(2,6,23,.2);border:1px solid rgba(148,163,184,.08);border-radius:14px;padding:10px}
 @media(max-width:767px){
  main.accounting-layout{display:block!important}
@@ -2277,6 +2280,17 @@ body{padding-bottom:calc(76px + env(safe-area-inset-bottom))!important}
         <div class="accounting-status">● İşletme</div>
     </div>
 
+    <div class="metric mb-4" id="veterinaryPayablesPanel">
+        <div class="flex items-center justify-between gap-3 mb-2">
+            <div>
+                <div class="accounting-group-title mb-1">👨‍⚕️ Veteriner Veresiye Hesabı</div>
+                <div class="text-[10px] text-slate-500">Muayene ve tedavi faturaları hemen ödenmek zorunda değil.</div>
+            </div>
+            <div id="veterinaryOutstanding" class="font-black text-yellow-300">0 ₺</div>
+        </div>
+        <div id="veterinaryInvoiceList" class="space-y-2"></div>
+    </div>
+
     <div class="grid grid-cols-2 gap-3 mb-4">
         <div class="metric">
             <div class="text-xs text-slate-500">Mevcut Kasa</div>
@@ -2603,6 +2617,13 @@ let game = {
         totalGrantIncome:0
     },
 
+    veterinary:{
+        invoices:[],
+        totalInvoiced:0,
+        totalPaid:0,
+        maxOutstanding:20000
+    },
+
     income:0,
 
     expenses:0,
@@ -2839,6 +2860,12 @@ function startFreshFarm(){
     game.processingQueue=[];
     game.coldStorage={pasteurizedMilk:0,yogurt:0,cheese:0};
     game.processedProducts={pasteurizedMilk:0,yogurt:0,cheese:0};
+    game.veterinary={
+        invoices:[],
+        totalInvoiced:0,
+        totalPaid:0,
+        maxOutstanding:20000
+    };
     game.income=0;
     game.expenses=0;
     game.milkingStrategy=3;
@@ -2952,6 +2979,13 @@ function loadGame(){
                 totalRepaid:0,
                 totalGrantIncome:0,
                 ...(old.bank||{})
+            },
+            veterinary:{
+                invoices:[],
+                totalInvoiced:0,
+                totalPaid:0,
+                maxOutstanding:20000,
+                ...(old.veterinary||{})
             },
             rawMilkTankCapacity:Number(old.rawMilkTankCapacity)||2000,
             processingQueue:Array.isArray(old.processingQueue)?old.processingQueue:[],
@@ -5487,8 +5521,9 @@ function openAnimalCard(id){
     '<div class="animal-card-history">'+(milkHistory.length?milkHistory.slice(0,8).map(item=>'<div><b>Gün '+item.day+' • '+item.time+'</b> — '+(Number(item.yield)||0).toFixed(1)+' L</div>').join(""):'')+'</div></div>'+
     '<div class="animal-card-section"><div class="animal-card-section-title">🩺 Sağlık & Veteriner</div><div class="animal-card-action-grid">'+
     '<button type="button" class="nav-btn" onclick="recordAnimalHealth(\''+String(cow.id)+'\',\'Muayene\')">🩺 Muayene</button>'+
-    '<button type="button" class="nav-btn" onclick="recordAnimalHealth(\''+String(cow.id)+'\',\'Tedavi\')">💊 Tedavi</button>'+
+    '<button type="button" class="nav-btn" onclick="callVeterinarian(\''+String(cow.id)+'\')">👨‍⚕️ Veteriner Çağır</button>'+
     '<button type="button" class="nav-btn" onclick="recordAnimalHealth(\''+String(cow.id)+'\',\'Aşılama\')">💉 Aşılama</button></div>'+
+    '<div class="text-[10px] text-slate-500 mt-2">Veteriner çağrısı nakit yoksa veresiye açılabilir. Borç Muhasebe → İşlemler bölümünden kapatılır.</div>'+
     '<div class="animal-card-history">'+(cow.healthHistory.length?cow.healthHistory.slice(0,5).map(item=>'<div><b>Gün '+item.day+'</b> • '+item.type+(item.note?" — "+item.note:"")+'</div>').join(""):'<div class="text-slate-500">Henüz sağlık kaydı yok.</div>')+'</div></div>'+
     (cow.isCalf?
     '<div class="animal-card-section"><div class="animal-card-section-title">🍼 Buzağı Bakımı</div><div class="animal-card-history">'+
@@ -5514,6 +5549,130 @@ function addAnimalHealthRecord(cow,type,note=""){
     cow.healthHistory.unshift({day:game.day,time:formatGameTime(),type,note});
     cow.healthHistory=cow.healthHistory.slice(0,30);
 }
+function getVeterinaryOutstanding(){
+    game.veterinary=game.veterinary||{invoices:[],totalInvoiced:0,totalPaid:0,maxOutstanding:20000};
+    game.veterinary.invoices=Array.isArray(game.veterinary.invoices)?game.veterinary.invoices:[];
+    return game.veterinary.invoices
+        .filter(item=>item.status==="Açık")
+        .reduce((sum,item)=>sum+(Number(item.amount)||0),0);
+}
+
+function diagnoseCowForVet(cow){
+    const reasons=[];
+    const expected=Math.max(1,Number(cow.milkPotential)||30);
+    const current=Math.max(0,Number(cow.milkYield)||0);
+    if(cow.reproduction?.status==="Kuru Dönem"){
+        return {title:"Kuru dönem",reason:"Hayvan kuru dönemde; sağım beklenmez.",action:"Sağım yapılmaz."};
+    }
+    if(current < expected*0.45) reasons.push("Süt verimi beklenen düzeyin belirgin altında");
+    if((Number(cow.health)||0)<85) reasons.push("genel sağlık düşüklüğü");
+    if((Number(cow.saraRisk)||0)>=50) reasons.push("SARA / rumen pH problemi");
+    if((Number(cow.bcs)||0)<2.6) reasons.push("düşük kondisyon ve enerji açığı");
+    if((Number(cow.diseaseRisk)||0)>=40) reasons.push("yüksek hastalık riski");
+    if((Number(cow.udderFill)||0)<20) reasons.push("meme doluluğu düşük; sağım zamanlaması kontrol edilmeli");
+    if(!reasons.length) reasons.push("belirgin klinik sorun saptanmadı; sağım programı ve rasyon kontrolü önerilir");
+    return {
+        title: current < expected*0.45 ? "Düşük süt verimi" : "Kontrol gerekli",
+        reason: reasons.join(", ")+".",
+        action: current < expected*0.45 ? "Muayene + hedefli tedavi / rasyon düzeltmesi" : "İzlem ve rutin muayene"
+    };
+}
+
+function callVeterinarian(id){
+    const cow=getCowById(id); if(!cow || cow.isCalf) return;
+    game.veterinary=game.veterinary||{invoices:[],totalInvoiced:0,totalPaid:0,maxOutstanding:20000};
+    const outstanding=getVeterinaryOutstanding();
+    const diagnosis=diagnoseCowForVet(cow);
+
+    if(diagnosis.title==="Kuru dönem"){
+        addNotification("Veteriner Değerlendirmesi",cow.name+" kuru dönemde. Sağım düşüklüğü hastalık olarak değerlendirilmedi.","info",true);
+        refreshAnimalCard(id);
+        return;
+    }
+
+    const base=1200;
+    const treatment=(Number(cow.health)<85 || Number(cow.saraRisk)>=50 || Number(cow.diseaseRisk)>=40 || Number(cow.bcs)<2.6) ? 1800 : 0;
+    const amount=base+treatment;
+
+    if(outstanding+amount>Number(game.veterinary.maxOutstanding||20000)){
+        addLog("⚠ Veteriner veresiye limiti dolu. Önce mevcut faturaların bir kısmını öde.");
+        addNotification("Veteriner Kredisi Doldu","Açık veteriner faturaları "+outstanding.toLocaleString("tr-TR")+" ₺. Önce borcu azalt.","warning",true);
+        return;
+    }
+
+    const invoice={
+        id:"VET-"+Date.now()+"-"+String(cow.id),
+        cowId:cow.id,
+        cowName:cow.name,
+        day:game.day,
+        dueDay:game.day+3,
+        amount,
+        status:"Açık",
+        diagnosis:diagnosis.reason,
+        action:diagnosis.action
+    };
+
+    game.veterinary.invoices.unshift(invoice);
+    game.veterinary.totalInvoiced=(Number(game.veterinary.totalInvoiced)||0)+amount;
+
+    // Hizmet alınmış sayılır: gider hemen oluşur, nakit ise ödeme gününe kadar değişmez.
+    game.expenses+=amount;
+    recordAccounting("Gider","Veterinerlik - Veresiye",amount);
+
+    // Hedefe yönelik klinik müdahale.
+    cow.health=Math.min(100,(Number(cow.health)||0)+10);
+    cow.diseaseRisk=Math.max(0,(Number(cow.diseaseRisk)||0)-30);
+    cow.saraRisk=Math.max(0,(Number(cow.saraRisk)||0)-35);
+    cow.rumenPH=Math.min(6.6,(Number(cow.rumenPH)||6.0)+0.18);
+    cow.bcs=Math.min(4.5,(Number(cow.bcs)||2.8)+0.08);
+    cow.milkYield=calculateMilkProduction(cow);
+    addAnimalHealthRecord(cow,"Veteriner","Muayene: "+diagnosis.reason+" | Plan: "+diagnosis.action+" | Fatura: "+amount.toLocaleString("tr-TR")+" ₺ veresiye");
+
+    addNotification(
+        "Veteriner Çiftliğe Geldi",
+        cow.name+" muayene edildi. "+diagnosis.reason+" Borç: "+amount.toLocaleString("tr-TR")+" ₺ • vade: Gün "+invoice.dueDay,
+        "success",
+        true
+    );
+    addLog("👨‍⚕️ Veteriner hizmeti: "+cow.name+" • "+amount.toLocaleString("tr-TR")+" ₺ veresiye.");
+    refreshAnimalCard(id);
+}
+
+function payVeterinaryInvoice(invoiceId){
+    game.veterinary=game.veterinary||{invoices:[]};
+    const invoice=game.veterinary.invoices.find(item=>item.id===invoiceId);
+    if(!invoice || invoice.status!=="Açık") return;
+    const amount=Number(invoice.amount)||0;
+    if(Number(game.money)||0<amount){
+        addLog("⚠ Veteriner borcunu ödemek için yeterli nakit yok.");
+        addNotification("Ödeme Yapılamadı","Veteriner faturası için "+amount.toLocaleString("tr-TR")+" ₺ nakit gerekiyor.","warning",true);
+        return;
+    }
+    game.money-=amount;
+    invoice.status="Ödendi";
+    invoice.paidDay=game.day;
+    game.veterinary.totalPaid=(Number(game.veterinary.totalPaid)||0)+amount;
+    recordAccounting("Gider Ödemesi","Veteriner Veresiye Ödemesi",amount);
+    addNotification("Veteriner Borcu Ödendi",invoice.cowName+" için "+amount.toLocaleString("tr-TR")+" ₺ ödeme yapıldı.","success",true);
+    render();
+    saveGame();
+}
+
+function renderVeterinaryPayables(){
+    const outstandingEl=document.getElementById("veterinaryOutstanding");
+    const listEl=document.getElementById("veterinaryInvoiceList");
+    if(!outstandingEl||!listEl) return;
+    const invoices=(game.veterinary?.invoices||[]).filter(item=>item.status==="Açık");
+    const outstanding=invoices.reduce((sum,item)=>sum+(Number(item.amount)||0),0);
+    outstandingEl.textContent=outstanding.toLocaleString("tr-TR")+" ₺";
+    listEl.innerHTML=invoices.length?invoices.slice(0,8).map(item=>{
+        const overdue=Number(game.day)>Number(item.dueDay);
+        return '<div class="flex items-center justify-between gap-3 p-2 rounded-xl border border-slate-800 bg-slate-950/30">'+
+            '<div class="min-w-0"><b class="text-xs">'+item.cowName+'</b><div class="text-[9px] text-slate-500">'+item.amount.toLocaleString("tr-TR")+' ₺ • '+(overdue?'Vadesi geçti':'Vade Gün '+item.dueDay)+'</div></div>'+
+            '<button class="nav-btn text-green-300 text-xs" onclick="payVeterinaryInvoice(\''+item.id+'\')">Öde</button></div>';
+    }).join(""):'<div class="text-[10px] text-slate-500">Açık veteriner faturası yok.</div>';
+}
+
 function recordAnimalHealth(id,type){
     const cow=getCowById(id);if(!cow)return;
     let note="";
@@ -5971,6 +6130,7 @@ function renderMilkPerformance(){
 }
 
 function renderAccountingCenter(){
+    renderVeterinaryPayables();
     const bank=ensureBankState();
     const income=Number(game.income)||0;
     const expenses=Number(game.expenses)||0;
