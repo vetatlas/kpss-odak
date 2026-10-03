@@ -365,6 +365,17 @@ select:focus{
     box-shadow:0 18px 50px rgba(0,0,0,.4);animation:notificationToastIn .35s ease-out both;
 }
 .notification-toast.hide{animation:notificationToastOut .5s ease-in both}
+.animal-card-modal{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.68);backdrop-filter:blur(8px)}
+.animal-card-modal.open{display:flex}
+.animal-card-shell{width:min(560px,100%);max-height:90vh;overflow-y:auto;border:1px solid var(--border);border-radius:22px;background:#0b121c;box-shadow:0 30px 90px rgba(0,0,0,.55)}
+.animal-card-header{padding:18px;border-bottom:1px solid #1b2b3c}
+.animal-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:16px}
+.animal-card-field{background:#111b29;border:1px solid #203247;border-radius:13px;padding:11px}
+.animal-card-field-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.animal-card-field-value{margin-top:4px;font-size:13px;font-weight:800}
+.animal-card-actions{padding:0 16px 16px;display:flex;gap:10px}
+.animal-card-actions button{flex:1}
+@media(max-width:420px){.animal-card-grid{grid-template-columns:1fr}.animal-card-actions{flex-direction:column}}
 @keyframes notificationToastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes notificationToastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(10px)}}
 @media(max-width:640px){
@@ -546,6 +557,23 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
     <div class="min-w-0">
         <div id="notificationToastTitle" class="font-bold"></div>
         <div id="notificationToastText" class="text-xs text-slate-300 mt-1"></div>
+    </div>
+</div>
+
+<div id="animalCardModal" class="animal-card-modal" aria-hidden="true">
+    <div class="animal-card-shell" role="dialog" aria-modal="true" aria-labelledby="animalCardTitle">
+        <div class="animal-card-header flex items-start justify-between gap-3">
+            <div>
+                <div class="text-[10px] text-slate-500 tracking-[2px] uppercase">Hayvan Kartı</div>
+                <h2 id="animalCardTitle" class="text-xl font-black mt-1">🐄 Hayvan</h2>
+                <div id="animalCardStatus" class="text-xs mt-1 text-slate-500">Durum</div>
+            </div>
+            <button type="button" onclick="closeAnimalCard()" class="nav-btn text-slate-300">✕</button>
+        </div>
+        <div id="animalCardGrid" class="animal-card-grid"></div>
+        <div class="animal-card-actions">
+            <button type="button" onclick="closeAnimalCard()" class="nav-btn">Kapat</button>
+        </div>
     </div>
 </div>
 
@@ -1665,7 +1693,14 @@ function createCow(id){
 
         energyBalance:0,
 
-        diseaseRisk:0
+        diseaseRisk:0,
+
+        breed:"Holstein",
+        earTag:"TR-"+String(id).padStart(4,"0"),
+        birthDate:"",
+        lactationNumber:1,
+        sex:"Dişi",
+        purchaseDate:""
 
     };
 
@@ -3725,10 +3760,86 @@ function renderHerd(){
                 ● ${statusText}
             </div>
 
+            <button type="button" onclick="openAnimalCard('${String(cow.id).replace(/'/g,"\\'")}')" class="mt-3 w-full nav-btn text-blue-300 border-blue-500/20">
+                📋 Hayvan Kartını Aç
+            </button>
+
         </div>`;
     }).join("");
 }
 
+
+function getAnimalCardStatus(cow){
+    if(cow.saraRisk>=50) return "Rumen asidozu riski";
+    if(cow.health<80) return "Sağlık takibi";
+    if(cow.udderFill>=100) return "Sağım kontrolü";
+    return "Normal";
+}
+
+function formatAnimalBirthDate(value){
+    if(!value) return "Kayıt yok";
+    const d=new Date(value+"T00:00:00");
+    if(Number.isNaN(d.getTime())) return value;
+    return d.toLocaleDateString("tr-TR");
+}
+
+function openAnimalCard(id){
+    const cow=game.cows.find(item=>String(item.id)===String(id));
+    if(!cow) return;
+    const modal=document.getElementById("animalCardModal");
+    const title=document.getElementById("animalCardTitle");
+    const status=document.getElementById("animalCardStatus");
+    const grid=document.getElementById("animalCardGrid");
+    if(!modal||!title||!status||!grid) return;
+
+    title.textContent="🐄 "+(cow.name||("İnek "+cow.id));
+    status.textContent=getAnimalCardStatus(cow);
+
+    const fields=[
+        ["Küpe No",cow.earTag||("TR-"+String(cow.id).padStart(4,"0"))],
+        ["Irk",cow.breed||"Belirtilmemiş"],
+        ["Cinsiyet",cow.sex||"Dişi"],
+        ["Doğum Tarihi",formatAnimalBirthDate(cow.birthDate)],
+        ["Laktasyon No",String(cow.lactationNumber||1)],
+        ["Laktasyon Günü",String(cow.lactationDay||0)],
+        ["Canlı Ağırlık",(Number(cow.weight)||0).toFixed(0)+" kg"],
+        ["BCS",(Number(cow.bcs)||0).toFixed(2)],
+        ["Günlük Süt",(Number(cow.milkYield)||0).toFixed(1)+" L"],
+        ["Sağlık",(Number(cow.health)||0).toFixed(1)+"%"],
+        ["Rumen pH",(Number(cow.rumenPH)||0).toFixed(2)],
+        ["SARA Riski",(Number(cow.saraRisk)||0).toFixed(0)+"%"],
+        ["Hastalık Riski",(Number(cow.diseaseRisk)||0).toFixed(0)+"%"],
+        ["Meme Doluluğu",(Number(cow.udderFill)||0).toFixed(1)+"%"],
+        ["Enerji Dengesi",(Number(cow.energyBalance)||0).toFixed(2)],
+        ["Alım Tarihi",formatAnimalBirthDate(cow.purchaseDate)]
+    ];
+
+    grid.innerHTML=fields.map(([label,value])=>`<div class="animal-card-field">
+        <div class="animal-card-field-label">${label}</div>
+        <div class="animal-card-field-value">${value}</div>
+    </div>`).join("");
+
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden","false");
+}
+
+function closeAnimalCard(){
+    const modal=document.getElementById("animalCardModal");
+    if(!modal) return;
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden","true");
+}
+
+function setupAnimalCardModal(){
+    const modal=document.getElementById("animalCardModal");
+    if(!modal) return;
+    modal.addEventListener("click",event=>{
+        if(event.target===modal) closeAnimalCard();
+    });
+    document.addEventListener("keydown",event=>{
+        if(event.key==="Escape") closeAnimalCard();
+    });
+}
 
 function updateFarmAtmosphere(){
     const layer=document.getElementById("farmAtmosphere");
@@ -4607,6 +4718,7 @@ function initFarmApp(){
         document.getElementById("app")?.classList.remove("hidden-screen");
         setupAppMenu();
         setupNotifications();
+        setupAnimalCardModal();
         setupFarmSound();
         render();
         processAutomaticMilking();
