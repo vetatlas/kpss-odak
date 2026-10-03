@@ -216,6 +216,43 @@ select:focus{
     background:#23374a;
     border-radius:10px;
 }
+
+/* ÇİFTLİK SES SİSTEMİ */
+.sound-control{
+    position:fixed;
+    right:16px;
+    bottom:16px;
+    z-index:80;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(13,20,31,.94);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:8px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+    backdrop-filter:blur(12px);
+}
+.sound-btn{
+    border:1px solid #31516b;
+    background:#111b29;
+    color:#eaf3f8;
+    border-radius:10px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:700;
+}
+.sound-btn:hover{background:#172536}
+.sound-volume{
+    width:82px;
+    accent-color:var(--green);
+}
+.sound-label{
+    font-size:10px;
+    color:var(--muted);
+    white-space:nowrap;
+}
+
 </style>
 </head>
 
@@ -3899,6 +3936,205 @@ function realTimeLoop(){
 }
 
 
+
+/* =========================================================
+   ÇİFTLİK ORTAM SESİ
+   Harici müzik dosyası gerektirmez. Web Audio API ile
+   düşük seviyeli huzurlu fon + hafif çiftlik ambiyansı üretir.
+========================================================= */
+
+let farmAudio = null;
+
+function createFarmNoiseBuffer(ctx){
+    const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let last = 0;
+
+    for(let i=0;i<data.length;i++){
+        const white = Math.random()*2-1;
+        last = last * 0.985 + white * 0.015;
+        data[i] = last * 0.55;
+    }
+    return buffer;
+}
+
+function startFarmAmbience(){
+    if(farmAudio && farmAudio.ctx.state !== "closed"){
+        farmAudio.ctx.resume().catch(()=>{});
+        return true;
+    }
+
+    try{
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if(!AudioCtx) return false;
+
+        const ctx = new AudioCtx();
+
+        const master = ctx.createGain();
+        master.gain.value = Number(localStorage.getItem("ciftlikSesSeviyesi") || 0.18);
+        master.connect(ctx.destination);
+
+        /* Hafif arka plan akoru */
+        const musicGain = ctx.createGain();
+        musicGain.gain.value = 0.035;
+        musicGain.connect(master);
+
+        const notes = [196, 246.94, 293.66, 392];
+        const musicOscillators = notes.map((freq, index)=>{
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = index % 2 === 0 ? "sine" : "triangle";
+            osc.frequency.value = freq;
+            gain.gain.value = index === 0 ? 0.8 : 0.45;
+            osc.connect(gain);
+            gain.connect(musicGain);
+            osc.start();
+            return osc;
+        });
+
+        /* Rüzgâr/ahır ortamı */
+        const noise = ctx.createBufferSource();
+        noise.buffer = createFarmNoiseBuffer(ctx);
+        noise.loop = true;
+
+        const noiseFilter = ctx.createBiquadFilter();
+        noiseFilter.type = "lowpass";
+        noiseFilter.frequency.value = 850;
+
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.value = 0.035;
+
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(master);
+        noise.start();
+
+        /* Çok hafif kuş cıvıltısı benzeri kısa tonlar */
+        const birdTimer = setInterval(()=>{
+            if(!farmAudio || ctx.state === "closed") return;
+
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(1800 + Math.random()*700, now);
+            osc.frequency.exponentialRampToValueAtTime(
+                2600 + Math.random()*700,
+                now + 0.16
+            );
+
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(0.018, now + 0.025);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.20);
+
+            osc.connect(gain);
+            gain.connect(master);
+            osc.start(now);
+            osc.stop(now + 0.22);
+        }, 9000 + Math.random()*5000);
+
+        farmAudio = {
+            ctx,
+            master,
+            musicOscillators,
+            noise,
+            birdTimer
+        };
+
+        ctx.resume().catch(()=>{});
+        updateSoundUI(true);
+        return true;
+    }catch(error){
+        console.warn("Çiftlik sesi başlatılamadı:", error);
+        return false;
+    }
+}
+
+function stopFarmAmbience(){
+    if(!farmAudio) return;
+
+    try{
+        clearInterval(farmAudio.birdTimer);
+        farmAudio.musicOscillators.forEach(osc=>{
+            try{ osc.stop(); }catch(e){}
+        });
+        try{ farmAudio.noise.stop(); }catch(e){}
+        farmAudio.ctx.close().catch(()=>{});
+    }catch(error){}
+
+    farmAudio = null;
+    updateSoundUI(false);
+}
+
+function setFarmVolume(value){
+    const volume = Math.max(0, Math.min(100, Number(value))) / 100;
+    localStorage.setItem("ciftlikSesSeviyesi", volume);
+
+    if(farmAudio){
+        farmAudio.master.gain.setTargetAtTime(
+            volume,
+            farmAudio.ctx.currentTime,
+            0.05
+        );
+    }
+
+    const label = document.getElementById("soundLabel");
+    if(label){
+        label.textContent = volume === 0
+            ? "🔇 Ses kapalı"
+            : `🔊 Çiftlik sesi %${Math.round(volume*100)}`;
+    }
+}
+
+function updateSoundUI(active){
+    const button = document.getElementById("soundToggle");
+    const label = document.getElementById("soundLabel");
+
+    if(!button || !label) return;
+
+    button.textContent = active ? "🔇 Sesi Kapat" : "🔊 Sesi Başlat";
+    label.textContent = active
+        ? "🔊 Çiftlik ambiyansı"
+        : "🔇 Ses kapalı";
+}
+
+function setupFarmSound(){
+    const volume = Number(localStorage.getItem("ciftlikSesSeviyesi") || 0.18);
+    const slider = document.getElementById("soundVolume");
+
+    if(slider){
+        slider.value = Math.round(volume * 100);
+        slider.addEventListener("input", e=>setFarmVolume(e.target.value));
+    }
+
+    document.getElementById("soundToggle")?.addEventListener("click", ()=>{
+        if(farmAudio){
+            stopFarmAmbience();
+        }else{
+            startFarmAmbience();
+        }
+    });
+
+    /* Tarayıcı ses otomatik oynatmayı engellerse,
+       ilk dokunuş/tıklama sonrası sesi başlatmayı dener. */
+    const unlock = ()=>{
+        if(!farmAudio){
+            startFarmAmbience();
+        }
+        window.removeEventListener("pointerdown", unlock);
+        window.removeEventListener("keydown", unlock);
+    };
+
+    window.addEventListener("pointerdown", unlock, {once:true});
+    window.addEventListener("keydown", unlock, {once:true});
+
+    /* Sayfa açılışında dene. Tarayıcı izin vermezse
+       yukarıdaki ilk kullanıcı etkileşimi devreye girer. */
+    startFarmAmbience();
+}
+
+
 /* =========================================================
    ANA MENÜ
 ========================================================= */
@@ -4050,6 +4286,7 @@ function boot(){
 
 
                             setupAppMenu();
+                            setupFarmSound();
 
                             render();
 
