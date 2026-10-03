@@ -5075,14 +5075,9 @@ function realTimeLoop(){
         now-lastTick;
 
 
-    const gameMinutes=
-        Math.floor(
-            elapsed/
-            (
-                REAL_SECONDS_PER_GAME_MINUTE*
-                1000
-            )
-        );
+    const gameMinutes = Math.floor(
+        elapsed / (REAL_SECONDS_PER_GAME_MINUTE * 1000 / gameSpeedMultiplier)
+    );
 
 
     if(!timePaused && gameMinutes>0){
