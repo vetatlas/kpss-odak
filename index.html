@@ -365,6 +365,11 @@ select:focus{
     .quick-status b{text-align:left}
 }
 
+
+/* Yeni başlangıç: yükleme ekranı yok. */
+.boot{display:none!important;}
+#systemMessageBox{animation:messageIn .45s ease-out both;}
+@keyframes messageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 
@@ -485,6 +490,16 @@ select:focus{
             <div class="text-xs text-slate-500 tracking-[2px] uppercase">Çiftlik Kontrol Merkezi</div>
             <h2 class="text-2xl md:text-3xl font-black mt-1">Bugünkü Çiftlik Durumu</h2>
             <p class="text-sm text-slate-500 mt-1">Sürü, yem, süt, kasa ve bir sonraki sağım tek ekranda.</p>
+    <div id="systemMessageBox" class="mt-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
+        <div class="flex items-start gap-3">
+            <div class="text-2xl">📩</div>
+            <div class="min-w-0 flex-1">
+                <div id="systemMessageTitle" class="font-bold text-amber-300">Sistem Mesajı</div>
+                <div id="systemMessageText" class="text-sm text-slate-300 mt-1"></div>
+                <button id="systemMessageAction" type="button" class="nav-btn mt-3 text-green-300">🐄 İlk İneği Satın Al</button>
+            </div>
+        </div>
+    </div>
         </div>
         <div class="dashboard-clock">
             <div class="text-xs text-slate-500">Çiftlik Saati</div>
@@ -555,7 +570,7 @@ select:focus{
         </div>
 
         <button onclick="addCow()" class="nav-btn text-green-400">
-            + Hayvan Ekle
+            🐄 Hayvan Satın Al • 25.000 ₺
         </button>
 
     </div>
@@ -1395,9 +1410,13 @@ const FEED_PRICE = 19.07;
 
 const MILK_PRICE = 24.30;
 
-const INITIAL_MONEY = 150000;
+const SAVE_VERSION = 2;
+const STARTING_DONATION = 35000;
+const COW_PURCHASE_PRICE = 25000;
 
-const INITIAL_FEED = 1200;
+const INITIAL_MONEY = 0;
+
+const INITIAL_FEED = 0;
 
 
 /* =========================================================
@@ -1406,6 +1425,7 @@ const INITIAL_FEED = 1200;
 
 let game = {
 
+    saveVersion:SAVE_VERSION,
     day:1,
 
     minute:360,
@@ -1434,6 +1454,9 @@ let game = {
     lastAutomaticMilkingHour:-1,
 
     accountingLedger:[],
+
+    messages:[],
+    onboardingStep:0,
 
     dataSource:{
         milkPrice:"USK 2026: 24.30 TL/L",
@@ -1602,21 +1625,58 @@ function createCow(id){
 ========================================================= */
 
 function createInitialHerd(){
-
     game.cows=[];
+}
 
-    for(
-        let i=1;
-        i<=24;
-        i++
-    ){
 
-        game.cows.push(
-            createCow(i)
-        );
+/* =========================================================
+   YENİ ÇİFTLİK
+========================================================= */
 
-    }
+function startFreshFarm(){
+    game.saveVersion=SAVE_VERSION;
+    game.day=1;
+    game.minute=360;
+    game.money=0;
+    game.feed=0;
+    game.totalMilk=0;
+    game.todayMilk=0;
+    game.income=0;
+    game.expenses=0;
+    game.milkingStrategy=3;
+    game.pendingMilkingStrategy=null;
+    game.lastRealTime=Date.now();
+    game.lastMilking="";
+    game.lastMilkingSlot="";
+    game.lastAutomaticMilkingDay=0;
+    game.lastAutomaticMilkingHour=-1;
+    game.accountingLedger=[];
+    game.messages=[];
+    game.onboardingStep=1;
+    game.cows=[];
+    updateRationAnalysis();
 
+    /* Oyunun hikâyesi sistem mesajıyla başlar. */
+    game.money=STARTING_DONATION;
+    game.income=STARTING_DONATION;
+    game.accountingLedger.unshift({
+        day:1,
+        time:"06:00",
+        type:"Gelir",
+        category:"Başlangıç Bağışı",
+        amount:STARTING_DONATION
+    });
+
+    game.messages.unshift({
+        id:Date.now(),
+        day:1,
+        time:"06:00",
+        title:"Sistem Desteği",
+        text:"Hoş geldin çiftlik sahibi. Çiftliğini sıfırdan kurabilmen için sistem hesabına 35.000 ₺ başlangıç bağışı yaptı. İlk hedefin: ilk ineğini satın almak ve küçük sürünü adım adım büyütmek."
+    });
+
+    localStorage.removeItem("ciftlikLogs");
+    addLog("🎁 Sistem bağışı hesabına yatırıldı: 35.000 ₺");
 }
 
 
@@ -1650,10 +1710,8 @@ function loadGame(){
 
     if(!saved){
 
-        createInitialHerd();
-
+        startFreshFarm();
         updateRationAnalysis();
-
         return;
 
     }
@@ -1662,6 +1720,14 @@ function loadGame(){
 
         const old =
             JSON.parse(saved);
+
+        /* Eski 24 hayvanlı kayıt bu sürümde geçerli değil: çiftlik yeniden kuruluyor. */
+        if(old.saveVersion!==SAVE_VERSION){
+            localStorage.removeItem("ciftlikSimulasyonu");
+            startFreshFarm();
+            updateRationAnalysis();
+            return;
+        }
 
         game={
             ...game,
@@ -3007,23 +3073,32 @@ function setMilkingStrategy(times){
 
 function addCow(){
 
-    const id =
-        game.cows.length+
-        1;
+    if(game.money<COW_PURCHASE_PRICE){
+        addLog(`⚠ İlk hayvan için ${COW_PURCHASE_PRICE.toLocaleString("tr-TR")} ₺ gerekiyor.`);
+        return;
+    }
 
+    const id=game.cows.length+1;
 
-    game.cows.push(
-        createCow(id)
-    );
+    game.money-=COW_PURCHASE_PRICE;
+    game.expenses+=COW_PURCHASE_PRICE;
+    recordAccounting("Gider","Hayvan Alımı",COW_PURCHASE_PRICE);
 
+    game.cows.push(createCow(id));
 
-    addLog(
-        `Sürüye İnek ${id} eklendi.`
-    );
+    game.onboardingStep=Math.max(game.onboardingStep||1,2);
 
+    game.messages.unshift({
+        id:Date.now(),
+        day:game.day,
+        time:formatGameTime(),
+        title:"Hayvan Alımı",
+        text:`İnek ${id} çiftliğine geldi. Şimdi ona düzenli yem ve bakım sağlayarak sürünü yavaş yavaş büyütebilirsin.`
+    });
+    game.messages=game.messages.slice(0,20);
 
+    addLog(`🐄 İnek ${id} satın alındı. Maliyet: ${COW_PURCHASE_PRICE.toLocaleString("tr-TR")} ₺`);
     render();
-
     saveGame();
 
 }
@@ -3616,6 +3691,52 @@ function updateFarmAtmosphere(){
    ANA RENDER
 ========================================================= */
 
+function animateDashboardNumber(id,target,formatter,duration=650){
+    const el=document.getElementById(id);
+    if(!el) return;
+    const value=Number(target)||0;
+    if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+        el.textContent=formatter(value);
+        return;
+    }
+    const token=(Number(el.dataset.animToken||0)+1);
+    el.dataset.animToken=token;
+    const start=Number(el.dataset.numericValue||0);
+    const begin=performance.now();
+    const ease=t=>1-Math.pow(1-t,3);
+
+    const frame=now=>{
+        if(Number(el.dataset.animToken)!==token) return;
+        const p=Math.min(1,(now-begin)/duration);
+        const current=start+(value-start)*ease(p);
+        el.textContent=formatter(current);
+        if(p<1) requestAnimationFrame(frame);
+        else el.dataset.numericValue=String(value);
+    };
+    requestAnimationFrame(frame);
+}
+
+function renderOnboarding(){
+    const box=document.getElementById("systemMessageBox");
+    const title=document.getElementById("systemMessageTitle");
+    const text=document.getElementById("systemMessageText");
+    const action=document.getElementById("systemMessageAction");
+    if(!box||!title||!text||!action) return;
+
+    const msg=game.messages?.[0];
+    if(msg){
+        title.textContent=msg.title;
+        text.textContent=msg.text;
+        box.classList.remove("hidden");
+    }
+
+    action.textContent=game.cows.length===0
+        ? `🐄 İlk İneği Satın Al • ${COW_PURCHASE_PRICE.toLocaleString("tr-TR")} ₺`
+        : "🐄 Bir İnek Daha Al";
+    action.disabled=game.money<COW_PURCHASE_PRICE;
+    action.onclick=()=>addCow();
+}
+
 function render(){
 
     updateFarmAtmosphere();
@@ -3660,42 +3781,19 @@ function render(){
         `${dayProgress.toFixed(1)}%`;
 
 
-    document.getElementById(
-        "herdKpi"
-    ).textContent =
-        game.cows.length;
+    animateDashboardNumber("herdKpi",game.cows.length,v=>Math.round(v).toLocaleString("tr-TR"));
 
 
-    document.getElementById(
-        "milkKpi"
-    ).textContent =
-        `${game.todayMilk.toFixed(1)} L`;
+    animateDashboardNumber("milkKpi",game.todayMilk,v=>`${v.toFixed(1)} L`);
 
 
-    document.getElementById(
-        "totalMilk"
-    ).textContent =
-        `${game.totalMilk.toFixed(1)} L`;
+    animateDashboardNumber("totalMilk",game.totalMilk,v=>`${v.toFixed(1)} L`);
 
 
-    document.getElementById(
-        "feedKpi"
-    ).textContent =
-        `${Math.max(
-            0,
-            game.feed
-        ).toFixed(0)} kg`;
+    animateDashboardNumber("feedKpi",Math.max(0,game.feed),v=>`${v.toFixed(0)} kg`);
 
 
-    document.getElementById(
-        "moneyKpi"
-    ).textContent =
-        `${game.money.toLocaleString(
-            "tr-TR",
-            {
-                maximumFractionDigits:0
-            }
-        )} ₺`;
+    animateDashboardNumber("moneyKpi",game.money,v=>`${Math.round(v).toLocaleString("tr-TR")} ₺`);
 
 
     const averageUdder =
@@ -3788,6 +3886,8 @@ function render(){
         dashboardNet.textContent=`${netNow.toLocaleString("tr-TR",{maximumFractionDigits:0})} ₺`;
         dashboardNet.className=netNow>=0 ? "green" : "red";
     }    
+    renderOnboarding();
+
     const dashboardAlerts=document.getElementById("dashboardAlerts");
     const alertCount=document.getElementById("alertCount");
     if(dashboardAlerts && alertCount){
@@ -4359,6 +4459,7 @@ function initFarmApp(){
         processAutomaticMilking();
         realTimeLoop();
         addLog("Çiftlik Simülasyonu başlatıldı.");
+        saveGame();
         farmAppInitialized=true;
         return true;
     }catch(error){
@@ -4371,80 +4472,10 @@ function initFarmApp(){
 }
 
 function boot(){
-    const lines=[
-        "Biyolojik motor başlatılıyor...",
-        "Sürü yönetim sistemi yükleniyor...",
-        "Laktasyon modeli hazırlanıyor...",
-        "DMI ve rasyon motoru hazırlanıyor...",
-        "Rumen sağlığı kontrol ediliyor...",
-        "Ekonomik motor hazırlanıyor...",
-        "Çiftlik bağlantısı kuruldu.",
-        "SİSTEM HAZIR."
-    ];
-
-    const bootText=document.getElementById("bootText");
-    const progress=document.getElementById("bootProgress");
-    const status=document.getElementById("bootStatus");
-    const enter=document.getElementById("enterFarmButton");
-
-    let index=0;
-
-    const writeLine=()=>{
-        if(index<lines.length){
-            bootText.innerHTML+=`<div class="boot-line">> ${lines[index]}</div>`;
-            index++;
-            if(progress) progress.style.width=`${Math.round(index/lines.length*100)}%`;
-            if(index===lines.length && status) status.textContent="Çiftlik hazır • Giriş bekleniyor";
-            if(status) status.textContent=index<lines.length ? "Motorlar yükleniyor..." : "Hazır";
-            setTimeout(writeLine,95);
-        }
-    };
-
-    writeLine();
-
-    /* Giriş ekranı sonsuza kadar beklemez: kullanıcı isterse hemen girebilir. */
-    setTimeout(()=>{
-        if(enter){
-            enter.classList.remove("hidden");
-            enter.focus();
-        }
-    },500);
-
-    const enterFarm=()=>{
-        const boot=document.getElementById("bootScreen");
-
-        /* Önce uygulamayı aç; ses yalnızca kullanıcı tıklarsa başlasın. */
-        initFarmApp();
-
-        boot?.animate(
-            [
-                {opacity:1,transform:"scale(1)"},
-                {opacity:0,transform:"scale(1.025)"}
-            ],
-            {duration:450,easing:"ease-in",fill:"forwards"}
-        );
-
-        setTimeout(()=>boot?.remove(),430);
-    };
-
-    enter?.addEventListener("click",()=>{
-        enterFarm();
-        startFarmAmbience();
-    },{once:true});
-
-    /*
-      ACİL GÜVENLİK GEÇİŞİ:
-      Boot ekranı herhangi bir nedenle takılırsa 1.5 saniye sonra
-      uygulama otomatik açılır. Böylece kullanıcı giriş ekranında kalmaz.
-    */
-    setTimeout(()=>{
-        if(!farmAppInitialized){
-            enterFarm();
-        }
-    },1500);
+    /* Eski terminal/yükleme ekranı kaldırıldı: çiftlik doğrudan açılır. */
+    document.getElementById("bootScreen")?.remove();
+    initFarmApp();
 }
-
-
 
 
 /* =========================================================
