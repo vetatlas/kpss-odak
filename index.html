@@ -4120,184 +4120,95 @@ function createFarmNoiseBuffer(ctx){
 }
 
 /* =========================================================
-   DOĞAL ÇİFTLİK SES SİSTEMİ
-   Sentetik düşük frekans uğultusu kaldırıldı.
+   GERÇEK KAYITLI ÇİFTLİK SES SİSTEMİ
+   Sentetik osilatörler tamamen kaldırıldı.
+   Kaynaklar: Orange Free Sounds
+   Lisans: CC BY 4.0 (ticari kullanım serbest, atıf gerekir)
 ========================================================= */
 
-function playNaturalTone(ctx,master,frequency,duration,volume=0.025){
-    const now=ctx.currentTime;
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-    const filter=ctx.createBiquadFilter();
+const FARM_AUDIO_SOURCES={
+    cow:"https://www.orangefreesounds.com/wp-content/uploads/2014/08/Cow-moo.mp3",
+    birds:"https://www.orangefreesounds.com/wp-content/uploads/2016/05/Chirping-birds.mp3",
+    rooster:"https://www.orangefreesounds.com/wp-content/uploads/2015/02/Rooster-sound-mp3.mp3"
+};
 
-    osc.type="sine";
-    osc.frequency.setValueAtTime(frequency,now);
-    filter.type="bandpass";
-    filter.frequency.value=Math.max(300,frequency);
-    filter.Q.value=1.1;
-
-    gain.gain.setValueAtTime(0.0001,now);
-    gain.gain.linearRampToValueAtTime(volume,now+0.025);
-    gain.gain.exponentialRampToValueAtTime(0.0001,now+duration);
-
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(master);
-    osc.start(now);
-    osc.stop(now+duration+0.03);
+function createRealFarmAudio(src,volume=1,loop=false){
+    const audio=new Audio(src);
+    audio.preload="auto";
+    audio.volume=volume;
+    audio.loop=loop;
+    audio.crossOrigin="anonymous";
+    return audio;
 }
 
-/* Daha yumuşak, nefesli bir inek çağrısı; düşük uğultu yok. */
-function playCowMoo(ctx,master){
-    const now=ctx.currentTime;
-    const osc=ctx.createOscillator();
-    const harmonic=ctx.createOscillator();
-    const gain=ctx.createGain();
-    const filter=ctx.createBiquadFilter();
+function playRealFarmSound(name,delay=0){
+    if(!farmAudio || !farmAudio.enabled) return;
+    const audio=farmAudio[name];
+    if(!audio) return;
 
-    const base=105+Math.random()*28;
-    osc.type="triangle";
-    harmonic.type="sine";
-    osc.frequency.setValueAtTime(base,now);
-    osc.frequency.linearRampToValueAtTime(base*.78,now+.48);
-    osc.frequency.linearRampToValueAtTime(base*.92,now+1.0);
-    harmonic.frequency.setValueAtTime(base*2.01,now);
-    harmonic.frequency.linearRampToValueAtTime(base*1.72,now+1.0);
-
-    filter.type="lowpass";
-    filter.frequency.value=900;
-    filter.Q.value=.7;
-
-    gain.gain.setValueAtTime(.0001,now);
-    gain.gain.linearRampToValueAtTime(.055,now+.10);
-    gain.gain.setValueAtTime(.045,now+.48);
-    gain.gain.exponentialRampToValueAtTime(.0001,now+1.12);
-
-    osc.connect(filter);
-    harmonic.connect(filter);
-    filter.connect(gain);
-    gain.connect(master);
-    osc.start(now);
-    harmonic.start(now);
-    osc.stop(now+1.15);
-    harmonic.stop(now+1.15);
-}
-
-function playCalfCall(ctx,master){
-    const now=ctx.currentTime;
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-    osc.type="triangle";
-    osc.frequency.setValueAtTime(300+Math.random()*35,now);
-    osc.frequency.linearRampToValueAtTime(220+Math.random()*25,now+.42);
-    gain.gain.setValueAtTime(.0001,now);
-    gain.gain.linearRampToValueAtTime(.035,now+.06);
-    gain.gain.exponentialRampToValueAtTime(.0001,now+.52);
-    osc.connect(gain);
-    gain.connect(master);
-    osc.start(now);
-    osc.stop(now+.55);
-}
-
-function playBirdCall(ctx,master){
-    const now=ctx.currentTime;
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-    osc.type="sine";
-    osc.frequency.setValueAtTime(1900+Math.random()*400,now);
-    osc.frequency.linearRampToValueAtTime(2800+Math.random()*450,now+.11);
-    osc.frequency.linearRampToValueAtTime(2100+Math.random()*350,now+.24);
-    gain.gain.setValueAtTime(.0001,now);
-    gain.gain.linearRampToValueAtTime(.022,now+.02);
-    gain.gain.exponentialRampToValueAtTime(.0001,now+.28);
-    osc.connect(gain);
-    gain.connect(master);
-    osc.start(now);
-    osc.stop(now+.3);
-}
-
-function playRooster(ctx,master){
-    /* Tek keskin osilatör yerine kısa, üç parçalı ötüş. */
-    const now=ctx.currentTime;
-    [0,0.16,0.31].forEach((offset,index)=>{
-        const osc=ctx.createOscillator();
-        const gain=ctx.createGain();
-        osc.type="triangle";
-        const f=620-index*55+Math.random()*35;
-        osc.frequency.setValueAtTime(f,now+offset);
-        osc.frequency.linearRampToValueAtTime(f*1.28,now+offset+.08);
-        gain.gain.setValueAtTime(.0001,now+offset);
-        gain.gain.linearRampToValueAtTime(.018,now+offset+.025);
-        gain.gain.exponentialRampToValueAtTime(.0001,now+offset+.16);
-        osc.connect(gain);
-        gain.connect(master);
-        osc.start(now+offset);
-        osc.stop(now+offset+.18);
-    });
-}
-
-function playWater(ctx,master){
-    const count=2+Math.floor(Math.random()*3);
-    for(let i=0;i<count;i++){
-        setTimeout(()=>{
-            if(!farmAudio || ctx.state==="closed") return;
-            playNaturalTone(ctx,master,1050+Math.random()*500,.11,.012);
-        },i*130);
+    if(delay){
+        setTimeout(()=>playRealFarmSound(name),delay);
+        return;
     }
+
+    try{
+        audio.currentTime=0;
+        audio.volume=Math.max(0,Math.min(1,farmAudio.masterVolume*(name==="birds"?.32:1)));
+        const promise=audio.play();
+        if(promise && promise.catch) promise.catch(()=>{});
+    }catch(error){}
+}
+
+function scheduleRealFarmSound(name,min,max){
+    if(!farmAudio || !farmAudio.enabled) return;
+
+    const timer=setTimeout(()=>{
+        if(!farmAudio || !farmAudio.enabled) return;
+        playRealFarmSound(name);
+        scheduleRealFarmSound(name,min,max);
+    },min+Math.random()*(max-min));
+
+    farmAudio.timers.push(timer);
 }
 
 function startFarmAmbience(){
-    if(farmAudio && farmAudio.ctx.state!=="closed"){
-        farmAudio.ctx.resume().then(()=>updateSoundUI(true)).catch(()=>{});
+    if(farmAudio && farmAudio.enabled){
+        updateSoundUI(true);
         return true;
     }
 
     try{
-        const AudioCtx=window.AudioContext||window.webkitAudioContext;
-        if(!AudioCtx) return false;
-
-        const ctx=new AudioCtx();
-        const master=ctx.createGain();
         const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.30);
-        master.gain.value=Math.max(0,Math.min(1,savedVolume));
-        master.connect(ctx.destination);
+        const masterVolume=Math.max(0,Math.min(1,savedVolume));
 
-        /* Çok hafif ortam sesi. Artık 52 Hz uğultu/bas motor sesi YOK. */
-        const noise=ctx.createBufferSource();
-        noise.buffer=createFarmNoiseBuffer(ctx);
-        noise.loop=true;
-        const noiseFilter=ctx.createBiquadFilter();
-        noiseFilter.type="bandpass";
-        noiseFilter.frequency.value=650;
-        noiseFilter.Q.value=.45;
-        const noiseGain=ctx.createGain();
-        noiseGain.gain.value=.012;
-        noise.connect(noiseFilter);
-        noiseFilter.connect(noiseGain);
-        noiseGain.connect(master);
-        noise.start();
+        const birds=createRealFarmAudio(FARM_AUDIO_SOURCES.birds,.32,true);
+        const cow=createRealFarmAudio(FARM_AUDIO_SOURCES.cow,1,false);
+        const rooster=createRealFarmAudio(FARM_AUDIO_SOURCES.rooster,1,false);
 
-        const timers=[];
-        const schedule=(fn,min,max)=>{
-            const timer=setTimeout(function run(){
-                if(!farmAudio || ctx.state==="closed") return;
-                fn();
-                timers.push(setTimeout(run,min+Math.random()*(max-min)));
-            },min+Math.random()*(max-min));
-            timers.push(timer);
+        farmAudio={
+            enabled:true,
+            masterVolume,
+            birds,
+            cow,
+            rooster,
+            timers:[]
         };
 
-        schedule(()=>playCowMoo(ctx,master),9000,18000);
-        schedule(()=>playCalfCall(ctx,master),14000,26000);
-        schedule(()=>playBirdCall(ctx,master),5000,11000);
-        schedule(()=>playWater(ctx,master),22000,40000);
-        schedule(()=>playRooster(ctx,master),60000,120000);
+        /*
+          Kuş kaydı sürekli çok düşük seviyede arka plan olarak döner.
+          İnek ve horoz tamamen gerçek saha kayıtlarıdır.
+        */
+        birds.play().catch(()=>{
+            /* Tarayıcı kullanıcı etkileşimi bekliyorsa butona tekrar basılabilir. */
+        });
 
-        farmAudio={ctx,master,noise,timers};
-        ctx.resume().then(()=>updateSoundUI(true)).catch(()=>updateSoundUI(false));
+        scheduleRealFarmSound("cow",12000,24000);
+        scheduleRealFarmSound("rooster",90000,180000);
+
+        updateSoundUI(true);
         return true;
     }catch(error){
-        console.warn("Çiftlik sesi başlatılamadı:",error);
+        console.warn("Gerçek çiftlik sesleri başlatılamadı:",error);
         return false;
     }
 }
@@ -4307,9 +4218,15 @@ function stopFarmAmbience(){
 
     try{
         (farmAudio.timers||[]).forEach(timer=>clearTimeout(timer));
-        try{farmAudio.noise.stop();}catch(e){}
-        try{farmAudio.barnOsc.stop();}catch(e){}
-        farmAudio.ctx.close().catch(()=>{});
+        ["birds","cow","rooster"].forEach(name=>{
+            const audio=farmAudio[name];
+            if(audio){
+                try{
+                    audio.pause();
+                    audio.currentTime=0;
+                }catch(e){}
+            }
+        });
     }catch(error){}
 
     farmAudio=null;
@@ -4321,7 +4238,10 @@ function setFarmVolume(value){
     localStorage.setItem("ciftlikSesSeviyesi",volume);
 
     if(farmAudio){
-        farmAudio.master.gain.setTargetAtTime(volume,farmAudio.ctx.currentTime,.05);
+        farmAudio.masterVolume=volume;
+        if(farmAudio.birds) farmAudio.birds.volume=volume*.32;
+        if(farmAudio.cow) farmAudio.cow.volume=volume;
+        if(farmAudio.rooster) farmAudio.rooster.volume=volume;
     }
 
     const label=document.getElementById("soundLabel");
