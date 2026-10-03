@@ -2912,9 +2912,9 @@ function processReproduction(cow){
         if(!state[id]) state[id]={};
         if(!state[id].heat) {
             addNotification("Otomatik Kızgınlık",cow.name+" için yeni kızgınlık dönemi başladı. Tohumlama planlanabilir.","warning",true);
+            addAnimalHealthRecord(cow,"Üreme","Otomatik kızgınlık tespit edildi");
             state[id].heat=true;
         }
-        addAnimalHealthRecord(cow,"Üreme","Otomatik kızgınlık tespit edildi");
     }else{
         if(!state[id]) state[id]={};
         state[id].heat=false;
