@@ -1606,6 +1606,28 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 <!-- FİNANS -->
 
 <section class="glass p-5" data-menu-section="muhasebe">
+    <div class="flex justify-between items-center mb-4">
+        <div><h2 class="font-bold">🏭 Süt İşleme Tesisi</h2><p class="text-xs text-slate-500 mt-1">Çiğ sütü katma değerli ürüne dönüştür.</p></div>
+        <span id="rawMilkStock" class="text-xs font-bold text-blue-300">0 L</span>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <div class="metric"><div class="text-xs text-slate-500">Çiğ Süt</div><div id="rawMilkKpi" class="font-bold">0 L</div></div>
+        <div class="metric"><div class="text-xs text-slate-500">Pastörize</div><div id="pasteurizedMilkStock" class="font-bold">0 L</div></div>
+        <div class="metric"><div class="text-xs text-slate-500">Yoğurt</div><div id="yogurtStock" class="font-bold">0 kg</div></div>
+        <div class="metric"><div class="text-xs text-slate-500">Peynir</div><div id="cheeseStock" class="font-bold">0 kg</div></div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-2">
+        <button onclick="processMilk('pasteurizedMilk')" class="nav-btn">🥛 Pastörize Et</button>
+        <button onclick="processMilk('yogurt')" class="nav-btn">🥣 Yoğurt Üret</button>
+        <button onclick="processMilk('cheese')" class="nav-btn">🧀 Peynir Üret</button>
+        <button onclick="sellRawMilk()" class="nav-btn text-blue-300">💧 Çiğ Sütü Sat</button>
+        <button onclick="sellProcessedMilk('pasteurizedMilk')" class="nav-btn text-green-300">🥛 Pastörize Sütü Sat</button>
+        <button onclick="sellProcessedMilk('yogurt')" class="nav-btn text-green-300">🥣 Yoğurdu Sat</button>
+        <button onclick="sellProcessedMilk('cheese')" class="nav-btn text-green-300">🧀 Peyniri Sat</button>
+    </div>
+</section>
+
+<section class="glass p-5" data-menu-section="muhasebe">
 
     <h2 class="font-bold mb-4">
         💰 Finans
@@ -1995,6 +2017,9 @@ let game = {
 
     todayMilk:0,
 
+    rawMilkStock:0,
+    processedProducts:{pasteurizedMilk:0,yogurt:0,cheese:0},
+
     income:0,
 
     expenses:0,
@@ -2226,6 +2251,8 @@ function startFreshFarm(){
     game.feed=0;
     game.totalMilk=0;
     game.todayMilk=0;
+    game.rawMilkStock=0;
+    game.processedProducts={pasteurizedMilk:0,yogurt:0,cheese:0};
     game.income=0;
     game.expenses=0;
     game.milkingStrategy=3;
@@ -2329,7 +2356,9 @@ function loadGame(){
             milkingWorker:{
                 hired:false,name:"Sağım İşçisi",hireCost:2500,dailyWage:750,hiredDay:null,
                 ...(old.milkingWorker||{})
-            }
+            },
+            rawMilkStock:Number(old.rawMilkStock)||0,
+            processedProducts:{pasteurizedMilk:0,yogurt:0,cheese:0,...(old.processedProducts||{})}
         };
 
         game.pendingMilkingStrategy =
@@ -3862,24 +3891,12 @@ function milkHerd(automatic=false){
     game.totalMilk+=milk;
     game.todayMilk+=milk;
 
-    const income=milk*MILK_PRICE;
-
-    game.money+=income;
-    game.income+=income;
+    game.rawMilkStock=(Number(game.rawMilkStock)||0)+milk;
 
     game.lastMilking=formatGameTime();
     game.lastMilkingSlot=slot;
 
     game.accountingLedger=game.accountingLedger||[];
-    game.accountingLedger.unshift({
-        day:game.day,
-        time:formatGameTime(),
-        type:"Gelir",
-        category:"Süt Satışı",
-        amount:income
-    });
-    game.accountingLedger=game.accountingLedger.slice(0,30);
-
     addNotification(
         automatic ? "Otomatik Sağım Tamamlandı" : "Sağım Tamamlandı",
         `${milk.toFixed(1)} L süt elde edildi ve ${income.toFixed(0).toLocaleString("tr-TR")} ₺ gelir oluştu.`,
@@ -3888,7 +3905,7 @@ function milkHerd(automatic=false){
     );
 
     addLog(
-        `${automatic ? "Otomatik" : "Manuel"} sağım tamamlandı: ${milk.toFixed(1)} L | Gelir: ${income.toFixed(0)} ₺`
+        `${automatic ? "Otomatik" : "Manuel"} sağım tamamlandı: ${milk.toFixed(1)} L | Süt tankına alındı`
     );
 
     if(stressed>0){
@@ -3900,6 +3917,52 @@ function milkHerd(automatic=false){
 
 }
 
+
+function sellRawMilk(){
+    const liters=Math.max(0,Number(game.rawMilkStock)||0);
+    if(liters<0.1){addLog("⚠ Satılacak çiğ süt bulunmuyor.");return;}
+    const income=liters*MILK_PRICE;
+    game.rawMilkStock=0;
+    game.money+=income; game.income+=income;
+    recordAccounting("Gelir","Çiğ Süt Satışı",income);
+    addNotification("Çiğ Süt Satıldı",liters.toFixed(1)+" L çiğ süt "+income.toFixed(0)+" ₺ gelirle satıldı.","success",true);
+    render(); saveGame();
+}
+
+function processMilk(product){
+    const stock=Math.max(0,Number(game.rawMilkStock)||0);
+    game.processedProducts=game.processedProducts||{pasteurizedMilk:0,yogurt:0,cheese:0};
+    const cfg={
+        pasteurizedMilk:{name:"Pastörize Süt",need:1,output:0.98,price:32,cost:2.2},
+        yogurt:{name:"Yoğurt",need:1,output:1.02,price:55,cost:5.5},
+        cheese:{name:"Peynir",need:10,output:1,price:240,cost:18}
+    }[product];
+    if(!cfg)return;
+    if(stock<cfg.need){addLog("⚠ "+cfg.name+" için en az "+cfg.need+" L çiğ süt gerekiyor.");return;}
+    const batches=Math.floor(stock/cfg.need),used=batches*cfg.need,output=batches*cfg.output,processingCost=used*cfg.cost;
+    if(game.money<processingCost){addLog("⚠ İşleme maliyeti için "+processingCost.toFixed(0)+" ₺ gerekiyor.");return;}
+    game.rawMilkStock-=used;
+    game.processedProducts[product]+=output;
+    game.money-=processingCost; game.expenses+=processingCost;
+    recordAccounting("Gider",cfg.name+" İşleme",processingCost);
+    addNotification("Süt İşleme Tamamlandı",used.toFixed(1)+" L süt → "+output.toFixed(1)+" "+cfg.name+".","success",true);
+    addLog("🏭 "+cfg.name+": "+used.toFixed(1)+" L süt işlendi, "+output.toFixed(1)+" ürün üretildi.");
+    render(); saveGame();
+}
+
+function sellProcessedMilk(product){
+    game.processedProducts=game.processedProducts||{pasteurizedMilk:0,yogurt:0,cheese:0};
+    const cfg={pasteurizedMilk:{name:"Pastörize Süt",price:32},yogurt:{name:"Yoğurt",price:55},cheese:{name:"Peynir",price:240}}[product];
+    if(!cfg)return;
+    const qty=Math.max(0,Number(game.processedProducts[product])||0);
+    if(qty<0.01){addLog("⚠ Satılacak "+cfg.name.toLowerCase()+" bulunmuyor.");return;}
+    const income=qty*cfg.price;
+    game.processedProducts[product]=0;
+    game.money+=income; game.income+=income;
+    recordAccounting("Gelir",cfg.name+" Satışı",income);
+    addNotification(cfg.name+" Satıldı",qty.toFixed(1)+" birim ürün "+income.toFixed(0)+" ₺ gelir getirdi.","success",true);
+    render(); saveGame();
+}
 
 /* =========================================================
    SAĞIM STRATEJİSİ
@@ -5206,6 +5269,10 @@ function render(){
     if(workerStatus) workerStatus.textContent=worker.hired?"🟢 Görevde":"⚪ İşe alınmadı";
     if(workerDetail) workerDetail.textContent=worker.hired?"Programlı saatlerde otomatik sağım yapar • Günlük ücret: "+(Number(worker.dailyWage)||750).toLocaleString("tr-TR")+" ₺":"İşe alım: "+(Number(worker.hireCost)||2500).toLocaleString("tr-TR")+" ₺ • Günlük ücret: "+(Number(worker.dailyWage)||750).toLocaleString("tr-TR")+" ₺";
     if(workerBtn){workerBtn.textContent=worker.hired?"ÇALIŞIYOR":"İŞE AL";workerBtn.disabled=!!worker.hired;}
+
+    const products=game.processedProducts||{pasteurizedMilk:0,yogurt:0,cheese:0};
+    const raw=Number(game.rawMilkStock)||0;
+    [["rawMilkStock",raw.toFixed(1)+" L"],["rawMilkKpi",raw.toFixed(1)+" L"],["pasteurizedMilkStock",(Number(products.pasteurizedMilk)||0).toFixed(1)+" L"],["yogurtStock",(Number(products.yogurt)||0).toFixed(1)+" kg"],["cheeseStock",(Number(products.cheese)||0).toFixed(1)+" kg"]].forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value;});
 
     const nextMilkingElement=document.getElementById("nextMilkingText");
     if(nextMilkingElement){
