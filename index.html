@@ -3250,26 +3250,15 @@ function biologicalTick(){
 
 function calculateOfflineProgress(){
 
-    const now=Date.now();
-
-    const elapsed=Math.max(0,now-(game.lastRealTime||now));
-
-    const gameMinutes = Math.floor(elapsed / (REAL_SECONDS_PER_GAME_MINUTE * 1000 / gameSpeedMultiplier));
-
-    if(gameMinutes<1){
-        game.lastRealTime=now;
-        return;
-    }
-
     /*
-      Uygulama açılışında binlerce tick çalıştırmak ekranı kilitleyebiliyordu.
-      Offline hesap kontrollü tutuluyor; arayüz önce açılıyor.
+      Ortak dünya saatinde cihazın kapalı kaldığı süre ayrıca hesaplanmaz.
+      Açılışta doğrudan herkesle aynı dünya saatine bağlanılır.
     */
-    const processedMinutes=Math.min(gameMinutes,240);
-
-    advanceGameTime(processedMinutes);
-
-    game.lastRealTime=now;
+    const world=getSharedWorldTime();
+    game.day=world.day;
+    game.minute=world.minute;
+    game.lastRealTime=Date.now();
+}
 
     addLog(
         `Offline ilerleme: ${processedMinutes} oyun dakikası işlendi.`
@@ -4648,17 +4637,6 @@ function render(){
         "gameClock"
     ).textContent =
         `Gün ${game.day} • ${formatGameTime()}`;
-
-    document.querySelectorAll(".time-speed-btn").forEach(button=>{
-        button.classList.toggle("active-strategy", !timePaused && Number(button.dataset.speed)===gameSpeedMultiplier);
-    });
-    const timePauseBtn=document.getElementById("timePauseBtn");
-    if(timePauseBtn){
-        timePauseBtn.textContent=timePaused ? "▶" : "⏸";
-        timePauseBtn.title=timePaused ? "Zamanı başlat" : "Zamanı durdur";
-        timePauseBtn.classList.toggle("active-strategy",timePaused);
-    }
-
 
     document.querySelectorAll("#bigClock, #farmClockPanel").forEach(el=>el.textContent=formatGameTime());
 
