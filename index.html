@@ -106,6 +106,12 @@ button:active{
     color:var(--blue);
 }
 
+.active-menu{
+    border-color:var(--green)!important;
+    background:rgba(57,229,140,.08)!important;
+    color:var(--green);
+}
+
 .status-dot{
     width:9px;
     height:9px;
@@ -285,6 +291,17 @@ select:focus{
 
 </header>
 
+
+<div id="appMenu" class="sticky top-[73px] z-40 mb-5 overflow-x-auto">
+    <div class="glass p-2 flex gap-2 min-w-max">
+        <button class="nav-btn menu-btn active-menu" data-menu="genel">🏠 Genel</button>
+        <button class="nav-btn menu-btn" data-menu="surusu">🐄 Sürü</button>
+        <button class="nav-btn menu-btn" data-menu="besleme">🌾 Besleme</button>
+        <button class="nav-btn menu-btn" data-menu="sagim">🥛 Sağım</button>
+        <button class="nav-btn menu-btn" data-menu="muhasebe">🧾 Muhasebe</button>
+        <button class="nav-btn menu-btn" data-menu="gunluk">📋 Günlük</button>
+    </div>
+</div>
 
 <main class="max-w-7xl mx-auto px-4 py-6">
 
@@ -1024,6 +1041,10 @@ select:focus{
     <h2 class="font-bold mb-4">
         💰 Finans
     </h2>
+    <div class="text-[10px] text-slate-500 mb-4">
+        Fiyat referansı: Ulusal Süt Konseyi 2026. Çiğ süt 24,30 ₺/L;
+        son yayımlanan 2026 süt yemi 19,07 ₺/kg (Ağustos).
+    </div>
 
     <div class="space-y-3">
 
@@ -1168,9 +1189,9 @@ select:focus{
 
 const REAL_SECONDS_PER_GAME_MINUTE = 1.25;
 
-const FEED_PRICE = 14;
+const FEED_PRICE = 19.07;
 
-const MILK_PRICE = 18;
+const MILK_PRICE = 24.30;
 
 const INITIAL_MONEY = 150000;
 
@@ -1211,6 +1232,12 @@ let game = {
     lastAutomaticMilkingHour:-1,
 
     accountingLedger:[],
+
+    dataSource:{
+        milkPrice:"USK 2026: 24.30 TL/L",
+        feedPrice:"USK 2026: latest published milk feed 19.07 TL/kg",
+        updated:"2026-08"
+    },
 
     cows:[],
 
@@ -1894,7 +1921,7 @@ function getRationWarnings(){
     ){
 
         warnings.push(
-            "⚠ Yüksek nişasta: rumen asidozu/SARA riski artabilir."
+            "⚠ Yüksek nişasta: rumen asidozu/Subakut Rumen Asidozu (SARA) riskii artabilir."
         );
 
     }
@@ -3873,6 +3900,68 @@ function realTimeLoop(){
 
 
 /* =========================================================
+   ANA MENÜ
+========================================================= */
+
+function setupAppMenu(){
+
+    const sections=document.querySelectorAll("main section");
+
+    sections.forEach(section=>{
+
+        const title=(section.querySelector("h2")?.textContent||"").trim();
+
+        let menu="genel";
+
+        if(title.includes("Sürü")) menu="surusu";
+        else if(title.includes("Sağım")) menu="sagim";
+        else if(title.includes("Rasyon") || title.includes("Yem") || title.includes("Besleme")) menu="besleme";
+        else if(title.includes("Finans") || title.includes("Muhasebe")) menu="muhasebe";
+        else if(title.includes("Sistem Günlüğü")) menu="gunluk";
+        else if(title.includes("Çiftlik Saati")) menu="genel";
+
+        section.dataset.menuSection=menu;
+
+    });
+
+    document.querySelectorAll(".menu-btn").forEach(button=>{
+
+        button.addEventListener("click",()=>{
+
+            const target=button.dataset.menu;
+
+            document.querySelectorAll(".menu-btn").forEach(btn=>{
+                btn.classList.toggle("active-menu",btn===button);
+            });
+
+            sections.forEach(section=>{
+                section.style.display =
+                    section.dataset.menuSection===target
+                    ? ""
+                    : "none";
+            });
+
+            window.scrollTo({
+                top:0,
+                behavior:"smooth"
+            });
+
+        });
+
+    });
+
+    // İlk ekran: Genel
+    sections.forEach(section=>{
+        section.style.display =
+            section.dataset.menuSection==="genel"
+            ? ""
+            : "none";
+    });
+
+}
+
+
+/* =========================================================
    BOOT
 ========================================================= */
 
@@ -3959,6 +4048,8 @@ function boot(){
                                     "hidden-screen"
                                 );
 
+
+                            setupAppMenu();
 
                             render();
 
