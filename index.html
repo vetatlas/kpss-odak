@@ -403,6 +403,15 @@ select:focus{
             <b id="dashboardNet">0 ₺</b>
         </div>
     </div>
+    <div class="mt-4 metric">
+        <div class="flex items-center justify-between gap-3 mb-2">
+            <span class="text-xs font-bold text-slate-300">🚨 Çiftlik Uyarıları</span>
+            <span id="alertCount" class="text-[10px] text-slate-500">0 aktif</span>
+        </div>
+        <div id="dashboardAlerts" class="space-y-1 text-xs text-slate-400">
+            Sistem kontrol ediliyor...
+        </div>
+    </div>
 </section>
 
 
@@ -420,15 +429,15 @@ select:focus{
 
 <section class="glass p-5">
 
-    <div class="flex justify-between items-center mb-5">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
 
         <div>
-            <h2 class="text-lg font-bold">
-                Sürü Yönetimi
+            <div class="text-xs text-slate-500 tracking-[2px] uppercase">Sürü Merkezi</div>
+            <h2 class="text-lg font-bold mt-1">
+                🐄 Sürü Yönetimi
             </h2>
-
-            <p class="text-xs text-slate-500">
-                Hayvan bazlı biyolojik durum
+            <p class="text-xs text-slate-500 mt-1">
+                Hayvan bazlı biyolojik durum ve hızlı sağlık takibi
             </p>
         </div>
 
@@ -436,6 +445,24 @@ select:focus{
             + Hayvan Ekle
         </button>
 
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+        <div class="metric"><div class="text-[10px] text-slate-500">TOPLAM SÜRÜ</div><b id="herdTotal" class="text-lg">0</b></div>
+        <div class="metric"><div class="text-[10px] text-slate-500">NORMAL</div><b id="herdNormal" class="text-lg green">0</b></div>
+        <div class="metric"><div class="text-[10px] text-slate-500">SAĞLIK TAKİBİ</div><b id="herdHealth" class="text-lg yellow">0</b></div>
+        <div class="metric"><div class="text-[10px] text-slate-500">RUMEN ASİDOZU RİSKİ</div><b id="herdSara" class="text-lg red">0</b></div>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-2 mb-4">
+        <input id="herdSearch" type="search" placeholder="🔎 Hayvan ara (ör. İnek 12)" oninput="renderHerd()">
+        <select id="herdFilter" onchange="renderHerd()">
+            <option value="all">Tüm hayvanlar</option>
+            <option value="normal">Normal</option>
+            <option value="health">Sağlık takibi</option>
+            <option value="sara">Rumen asidozu riski</option>
+            <option value="udder">Meme doluluğu yüksek</option>
+        </select>
     </div>
 
     <div id="herdContainer"
@@ -1177,12 +1204,12 @@ select:focus{
     <div class="space-y-2">
         <button onclick="accountingBuyFeed(500)"
                 class="w-full nav-btn text-yellow-400">
-            🌾 500 kg Yem Al — 7.000 ₺
+            🌾 500 kg Yem Al — <span id="feedBuy500Price">0 ₺</span>
         </button>
 
         <button onclick="accountingBuyFeed(1000)"
                 class="w-full nav-btn text-yellow-400">
-            🌾 1.000 kg Yem Al — 14.000 ₺
+            🌾 1.000 kg Yem Al — <span id="feedBuy1000Price">0 ₺</span>
         </button>
 
         <button onclick="accountingPayment('Veterinerlik',2500)"
@@ -3299,242 +3326,143 @@ function renderRation(){
 
 function renderHerd(){
 
-    const container =
-        document.getElementById(
-            "herdContainer"
-        );
-
-
-    container.innerHTML =
-
-        game.cows.map(
-            cow=>{
-
-                let status="NORMAL";
-
-                let statusClass="green";
-
-
-                if(
-                    cow.udderFill>=100
-                ){
-
-                    status=
-                        "YÜKSEK MEME DOLULUĞU";
-
-                    statusClass=
-                        "red";
-
-                }
-
-                else if(
-                    cow.saraRisk>=50
-                ){
-
-                    status=
-                        "SARA RİSKİ";
-
-                    statusClass=
-                        "red";
-
-                }
-
-                else if(
-                    cow.health<80
-                ){
-
-                    status=
-                        "SAĞLIK TAKİBİ";
-
-                    statusClass=
-                        "yellow";
-
-                }
-
-
-                return`
-
-                <div class="cow">
-
-                    <div class="flex justify-between">
-
-                        <b>
-                            🐄 ${cow.name}
-                        </b>
-
-                        <span class="${statusClass}">
-                            ●
-                        </span>
-
-                    </div>
-
-
-                    <div class="text-xs text-slate-500 mt-2">
-                        BW: ${cow.weight} kg
-                    </div>
-
-
-                    <div class="text-xs text-slate-500">
-                        Laktasyon: ${cow.lactationDay}. gün
-                    </div>
-
-
-                    <div class="mt-3">
-
-                        <div class="flex justify-between text-xs mb-1">
-
-                            <span>
-                                Meme doluluğu
-                            </span>
-
-                            <span>
-                                ${cow.udderFill.toFixed(1)}%
-                            </span>
-
-                        </div>
-
-
-                        <div class="progress">
-
-                            <div
-                                style="
-                                width:${Math.min(
-                                    100,
-                                    cow.udderFill
-                                )}%;
-                                background:${
-                                    cow.udderFill>=100
-                                    ?
-                                    'var(--red)'
-                                    :
-                                    'var(--blue)'
-                                };
-                                ">
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="mt-3 grid grid-cols-2 gap-2">
-
-
-                        <div class="metric">
-
-                            <div class="text-xs text-slate-500">
-                                DMI
-                            </div>
-
-                            <b>
-                                ${calculateDMI(cow).toFixed(1)} kg
-                            </b>
-
-                        </div>
-
-
-                        <div class="metric">
-
-                            <div class="text-xs text-slate-500">
-                                Süt
-                            </div>
-
-                            <b class="green">
-                                ${cow.milkYield.toFixed(1)} L
-                            </b>
-
-                        </div>
-
-
-                        <div class="metric">
-
-                            <div class="text-xs text-slate-500">
-                                Rumen pH
-                            </div>
-
-                            <b class="${
-                                cow.rumenPH<5.8
-                                ?
-                                'red'
-                                :
-                                'green'
-                            }">
-
-                                ${cow.rumenPH.toFixed(2)}
-
-                            </b>
-
-                        </div>
-
-
-                        <div class="metric">
-
-                            <div class="text-xs text-slate-500">
-                                SARA
-                            </div>
-
-                            <b class="${
-                                cow.saraRisk>=50
-                                ?
-                                'red'
-                                :
-                                'green'
-                            }">
-
-                                ${cow.saraRisk.toFixed(0)}%
-
-                            </b>
-
-                        </div>
-
-
-                        <div class="metric">
-
-                            <div class="text-xs text-slate-500">
-                                BCS
-                            </div>
-
-                            <b>
-                                ${cow.bcs.toFixed(2)}
-                            </b>
-
-                        </div>
-
-
-                        <div class="metric">
-
-                            <div class="text-xs text-slate-500">
-                                Sağlık
-                            </div>
-
-                            <b class="${
-                                cow.health<80
-                                ?
-                                'red'
-                                :
-                                'green'
-                            }">
-
-                                ${cow.health.toFixed(1)}%
-
-                            </b>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="mt-3 text-xs ${statusClass}">
-                        ● ${status}
-                    </div>
-
+    const container=document.getElementById("herdContainer");
+    if(!container) return;
+
+    const search=(document.getElementById("herdSearch")?.value||"").trim().toLocaleLowerCase("tr-TR");
+    const filter=document.getElementById("herdFilter")?.value||"all";
+
+    const getStatus=cow=>{
+        if(cow.saraRisk>=50) return "sara";
+        if(cow.health<80) return "health";
+        if(cow.udderFill>=100) return "udder";
+        return "normal";
+    };
+
+    const counts={
+        normal:0,
+        health:0,
+        sara:0
+    };
+
+    game.cows.forEach(cow=>{
+        const status=getStatus(cow);
+        if(status==="normal") counts.normal++;
+        if(status==="health") counts.health++;
+        if(status==="sara") counts.sara++;
+    });
+
+    const setText=(id,value)=>{
+        const el=document.getElementById(id);
+        if(el) el.textContent=value;
+    };
+
+    setText("herdTotal",game.cows.length);
+    setText("herdNormal",counts.normal);
+    setText("herdHealth",counts.health);
+    setText("herdSara",counts.sara);
+
+    const visibleCows=game.cows.filter(cow=>{
+        const status=getStatus(cow);
+        const matchesFilter=
+            filter==="all" ||
+            (filter==="normal" && status==="normal") ||
+            (filter==="health" && status==="health") ||
+            (filter==="sara" && status==="sara") ||
+            (filter==="udder" && cow.udderFill>=100);
+
+        const name=(cow.name||"").toLocaleLowerCase("tr-TR");
+        return matchesFilter && (!search || name.includes(search));
+    });
+
+    if(!visibleCows.length){
+        container.innerHTML=`<div class="col-span-full metric text-center py-8 text-sm text-slate-500">
+            Aramaya/filtreye uyan hayvan bulunamadı.
+        </div>`;
+        return;
+    }
+
+    container.innerHTML=visibleCows.map(cow=>{
+
+        const status=getStatus(cow);
+        let statusText="NORMAL";
+        let statusClass="green";
+
+        if(status==="sara"){
+            statusText="RUMEN ASİDOZU RİSKİ";
+            statusClass="red";
+        }else if(status==="health"){
+            statusText="SAĞLIK TAKİBİ";
+            statusClass="yellow";
+        }else if(status==="udder"){
+            statusText="YÜKSEK MEME DOLULUĞU";
+            statusClass="red";
+        }
+
+        return `
+        <div class="cow">
+
+            <div class="flex justify-between">
+                <b>🐄 ${cow.name}</b>
+                <span class="${statusClass}">●</span>
+            </div>
+
+            <div class="text-xs text-slate-500 mt-2">
+                BW: ${cow.weight} kg
+            </div>
+
+            <div class="text-xs text-slate-500">
+                Laktasyon: ${cow.lactationDay}. gün
+            </div>
+
+            <div class="mt-3">
+                <div class="flex justify-between text-xs mb-1">
+                    <span>Meme doluluğu</span>
+                    <span>${cow.udderFill.toFixed(1)}%</span>
+                </div>
+                <div class="progress">
+                    <div style="width:${Math.min(100,cow.udderFill)}%;background:${cow.udderFill>=100?'var(--red)':'var(--blue)'};"></div>
+                </div>
+            </div>
+
+            <div class="mt-3 grid grid-cols-2 gap-2">
+                <div class="metric">
+                    <div class="text-xs text-slate-500">DMI</div>
+                    <b>${calculateDMI(cow).toFixed(1)} kg</b>
                 </div>
 
-                `;
+                <div class="metric">
+                    <div class="text-xs text-slate-500">Süt</div>
+                    <b class="green">${cow.milkYield.toFixed(1)} L</b>
+                </div>
 
-            }
-        ).join("");
+                <div class="metric">
+                    <div class="text-xs text-slate-500">Rumen pH</div>
+                    <b class="${cow.rumenPH<5.8?'red':'green'}">${cow.rumenPH.toFixed(2)}</b>
+                </div>
 
+                <div class="metric">
+                    <div class="text-xs text-slate-500">Rumen Asidozu Riski</div>
+                    <b class="${cow.saraRisk>=50?'red':'green'}">${cow.saraRisk.toFixed(0)}%</b>
+                </div>
+
+                <div class="metric">
+                    <div class="text-xs text-slate-500">BCS</div>
+                    <b>${cow.bcs.toFixed(2)}</b>
+                </div>
+
+                <div class="metric">
+                    <div class="text-xs text-slate-500">Sağlık</div>
+                    <b class="${cow.health<80?'red':'green'}">${cow.health.toFixed(1)}%</b>
+                </div>
+            </div>
+
+            <div class="mt-3 text-xs ${statusClass}">
+                ● ${statusText}
+            </div>
+
+        </div>`;
+    }).join("");
 }
 
 
@@ -3704,7 +3632,31 @@ function render(){
         const netNow=game.income-game.expenses;
         dashboardNet.textContent=`${netNow.toLocaleString("tr-TR",{maximumFractionDigits:0})} ₺`;
         dashboardNet.className=netNow>=0 ? "green" : "red";
+    }    
+    const dashboardAlerts=document.getElementById("dashboardAlerts");
+    const alertCount=document.getElementById("alertCount");
+    if(dashboardAlerts && alertCount){
+        const alerts=[];
+        const lowFeed=game.feed<500;
+        const criticalFeed=game.feed<200;
+        const saraCount=game.cows.filter(c=>c.saraRisk>=50).length;
+        const healthCount=game.cows.filter(c=>c.health<80).length;
+        const fullUdderCount=game.cows.filter(c=>c.udderFill>=100).length;
+
+        if(criticalFeed) alerts.push("🔴 Yem stoğu kritik: satın alma planlanmalı.");
+        else if(lowFeed) alerts.push("🟡 Yem stoğu azalıyor: yeni yem alımı değerlendirilmeli.");
+
+        if(saraCount) alerts.push(`🔴 ${saraCount} hayvanda subakut rumen asidozu (SARA) riski yüksek.`);
+        if(healthCount) alerts.push(`🟡 ${healthCount} hayvan sağlık takibinde.`);
+        if(fullUdderCount) alerts.push(`🔵 ${fullUdderCount} hayvanda meme doluluğu yüksek.`);
+
+        if(!alerts.length) alerts.push("🟢 Aktif kritik uyarı yok. Çiftlik normal izleme durumunda.");
+
+        alertCount.textContent=`${alerts.length} aktif`;
+        dashboardAlerts.innerHTML=alerts.map(item=>`<div>${item}</div>`).join("");
     }
+
+
 
 
     const herdDMI =
@@ -3809,6 +3761,11 @@ function render(){
         accountingExpenses.textContent=
             `${game.expenses.toLocaleString("tr-TR",{maximumFractionDigits:0})} ₺`;
     }
+    const feed500Price=document.getElementById("feedBuy500Price");
+    const feed1000Price=document.getElementById("feedBuy1000Price");
+    if(feed500Price) feed500Price.textContent=(500*FEED_PRICE).toLocaleString("tr-TR",{maximumFractionDigits:0})+" ₺";
+    if(feed1000Price) feed1000Price.textContent=(1000*FEED_PRICE).toLocaleString("tr-TR",{maximumFractionDigits:0})+" ₺";
+
 
     const accountingLog=document.getElementById("accountingLog");
 
@@ -4290,7 +4247,7 @@ function boot(){
 
         "Rumen pH modeli hazırlanıyor...",
 
-        "SARA risk motoru hazırlanıyor...",
+        "Subakut rumen asidozu (SARA) risk motoru hazırlanıyor...",
 
         "Ekonomik motor başlatılıyor...",
 
