@@ -1068,6 +1068,69 @@ select:focus{
 </section>
 
 
+<!-- MUHASEBE -->
+
+<section class="glass p-5">
+
+    <div class="flex justify-between items-center mb-4">
+        <div>
+            <h2 class="font-bold">
+                🧾 Muhasebe Birimi
+            </h2>
+            <p class="text-xs text-slate-500 mt-1">
+                Yem alımı ve işletme ödemeleri
+            </p>
+        </div>
+        <span class="text-xs text-slate-500">
+            Kasa kontrolü
+        </span>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="metric">
+            <div class="text-xs text-slate-500">Mevcut Kasa</div>
+            <div id="accountingBalance" class="text-xl font-bold blue">0 ₺</div>
+        </div>
+        <div class="metric">
+            <div class="text-xs text-slate-500">Toplam Gider</div>
+            <div id="accountingExpenses" class="text-xl font-bold red">0 ₺</div>
+        </div>
+    </div>
+
+    <div class="space-y-2">
+        <button onclick="accountingBuyFeed(500)"
+                class="w-full nav-btn text-yellow-400">
+            🌾 500 kg Yem Al — 7.000 ₺
+        </button>
+
+        <button onclick="accountingBuyFeed(1000)"
+                class="w-full nav-btn text-yellow-400">
+            🌾 1.000 kg Yem Al — 14.000 ₺
+        </button>
+
+        <button onclick="accountingPayment('Veterinerlik',2500)"
+                class="w-full nav-btn text-red-300">
+            🩺 Veterinerlik Ödemesi — 2.500 ₺
+        </button>
+
+        <button onclick="accountingPayment('Elektrik ve Su',1500)"
+                class="w-full nav-btn text-red-300">
+            💡 Elektrik / Su — 1.500 ₺
+        </button>
+
+        <button onclick="accountingPayment('İşçilik',3000)"
+                class="w-full nav-btn text-red-300">
+            👨‍🌾 İşçilik — 3.000 ₺
+        </button>
+    </div>
+
+    <div id="accountingLog"
+         class="mt-4 max-h-48 overflow-y-auto">
+    </div>
+
+</section>
+
+
 <!-- GÜNLÜK -->
 
 <section class="glass p-5">
@@ -1138,11 +1201,16 @@ let game = {
 
     milkingStrategy:3,
 
+    pendingMilkingStrategy:null,
+
     lastRealTime:Date.now(),
 
     lastMilking:"",
+    lastMilkingSlot:"",
     lastAutomaticMilkingDay:0,
     lastAutomaticMilkingHour:-1,
+
+    accountingLedger:[],
 
     cows:[],
 
@@ -1368,6 +1436,19 @@ function loadGame(){
             ...game,
             ...old
         };
+
+        game.pendingMilkingStrategy =
+            game.pendingMilkingStrategy===undefined
+            ? null
+            : game.pendingMilkingStrategy;
+
+        game.lastMilkingSlot =
+            game.lastMilkingSlot||"";
+
+        game.accountingLedger =
+            Array.isArray(game.accountingLedger)
+            ? game.accountingLedger
+            : [];
 
 
         /*
@@ -2348,15 +2429,8 @@ function biologicalTick(){
 
 
             const fillIncrease =
-
-                (
-                    milkPerMinute/
-                    Math.max(
-                        0.1,
-                        cow.milkPotential
-                    )
-                )*
-                100;
+                100/
+                (1440/game.milkingStrategy);
 
 
             cow.udderFill+=
@@ -2503,6 +2577,12 @@ function advanceGameTime(minutes){
 
             game.todayMilk=0;
 
+            if(game.pendingMilkingStrategy){
+                game.milkingStrategy=game.pendingMilkingStrategy;
+                game.pendingMilkingStrategy=null;
+                addLog(`Yeni gün: sağım programı ${game.milkingStrategy}X olarak aktif.`);
+            }
+
 
             game.cows.forEach(
                 cow=>{
@@ -2520,6 +2600,8 @@ function advanceGameTime(minutes){
 
         biologicalTick();
 
+        processAutomaticMilking();
+
     }
 
 }
@@ -2533,27 +2615,38 @@ function getAutomaticMilkingHours(){
 
     if(game.milkingStrategy===2) return [6,18];
 
-    if(game.milkingStrategy===3) return [6,12,18];
+    if(game.milkingStrategy===3) return [6,14,22];
 
     return [6,10,14,18,22];
 
 }
 
 
-function processAutomaticMilking(){
+function isMilkingTime(){
 
     const hour=Math.floor(game.minute/60);
     const minute=game.minute%60;
 
-    if(minute!==0) return;
+    return minute===0 &&
+           getAutomaticMilkingHours().includes(hour);
 
-    if(game.lastAutomaticMilkingDay===game.day &&
-       game.lastAutomaticMilkingHour===hour) return;
+}
 
-    if(!getAutomaticMilkingHours().includes(hour)) return;
 
-    game.lastAutomaticMilkingDay=game.day;
-    game.lastAutomaticMilkingHour=hour;
+function getMilkingSlotKey(){
+
+    return `${game.day}-${game.minute}`;
+
+}
+
+
+function processAutomaticMilking(){
+
+    if(!isMilkingTime()) return;
+
+    const slot=getMilkingSlotKey();
+
+    if(game.lastMilkingSlot===slot) return;
 
     milkHerd(true);
 
@@ -2562,123 +2655,99 @@ function processAutomaticMilking(){
 
 function milkHerd(automatic=false){
 
+    if(!isMilkingTime()){
+
+        if(!automatic){
+            addLog(`⚠ Sağım zamanı değil. Programlı saatler: ${getAutomaticMilkingHours().map(h=>String(h).padStart(2,"0")+":00").join(", ")}`);
+        }
+
+        return;
+
+    }
+
+    const slot=getMilkingSlotKey();
+
+    if(game.lastMilkingSlot===slot){
+
+        if(!automatic){
+            addLog("⚠ Bu sağım saati zaten tamamlandı.");
+        }
+
+        return;
+
+    }
+
+
     let milk=0;
-
     let stressed=0;
+    const frequency=game.milkingStrategy;
 
 
-    game.cows.forEach(
-        cow=>{
+    game.cows.forEach(cow=>{
 
-            let yieldAmount =
+        const fillRatio=Math.min(1,cow.udderFill/100);
 
-                cow.milkYield*
-                (
-                    cow.udderFill/
-                    100
-                );
+        let yieldAmount=(cow.milkYield/frequency)*fillRatio;
 
+        if(cow.udderFill>100){
 
-            if(
-                cow.udderFill>100
-            ){
+            const penalty=Math.min(
+                0.30,
+                (cow.udderFill-100)/100
+            );
 
-                const penalty =
-                    Math.min(
-                        0.30,
-                        (
-                            cow.udderFill-
-                            100
-                        )/
-                        100
-                    );
-
-
-                yieldAmount*=
-                    1-
-                    penalty;
-
-
-                stressed++;
-
-            }
-
-
-            milk+=
-                yieldAmount;
-
-
-            cow.udderFill=
-                Math.max(
-                    5,
-                    cow.udderFill-
-                    82
-                );
+            yieldAmount*=1-penalty;
+            stressed++;
 
         }
-    );
+
+        milk+=Math.max(0,yieldAmount);
+
+        cow.udderFill=Math.max(0,cow.udderFill-100);
+
+    });
 
 
-    if(
-        game.milkingStrategy===4
-    ){
-
-        milk*=1.06;
-
-    }
-
-    else if(
-        game.milkingStrategy===2
-    ){
-
-        milk*=0.94;
-
-    }
+    /*
+      Sağım sıklığına küçük ve sabit bir yönetim katsayısı.
+      2X temel, 3X hafif verim artışı, 4X robotik sistem primi.
+    */
+    if(frequency===3) milk*=1.02;
+    if(frequency===4) milk*=1.04;
 
 
-    milk=Math.max(
-        0,
-        milk
-    );
-
+    milk=Math.max(0,milk);
 
     game.totalMilk+=milk;
-
     game.todayMilk+=milk;
 
-
-    const income =
-        milk*
-        MILK_PRICE;
-
+    const income=milk*MILK_PRICE;
 
     game.money+=income;
-
     game.income+=income;
 
+    game.lastMilking=formatGameTime();
+    game.lastMilkingSlot=slot;
 
-    game.lastMilking=
-        formatGameTime();
-
+    game.accountingLedger=game.accountingLedger||[];
+    game.accountingLedger.unshift({
+        day:game.day,
+        time:formatGameTime(),
+        type:"Gelir",
+        category:"Süt Satışı",
+        amount:income
+    });
+    game.accountingLedger=game.accountingLedger.slice(0,30);
 
     addLog(
-        `Sağım tamamlandı: ${milk.toFixed(1)} L | Gelir: ${income.toFixed(0)} ₺`
+        `${automatic ? "Otomatik" : "Manuel"} sağım tamamlandı: ${milk.toFixed(1)} L | Gelir: ${income.toFixed(0)} ₺`
     );
 
-
-    if(
-        stressed>0
-    ){
-
-        addLog(
-            `⚠ ${stressed} hayvanda yüksek meme doluluğu tespit edildi.`
-        );
-
+    if(stressed>0){
+        addLog(`⚠ ${stressed} hayvanda yüksek meme doluluğu tespit edildi.`);
     }
 
-
     render();
-
     saveGame();
 
 }
@@ -2690,15 +2759,20 @@ function milkHerd(automatic=false){
 
 function setMilkingStrategy(times){
 
-    game.milkingStrategy=
-        times;
+    if(![2,3,4].includes(times)) return;
+
+    if(game.milkingStrategy===times && !game.pendingMilkingStrategy){
+        addLog(`Sağım programı zaten ${times}X.`);
+        return;
+    }
+
+    game.pendingMilkingStrategy=times;
 
     addLog(
-        `Sağım stratejisi ${times}X olarak ayarlandı.`
+        `Sağım programı ${times}X olarak seçildi. Program değişikliği yeni gün 00:00'da devreye girecek.`
     );
 
     render();
-
     saveGame();
 
 }
@@ -2736,44 +2810,71 @@ function addCow(){
    YEM AL
 ========================================================= */
 
-function buyFeed(){
+function accountingBuyFeed(amount){
 
-    const amount=500;
+    const cost=amount*FEED_PRICE;
 
-    const cost =
-        amount*
-        FEED_PRICE;
-
-
-    if(
-        game.money<
-        cost
-    ){
-
-        addLog(
-            "⚠ Yem almak için yeterli nakit yok."
-        );
-
+    if(game.money<cost){
+        addLog("⚠ Muhasebe: Yem alımı için yeterli nakit yok.");
         return;
-
     }
 
-
     game.money-=cost;
-
     game.expenses+=cost;
-
     game.feed+=amount;
 
+    recordAccounting("Gider","Yem Alımı",cost);
 
     addLog(
-        `500 kg yem satın alındı. Maliyet: ${cost.toLocaleString("tr-TR")} ₺`
+        `${amount.toLocaleString("tr-TR")} kg yem alındı. Maliyet: ${cost.toLocaleString("tr-TR")} ₺`
     );
 
+    render();
+    saveGame();
+
+}
+
+
+function buyFeed(){
+    accountingBuyFeed(500);
+}
+
+
+function accountingPayment(category,amount){
+
+    if(game.money<amount){
+        addLog(`⚠ Muhasebe: ${category} ödemesi için yeterli nakit yok.`);
+        return;
+    }
+
+    game.money-=amount;
+    game.expenses+=amount;
+
+    recordAccounting("Gider",category,amount);
+
+    addLog(
+        `Muhasebe ödemesi: ${category} — ${amount.toLocaleString("tr-TR")} ₺`
+    );
 
     render();
-
     saveGame();
+
+}
+
+
+function recordAccounting(type,category,amount){
+
+    game.accountingLedger=game.accountingLedger||[];
+
+    game.accountingLedger.unshift({
+        day:game.day,
+        time:formatGameTime(),
+        type:type,
+        category:category,
+        amount:amount
+    });
+
+    game.accountingLedger=game.accountingLedger.slice(0,30);
 
 }
 
@@ -3580,6 +3681,30 @@ function render(){
     ).textContent =
         game.lastMilking||
         "Henüz yapılmadı";
+
+    const accountingBalance=document.getElementById("accountingBalance");
+    const accountingExpenses=document.getElementById("accountingExpenses");
+
+    if(accountingBalance){
+        accountingBalance.textContent=
+            `${game.money.toLocaleString("tr-TR",{maximumFractionDigits:0})} ₺`;
+    }
+
+    if(accountingExpenses){
+        accountingExpenses.textContent=
+            `${game.expenses.toLocaleString("tr-TR",{maximumFractionDigits:0})} ₺`;
+    }
+
+    const accountingLog=document.getElementById("accountingLog");
+
+    if(accountingLog){
+        const ledger=game.accountingLedger||[];
+        accountingLog.innerHTML=ledger.slice(0,8).map(item=>
+            `<div class="log">
+                Gün ${item.day} • ${item.time} | ${item.type} | ${item.category}: ${item.amount.toLocaleString("tr-TR")} ₺
+            </div>`
+        ).join("");
+    }
 
 
     const feedStatus =
