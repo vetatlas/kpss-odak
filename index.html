@@ -380,6 +380,12 @@ select:focus{
 .animal-card-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .animal-card-action-grid .nav-btn{font-size:11px;padding:9px 7px}
 .animal-card-history{margin-top:10px;max-height:130px;overflow:auto;border-top:1px solid #1b2b3c;padding-top:8px;font-size:10px;color:#9eb1c1;line-height:1.6}
+.milk-history-chart{display:flex;align-items:flex-end;gap:7px;height:150px;padding:10px 4px 0;border-top:1px solid #1b2b3c;border-bottom:1px solid #1b2b3c;overflow-x:auto}
+.milk-chart-col{min-width:44px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px}
+.milk-chart-value{font-size:8px;color:#9eb1c1}
+.milk-chart-track{height:92px;width:22px;border-radius:8px;background:#111b29;border:1px solid #203247;display:flex;align-items:flex-end;overflow:hidden}
+.milk-chart-bar{width:100%;border-radius:7px;background:linear-gradient(180deg,var(--green),var(--blue));min-height:5px}
+.milk-chart-label{font-size:7px;color:#71869a;text-align:center;line-height:1.2}
 @media(max-width:420px){.animal-card-grid{grid-template-columns:1fr}.animal-card-actions{flex-direction:column}.animal-card-section{grid-column:auto}.animal-card-action-grid{grid-template-columns:1fr}}
 @keyframes notificationToastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes notificationToastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(10px)}}
@@ -1707,6 +1713,7 @@ function createCow(id){
         sex:"Dişi",
         purchaseDate:"",
         healthHistory:[],
+        milkHistory:[],
         reproduction:{
             status:"Laktasyonda",
             heatDay:null,
@@ -1755,7 +1762,7 @@ function startFreshFarm(){
     game.lastAutomaticMilkingHour=-1;
     game.accountingLedger=[];
     game.messages=[];
-    game.notificationState={lowFeed:false,criticalFeed:false,health:{},sara:{},udder:{}};
+    game.notificationState={lowFeed:false,criticalFeed:false,health:{},sara:{},udder:{},milkDrop:{}};
     game.onboardingStep=1;
     game.cows=[];
     updateRationAnalysis();
@@ -1970,6 +1977,8 @@ function loadGame(){
                     cow.diseaseRisk=0;
                 if(!Array.isArray(cow.healthHistory))
                     cow.healthHistory=[];
+                if(!Array.isArray(cow.milkHistory))
+                    cow.milkHistory=[];
                 if(!cow.reproduction)
                     cow.reproduction={status:"Laktasyonda"};
                 cow.reproduction={
@@ -3118,6 +3127,14 @@ function milkHerd(automatic=false){
 
         cow.udderFill=Math.max(0,cow.udderFill-100);
 
+        cow.milkHistory=Array.isArray(cow.milkHistory)?cow.milkHistory:[];
+        cow.milkHistory.unshift({
+            day:game.day,
+            time:formatGameTime(),
+            yield:Math.max(0,yieldAmount)
+        });
+        cow.milkHistory=cow.milkHistory.slice(0,30);
+
     });
 
 
@@ -3843,7 +3860,32 @@ function openAnimalCard(id){
         ["Gebelik Kontrolü",r.pregnancyCheckDay?"Gün "+r.pregnancyCheckDay:"Yapılmadı"],["Tahmini Doğum",r.expectedCalvingDay?"Gün "+r.expectedCalvingDay:"Belirlenmedi"],
         ["Son Doğum",r.lastCalvingDay?"Gün "+r.lastCalvingDay:"Kayıt yok"],["Alım Tarihi",formatAnimalBirthDate(cow.purchaseDate)]
     ];
+    const milkHistory=Array.isArray(cow.milkHistory)?cow.milkHistory:[];
+    const milkValues=milkHistory.map(item=>Number(item.yield)||0);
+    const milkLast=milkValues.length?milkValues[0]:0;
+    const milkAvg=milkValues.length?milkValues.reduce((a,b)=>a+b,0)/milkValues.length:0;
+    const milkRecent=milkValues.slice(0,6);
+    const milkPrev=milkValues.slice(1,7);
+    const milkPrevAvg=milkPrev.length?milkPrev.reduce((a,b)=>a+b,0)/milkPrev.length:0;
+    const milkDropPct=milkPrevAvg>0?((milkPrevAvg-milkLast)/milkPrevAvg)*100:0;
+    const milkBars=milkHistory.slice(0,8).reverse();
+    const maxMilk=Math.max(1,...milkBars.map(item=>Number(item.yield)||0));
+    const milkChart=milkBars.length
+        ? '<div class="milk-history-chart">'+milkBars.map(item=>{
+            const value=Math.max(0,Number(item.yield)||0);
+            const height=Math.max(8,Math.round((value/maxMilk)*100));
+            return '<div class="milk-chart-col"><div class="milk-chart-value">'+value.toFixed(1)+'</div><div class="milk-chart-track"><div class="milk-chart-bar" style="height:'+height+'%"></div></div><div class="milk-chart-label">G'+item.day+'<br>'+item.time+'</div></div>';
+        }).join("")+'</div>'
+        : '<div class="notification-empty">Henüz sağım geçmişi oluşmadı.</div>';
+
     grid.innerHTML=fields.map(([label,value])=>'<div class="animal-card-field"><div class="animal-card-field-label">'+label+'</div><div class="animal-card-field-value">'+value+'</div></div>').join("")+
+    '<div class="animal-card-section"><div class="animal-card-section-title">🥛 Süt Verimi Geçmişi</div>'+
+    '<div class="grid grid-cols-3 gap-2 mb-3">'+
+    '<div class="metric"><div class="text-[9px] text-slate-500">SON SAĞIM</div><b class="green">'+milkLast.toFixed(1)+' L</b></div>'+
+    '<div class="metric"><div class="text-[9px] text-slate-500">ORTALAMA</div><b>'+milkAvg.toFixed(1)+' L</b></div>'+
+    '<div class="metric"><div class="text-[9px] text-slate-500">DEĞİŞİM</div><b class="'+(milkDropPct>=15?'red':'green')+'">'+(milkPrevAvg>0?(milkDropPct>=0?'-':'＋')+Math.abs(milkDropPct).toFixed(1)+'%':'—')+'</b></div>'+
+    '</div>'+milkChart+
+    '<div class="animal-card-history">'+(milkHistory.length?milkHistory.slice(0,8).map(item=>'<div><b>Gün '+item.day+' • '+item.time+'</b> — '+(Number(item.yield)||0).toFixed(1)+' L</div>').join(""):'')+'</div></div>'+
     '<div class="animal-card-section"><div class="animal-card-section-title">🩺 Sağlık & Veteriner</div><div class="animal-card-action-grid">'+
     '<button type="button" class="nav-btn" onclick="recordAnimalHealth(\''+String(cow.id)+'\',\'Muayene\')">🩺 Muayene</button>'+
     '<button type="button" class="nav-btn" onclick="recordAnimalHealth(\''+String(cow.id)+'\',\'Tedavi\')">💊 Tedavi</button>'+
@@ -4105,7 +4147,8 @@ function setupNotifications(){
 
 function checkSmartNotifications(){
     if(!game.cows?.length) return;
-    game.notificationState=game.notificationState||{lowFeed:false,criticalFeed:false,health:{},sara:{},udder:{}};
+    game.notificationState=game.notificationState||{lowFeed:false,criticalFeed:false,health:{},sara:{},udder:{},milkDrop:{}};
+    game.notificationState.milkDrop=game.notificationState.milkDrop||{};
     const s=game.notificationState, feed=Number(game.feed||0);
 
     if(feed<200){
@@ -4138,11 +4181,32 @@ function checkSmartNotifications(){
         if(udder>=100 && !s.udder[id]){
             addNotification("Sağım Uyarısı",`İnek ${id} meme doluluğu yüksek. Planlı sağımı kontrol et.`,"warning",true);s.udder[id]=true;
         }else if(udder<80)s.udder[id]=false;
+
+        const milkHistory=Array.isArray(cow.milkHistory)?cow.milkHistory:[];
+        if(milkHistory.length>=4){
+            const latest=Number(milkHistory[0].yield)||0;
+            const previous=milkHistory.slice(1,7).map(item=>Number(item.yield)||0).filter(value=>value>0);
+            const previousAvg=previous.length?previous.reduce((sum,value)=>sum+value,0)/previous.length:0;
+            const dropPct=previousAvg>0?((previousAvg-latest)/previousAvg)*100:0;
+            const dropState=s.milkDrop[id]||false;
+            if(dropPct>=15){
+                if(!dropState){
+                    addNotification("Süt Verimi Düşüşü",`İnek ${id} son sağımda önceki sağım ortalamasına göre %${dropPct.toFixed(0)} daha az süt verdi. Hayvanı ve sağım/yem koşullarını kontrol et.`,"warning",true);
+                }
+                s.milkDrop[id]=true;
+            }else if(dropPct<8){
+                s.milkDrop[id]=false;
+            }
+        }else{
+            s.milkDrop[id]=false;
+        }
+
         s.health[id]=h;
     });
     Object.keys(s.health).forEach(id=>{if(!activeIds.has(id))delete s.health[id];});
     Object.keys(s.sara).forEach(id=>{if(!activeIds.has(id))delete s.sara[id];});
     Object.keys(s.udder).forEach(id=>{if(!activeIds.has(id))delete s.udder[id];});
+    Object.keys(s.milkDrop).forEach(id=>{if(!activeIds.has(id))delete s.milkDrop[id];});
 }
 
 function render(){
