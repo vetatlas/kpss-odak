@@ -1141,6 +1141,8 @@ let game = {
     lastRealTime:Date.now(),
 
     lastMilking:"",
+    lastAutomaticMilkingDay:0,
+    lastAutomaticMilkingHour:-1,
 
     cows:[],
 
@@ -2527,7 +2529,38 @@ function advanceGameTime(minutes){
    SAĞIM
 ========================================================= */
 
-function milkHerd(){
+function getAutomaticMilkingHours(){
+
+    if(game.milkingStrategy===2) return [6,18];
+
+    if(game.milkingStrategy===3) return [6,12,18];
+
+    return [6,10,14,18,22];
+
+}
+
+
+function processAutomaticMilking(){
+
+    const hour=Math.floor(game.minute/60);
+    const minute=game.minute%60;
+
+    if(minute!==0) return;
+
+    if(game.lastAutomaticMilkingDay===game.day &&
+       game.lastAutomaticMilkingHour===hour) return;
+
+    if(!getAutomaticMilkingHours().includes(hour)) return;
+
+    game.lastAutomaticMilkingDay=game.day;
+    game.lastAutomaticMilkingHour=hour;
+
+    milkHerd(true);
+
+}
+
+
+function milkHerd(automatic=false){
 
     let milk=0;
 
