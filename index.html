@@ -146,20 +146,78 @@ button:active{
     position:fixed;
     inset:0;
     z-index:9999;
-    background:#020509;
+    background:
+        radial-gradient(circle at 50% 20%,rgba(57,229,140,.12),transparent 34%),
+        linear-gradient(160deg,#020509 0%,#07100d 52%,#020509 100%);
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:30px;
+    padding:22px;
 }
+.boot-shell{
+    width:min(760px,100%);
+    border:1px solid #234333;
+    border-radius:24px;
+    background:rgba(5,12,10,.86);
+    box-shadow:0 25px 80px rgba(0,0,0,.55),0 0 60px rgba(57,229,140,.06);
+    padding:26px;
+    backdrop-filter:blur(18px);
+}
+.boot-brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:20px;
+}
+.boot-logo{
+    width:54px;height:54px;border-radius:16px;
+    display:grid;place-items:center;
+    background:rgba(57,229,140,.10);
+    border:1px solid rgba(57,229,140,.30);
+    font-size:28px;
+    box-shadow:0 0 25px rgba(57,229,140,.10);
+}
+.boot-badge{
+    font-size:10px;
+    color:#7f95a8;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-top:3px;
+}
+.boot-progress{
+    height:5px;
+    background:#101b17;
+    border-radius:20px;
+    overflow:hidden;
+    margin:18px 0;
+}
+.boot-progress>div{
+    height:100%;
+    width:0;
+    background:linear-gradient(90deg,var(--green),var(--blue));
+    transition:width .3s ease;
+}
+.boot-enter{
+    width:100%;
+    margin-top:18px;
+    border:1px solid rgba(57,229,140,.45);
+    background:linear-gradient(135deg,rgba(57,229,140,.16),rgba(57,189,248,.08));
+    color:#dfffee;
+    border-radius:14px;
+    padding:14px 18px;
+    font-weight:800;
+    letter-spacing:.3px;
+}
+.boot-enter:hover{background:rgba(57,229,140,.22);transform:translateY(-1px)}
 
 .boot-terminal{
-    width:min(700px,100%);
+    width:100%;
     color:#39e58c;
     font-family:monospace;
-    font-size:13px;
+    font-size:12px;
     line-height:1.7;
 }
+.boot-terminal .boot-line{opacity:.82}
 
 .hidden-screen{
     display:none;
@@ -283,19 +341,30 @@ select:focus{
 
 <div id="bootScreen" class="boot">
 
-    <div class="boot-terminal">
-
-        <div class="text-lg font-bold mb-2">
-            ÇİFTLİK SİMÜLASYONU v1.2
+    <div class="boot-shell">
+        <div class="boot-brand">
+            <div class="boot-logo">🐄</div>
+            <div>
+                <div class="text-xl font-black tracking-wide">ÇİFTLİK SİMÜLASYONU</div>
+                <div class="boot-badge">Dijital Hayvancılık • Sürüm 1.3</div>
+            </div>
         </div>
 
-        <div class="mb-4">
-            ZOOTEKNİK BİYOLOJİK SİMÜLASYON MOTORU
+        <div class="boot-terminal">
+            <div class="text-xs text-slate-500 mb-2">ÇİFTLİK SİSTEMİ BAŞLATILIYOR</div>
+            <div id="bootText"></div>
         </div>
 
-        <div id="bootText"></div>
-        <button id="enterFarmButton" class="nav-btn text-green-400 mt-6 px-6 py-3 font-bold hidden">🌾 ÇİFTLİĞE GİR</button>
+        <div class="boot-progress"><div id="bootProgress"></div></div>
 
+        <div class="flex items-center justify-between text-[10px] text-slate-500">
+            <span>🐄 Ahır • 🌾 Yemlik • 🥛 Sağım</span>
+            <span id="bootStatus">Hazırlanıyor...</span>
+        </div>
+
+        <button id="enterFarmButton" class="boot-enter">
+            🌾 ÇİFTLİĞE GİR • SESİ BAŞLAT
+        </button>
     </div>
 
 </div>
@@ -3945,127 +4014,191 @@ function realTimeLoop(){
 
 /* =========================================================
    ÇİFTLİK ORTAM SESİ
-   Harici müzik dosyası gerektirmez. Web Audio API ile
-   düşük seviyeli huzurlu fon + hafif çiftlik ambiyansı üretir.
+   Web Audio API ile düşük seviyeli müzik yerine
+   doğal çiftlik ambiyansı: inek, buzağı, horoz/kuş,
+   ahır uğultusu ve su/yemlik sesleri.
 ========================================================= */
 
-let farmAudio = null;
+let farmAudio=null;
 
 function createFarmNoiseBuffer(ctx){
-    const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    let last = 0;
-
+    const buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);
+    const data=buffer.getChannelData(0);
+    let last=0;
     for(let i=0;i<data.length;i++){
-        const white = Math.random()*2-1;
-        last = last * 0.985 + white * 0.015;
-        data[i] = last * 0.55;
+        const white=Math.random()*2-1;
+        last=last*0.985+white*0.015;
+        data[i]=last*0.55;
     }
     return buffer;
 }
 
+function playTone(ctx,master,type,startFreq,endFreq,duration,peak,filterFreq=900){
+    const now=ctx.currentTime;
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    const filter=ctx.createBiquadFilter();
+
+    osc.type=type;
+    osc.frequency.setValueAtTime(Math.max(20,startFreq),now);
+    if(endFreq) osc.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq),now+duration);
+
+    filter.type="lowpass";
+    filter.frequency.value=filterFreq;
+
+    gain.gain.setValueAtTime(0.0001,now);
+    gain.gain.exponentialRampToValueAtTime(Math.max(.0002,peak),now+.06);
+    gain.gain.setValueAtTime(Math.max(.0002,peak*.72),now+duration*.55);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(master);
+    osc.start(now);
+    osc.stop(now+duration+.03);
+}
+
+function playCowMoo(ctx,master){
+    const now=ctx.currentTime;
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    const filter=ctx.createBiquadFilter();
+
+    osc.type="sawtooth";
+    const base=95+Math.random()*45;
+    osc.frequency.setValueAtTime(base,now);
+    osc.frequency.exponentialRampToValueAtTime(base*.62,now+.72);
+    osc.frequency.exponentialRampToValueAtTime(base*.82,now+1.18);
+
+    filter.type="lowpass";
+    filter.frequency.setValueAtTime(520,now);
+    filter.Q.value=2.2;
+
+    gain.gain.setValueAtTime(.0001,now);
+    gain.gain.exponentialRampToValueAtTime(.14,now+.10);
+    gain.gain.setValueAtTime(.105,now+.52);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+1.35);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(master);
+    osc.start(now);
+    osc.stop(now+1.4);
+}
+
+function playCalfCall(ctx,master){
+    playTone(ctx,master,"triangle",220+Math.random()*50,155,0.65,.055,800);
+}
+
+function playBirdCall(ctx,master){
+    const now=ctx.currentTime;
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.type="sine";
+    osc.frequency.setValueAtTime(1900+Math.random()*500,now);
+    osc.frequency.exponentialRampToValueAtTime(3000+Math.random()*700,now+.13);
+    osc.frequency.exponentialRampToValueAtTime(2200+Math.random()*500,now+.27);
+    gain.gain.setValueAtTime(.0001,now);
+    gain.gain.exponentialRampToValueAtTime(.045,now+.025);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+.3);
+    osc.connect(gain);
+    gain.connect(master);
+    osc.start(now);
+    osc.stop(now+.32);
+}
+
+function playRooster(ctx,master){
+    const now=ctx.currentTime;
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.type="sawtooth";
+    osc.frequency.setValueAtTime(520,now);
+    osc.frequency.exponentialRampToValueAtTime(760,now+.18);
+    osc.frequency.exponentialRampToValueAtTime(260,now+.65);
+    gain.gain.setValueAtTime(.0001,now);
+    gain.gain.exponentialRampToValueAtTime(.035,now+.05);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+.7);
+    osc.connect(gain);
+    gain.connect(master);
+    osc.start(now);
+    osc.stop(now+.75);
+}
+
+function playWater(ctx,master){
+    /* Su yalak/çeşme hissi: kısa, düzensiz damla sesleri */
+    const count=3+Math.floor(Math.random()*4);
+    for(let i=0;i<count;i++){
+        setTimeout(()=>{
+            if(!farmAudio || ctx.state==="closed") return;
+            playTone(ctx,master,"sine",850+Math.random()*450,520,.16,.018,1800);
+        },i*95);
+    }
+}
+
 function startFarmAmbience(){
-    if(farmAudio && farmAudio.ctx.state !== "closed"){
+    if(farmAudio && farmAudio.ctx.state!=="closed"){
         farmAudio.ctx.resume().catch(()=>{});
         return true;
     }
 
     try{
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const AudioCtx=window.AudioContext||window.webkitAudioContext;
         if(!AudioCtx) return false;
 
-        const ctx = new AudioCtx();
-        const master = ctx.createGain();
-        const savedVolume = Number(localStorage.getItem("ciftlikSesSeviyesi") || 0.32);
-        master.gain.value = savedVolume;
+        const ctx=new AudioCtx();
+        const master=ctx.createGain();
+        const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.42);
+        master.gain.value=Math.max(.05,Math.min(1,savedVolume));
         master.connect(ctx.destination);
 
-        /* Huzurlu fon müziği */
-        const musicGain = ctx.createGain();
-        musicGain.gain.value = 0.065;
-        musicGain.connect(master);
-
-        const notes = [146.83,196,246.94,293.66];
-        const musicOscillators = notes.map((freq,index)=>{
-            const osc=ctx.createOscillator();
-            const gain=ctx.createGain();
-            osc.type=index%2===0 ? "sine" : "triangle";
-            osc.frequency.value=freq;
-            gain.gain.value=index===0 ? 0.75 : 0.42;
-            osc.connect(gain);
-            gain.connect(musicGain);
-            osc.start();
-            return osc;
-        });
-
-        /* Ahır / rüzgâr ortamı */
+        /* Çok hafif doğal ahır/rüzgâr tabanı */
         const noise=ctx.createBufferSource();
         noise.buffer=createFarmNoiseBuffer(ctx);
         noise.loop=true;
 
         const noiseFilter=ctx.createBiquadFilter();
         noiseFilter.type="lowpass";
-        noiseFilter.frequency.value=1100;
+        noiseFilter.frequency.value=900;
 
         const noiseGain=ctx.createGain();
-        noiseGain.gain.value=0.10;
+        noiseGain.gain.value=.055;
 
         noise.connect(noiseFilter);
         noiseFilter.connect(noiseGain);
         noiseGain.connect(master);
         noise.start();
 
-        /* Hafif ahır uğultusu */
+        /* Hafif fan/ahır uğultusu */
         const barnOsc=ctx.createOscillator();
         const barnGain=ctx.createGain();
         barnOsc.type="sine";
-        barnOsc.frequency.value=58;
-        barnGain.gain.value=0.035;
+        barnOsc.frequency.value=52;
+        barnGain.gain.value=.018;
         barnOsc.connect(barnGain);
         barnGain.connect(master);
         barnOsc.start();
 
-        const birdTimer=setInterval(()=>{
-            if(!farmAudio || ctx.state==="closed") return;
-            const now=ctx.currentTime;
-            const osc=ctx.createOscillator();
-            const gain=ctx.createGain();
-            osc.type="sine";
-            osc.frequency.setValueAtTime(1900+Math.random()*600,now);
-            osc.frequency.exponentialRampToValueAtTime(2800+Math.random()*700,now+0.15);
-            gain.gain.setValueAtTime(0.0001,now);
-            gain.gain.exponentialRampToValueAtTime(0.035,now+0.025);
-            gain.gain.exponentialRampToValueAtTime(0.0001,now+0.24);
-            osc.connect(gain); gain.connect(master);
-            osc.start(now); osc.stop(now+0.26);
-        },12000+Math.random()*7000);
+        /* Arka planda müzik yerine hayvan/çiftlik olayları */
+        const timers=[];
 
-        /* Gerçek çiftlik hissi için aralıklı inek sesi */
-        const cowTimer=setInterval(()=>{
-            if(!farmAudio || ctx.state==="closed") return;
-            const now=ctx.currentTime;
-            const osc=ctx.createOscillator();
-            const gain=ctx.createGain();
-            const filter=ctx.createBiquadFilter();
+        const schedule=(fn,min,max)=>{
+            const timer=setTimeout(function run(){
+                if(!farmAudio || ctx.state==="closed") return;
+                fn();
+                const next=min+Math.random()*(max-min);
+                const t=setTimeout(run,next);
+                timers.push(t);
+            },min+Math.random()*(max-min));
+            timers.push(timer);
+        };
 
-            osc.type="sawtooth";
-            const base=125+Math.random()*35;
-            osc.frequency.setValueAtTime(base,now);
-            osc.frequency.exponentialRampToValueAtTime(base*0.72,now+0.85);
-            osc.frequency.exponentialRampToValueAtTime(base*0.88,now+1.35);
+        schedule(()=>playCowMoo(ctx,master),6500,14500);
+        schedule(()=>playCalfCall(ctx,master),9000,18000);
+        schedule(()=>playBirdCall(ctx,master),3500,8500);
+        schedule(()=>playWater(ctx,master),16000,30000);
+        schedule(()=>playRooster(ctx,master),45000,90000);
 
-            filter.type="lowpass";
-            filter.frequency.value=650;
-            gain.gain.setValueAtTime(0.0001,now);
-            gain.gain.exponentialRampToValueAtTime(0.10,now+0.10);
-            gain.gain.setValueAtTime(0.075,now+0.65);
-            gain.gain.exponentialRampToValueAtTime(0.0001,now+1.5);
-
-            osc.connect(filter); filter.connect(gain); gain.connect(master);
-            osc.start(now); osc.stop(now+1.55);
-        },24000+Math.random()*12000);
-
-        farmAudio={ctx,master,musicOscillators,noise,barnOsc,birdTimer,cowTimer};
+        farmAudio={ctx,master,noise,barnOsc,timers};
         ctx.resume().catch(()=>{});
         updateSoundUI(true);
         return true;
@@ -4079,86 +4212,57 @@ function stopFarmAmbience(){
     if(!farmAudio) return;
 
     try{
-        clearInterval(farmAudio.birdTimer);
-        clearInterval(farmAudio.cowTimer);
-        farmAudio.musicOscillators.forEach(osc=>{
-            try{ osc.stop(); }catch(e){}
-        });
-        try{ farmAudio.noise.stop(); }catch(e){}
-        try{ farmAudio.barnOsc.stop(); }catch(e){}
+        (farmAudio.timers||[]).forEach(timer=>clearTimeout(timer));
+        try{farmAudio.noise.stop();}catch(e){}
+        try{farmAudio.barnOsc.stop();}catch(e){}
         farmAudio.ctx.close().catch(()=>{});
     }catch(error){}
 
-    farmAudio = null;
+    farmAudio=null;
     updateSoundUI(false);
 }
 
 function setFarmVolume(value){
-    const volume = Math.max(0, Math.min(100, Number(value))) / 100;
-    localStorage.setItem("ciftlikSesSeviyesi", volume);
+    const volume=Math.max(0,Math.min(100,Number(value)))/100;
+    localStorage.setItem("ciftlikSesSeviyesi",volume);
 
     if(farmAudio){
-        farmAudio.master.gain.setTargetAtTime(
-            volume,
-            farmAudio.ctx.currentTime,
-            0.05
-        );
+        farmAudio.master.gain.setTargetAtTime(volume,farmAudio.ctx.currentTime,.05);
     }
 
-    const label = document.getElementById("soundLabel");
+    const label=document.getElementById("soundLabel");
     if(label){
-        label.textContent = volume === 0
-            ? "🔇 Ses kapalı"
-            : `🔊 Çiftlik sesi %${Math.round(volume*100)}`;
+        label.textContent=volume===0
+            ?"🔇 Ses kapalı"
+            :`🔊 Çiftlik ambiyansı %${Math.round(volume*100)}`;
     }
 }
 
 function updateSoundUI(active){
-    const button = document.getElementById("soundToggle");
-    const label = document.getElementById("soundLabel");
+    const button=document.getElementById("soundToggle");
+    const label=document.getElementById("soundLabel");
+    if(!button||!label) return;
 
-    if(!button || !label) return;
-
-    button.textContent = active ? "🔇 Sesi Kapat" : "🔊 Sesi Başlat";
-    label.textContent = active
-        ? "🔊 Çiftlik ambiyansı"
-        : "🔇 Ses kapalı";
+    button.textContent=active?"🔇 Sesi Kapat":"🔊 Sesi Başlat";
+    label.textContent=active?"🔊 Ahır + hayvan sesleri":"🔇 Ses kapalı";
 }
 
 function setupFarmSound(){
-    const volume = Number(localStorage.getItem("ciftlikSesSeviyesi") || 0.32);
-    const slider = document.getElementById("soundVolume");
+    const volume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.42);
+    const slider=document.getElementById("soundVolume");
 
     if(slider){
-        slider.value = Math.round(volume * 100);
-        slider.addEventListener("input", e=>setFarmVolume(e.target.value));
+        slider.value=Math.round(volume*100);
+        slider.addEventListener("input",e=>setFarmVolume(e.target.value));
     }
 
-    document.getElementById("soundToggle")?.addEventListener("click", ()=>{
-        if(farmAudio){
-            stopFarmAmbience();
-        }else{
-            startFarmAmbience();
-        }
+    document.getElementById("soundToggle")?.addEventListener("click",()=>{
+        if(farmAudio) stopFarmAmbience();
+        else startFarmAmbience();
     });
-
-    /* Tarayıcı ses otomatik oynatmayı engellerse,
-       ilk dokunuş/tıklama sonrası sesi başlatmayı dener. */
-    const unlock = ()=>{
-        if(!farmAudio){
-            startFarmAmbience();
-        }
-        window.removeEventListener("pointerdown", unlock);
-        window.removeEventListener("keydown", unlock);
-    };
-
-    window.addEventListener("pointerdown", unlock, {once:true});
-    window.addEventListener("keydown", unlock, {once:true});
-
-    /* Sayfa açılışında dene. Tarayıcı izin vermezse
-       yukarıdaki ilk kullanıcı etkileşimi devreye girer. */
-    startFarmAmbience();
 }
+
+
 
 
 /* =========================================================
@@ -4227,116 +4331,68 @@ function setupAppMenu(){
    BOOT
 ========================================================= */
 
+let farmAppInitialized=false;
+
+function initFarmApp(){
+    if(farmAppInitialized) return;
+    farmAppInitialized=true;
+
+    document.getElementById("app")?.classList.remove("hidden-screen");
+    setupAppMenu();
+    setupFarmSound();
+    render();
+    processAutomaticMilking();
+    realTimeLoop();
+    addLog("Çiftlik Simülasyonu başlatıldı.");
+}
+
 function boot(){
-
     const lines=[
-
         "Biyolojik motor başlatılıyor...",
-
         "Sürü yönetim sistemi yükleniyor...",
-
-        "Wood laktasyon modeli hazırlanıyor...",
-
-        "DMI motoru hazırlanıyor...",
-
-        "Yem hammaddeleri yükleniyor...",
-
-        "Rasyon formülatörü hazırlanıyor...",
-
-        "NDF / ADF / NDFD hesaplayıcı aktif...",
-
-        "Rumen pH modeli hazırlanıyor...",
-
-        "Subakut rumen asidozu (SARA) risk motoru hazırlanıyor...",
-
-        "Ekonomik motor başlatılıyor...",
-
-        "Gerçek zaman motoru aktif...",
-
+        "Laktasyon modeli hazırlanıyor...",
+        "DMI ve rasyon motoru hazırlanıyor...",
+        "Rumen sağlığı kontrol ediliyor...",
+        "Ekonomik motor hazırlanıyor...",
         "Çiftlik bağlantısı kuruldu.",
-
-        "",
-
         "SİSTEM HAZIR."
-
     ];
 
+    const bootText=document.getElementById("bootText");
+    const progress=document.getElementById("bootProgress");
+    const status=document.getElementById("bootStatus");
+    const enter=document.getElementById("enterFarmButton");
 
     let index=0;
 
+    const writeLine=()=>{
+        if(index<lines.length){
+            bootText.innerHTML+=`<div class="boot-line">> ${lines[index]}</div>`;
+            index++;
+            if(progress) progress.style.width=`${Math.round(index/lines.length*100)}%`;
+            if(status) status.textContent=index<lines.length ? "Motorlar yükleniyor..." : "Hazır";
+            setTimeout(writeLine,95);
+        }
+    };
 
-    const bootText=
-        document.getElementById(
-            "bootText"
-        );
+    writeLine();
 
+    /* Giriş ekranı sonsuza kadar beklemez: kullanıcı isterse hemen girebilir. */
+    setTimeout(()=>{
+        if(enter){
+            enter.classList.remove("hidden");
+            enter.focus();
+        }
+    },500);
 
-    const interval=
-        setInterval(
-            ()=>{
-
-                bootText.innerHTML+=
-                    `<div>> ${lines[index]}</div>`;
-
-
-                index++;
-
-
-                if(
-                    index>=lines.length
-                ){
-
-                    clearInterval(
-                        interval
-                    );
-
-
-                    setTimeout(
-                        ()=>{
-
-                            document
-                                .getElementById(
-                                    "app"
-                                )
-                                .classList
-                                .remove(
-                                    "hidden-screen"
-                                );
-
-
-                            setupAppMenu();
-                            setupFarmSound();
-
-                            const enterFarmButton=document.getElementById("enterFarmButton");
-                            if(enterFarmButton){
-                                enterFarmButton.addEventListener("click",()=>{
-                                    startFarmAmbience();
-                                    document.getElementById("bootScreen")?.remove();
-                                },{once:true});
-                            }
-
-                            render();
-
-                            processAutomaticMilking();
-
-                            realTimeLoop();
-
-
-                            addLog(
-                                "Çiftlik Simülasyonu v1.2 başlatıldı."
-                            );
-
-                        },
-                        700
-                    );
-
-                }
-
-            },
-            130
-        );
-
+    enter?.addEventListener("click",()=>{
+        initFarmApp();
+        startFarmAmbience();
+        document.getElementById("bootScreen")?.remove();
+    },{once:true});
 }
+
+
 
 
 /* =========================================================
