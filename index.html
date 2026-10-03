@@ -639,6 +639,82 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 @media (max-width:699px){
     .animal-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* =========================================================
+   TABLET DASHBOARD — KOMPAKT DÜZEN
+========================================================= */
+@media (min-width:700px) and (max-width:1200px){
+    body{font-size:13px}
+    .container{
+        padding:8px 12px 78px!important;
+    }
+    .dashboard,.dashboard-grid,.stats-grid,.cards-grid,.grid{
+        gap:7px!important;
+    }
+    .dashboard-card,.stat-card,.panel,.card{
+        border-radius:11px!important;
+        padding:9px!important;
+    }
+    .dashboard-card h2,.dashboard-card h3,
+    .panel h2,.panel h3,.card h2,.card h3{
+        font-size:.82rem!important;
+        margin-bottom:5px!important;
+    }
+    .dashboard-card p,.panel p,.card p{
+        font-size:.72rem;
+        margin-top:3px;
+        margin-bottom:4px;
+    }
+    .stat-card .text-2xl,.stat-card .text-3xl,
+    .stat-card strong{
+        font-size:1.15rem!important;
+    }
+    .stat-card .text-xs,.stat-card small{
+        font-size:.62rem!important;
+    }
+    .table-wrap,.table-container{
+        max-height:390px;
+        overflow:auto;
+    }
+    table{
+        font-size:.68rem!important;
+    }
+    th,td{
+        padding:5px 6px!important;
+    }
+    input,select,textarea{
+        min-height:32px!important;
+        padding:5px 7px!important;
+        font-size:.72rem!important;
+    }
+    button,.btn,.nav-btn{
+        min-height:31px;
+        padding:5px 8px;
+        font-size:.72rem;
+    }
+    .app-bottom-nav{
+        padding:5px 8px!important;
+        gap:4px!important;
+    }
+    .app-bottom-nav .nav-btn{
+        min-height:36px!important;
+        padding:4px 5px!important;
+        font-size:.68rem!important;
+    }
+    .notification-panel{
+        max-width:360px;
+    }
+    .milk-performance-panel{
+        padding:8px!important;
+    }
+    .milk-daily-chart{
+        gap:4px!important;
+    }
+    .milk-performance-row{
+        padding:6px!important;
+    }
+}
 </style>
 </head>
 
