@@ -1,0 +1,3836 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Çiftlik Simülasyonu</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+:root{
+    --bg:#060a10;
+    --panel:#0d141f;
+    --panel2:#111b29;
+    --border:#1d3044;
+    --text:#eaf3f8;
+    --muted:#7f95a8;
+    --green:#39e58c;
+    --blue:#39bdf8;
+    --yellow:#ffd166;
+    --red:#ff5d73;
+    --purple:#a78bfa;
+}
+
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    background:
+        radial-gradient(circle at 10% 10%,rgba(57,189,248,.08),transparent 30%),
+        radial-gradient(circle at 90% 90%,rgba(57,229,140,.06),transparent 30%),
+        var(--bg);
+    color:var(--text);
+    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+.glass{
+    background:rgba(13,20,31,.86);
+    border:1px solid var(--border);
+    border-radius:18px;
+    backdrop-filter:blur(12px);
+}
+
+.kpi{
+    padding:18px;
+    min-height:125px;
+}
+
+.kpi-label{
+    color:var(--muted);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1.2px;
+}
+
+.kpi-value{
+    font-size:26px;
+    font-weight:800;
+    margin-top:8px;
+}
+
+.green{color:var(--green)}
+.blue{color:var(--blue)}
+.yellow{color:var(--yellow)}
+.red{color:var(--red)}
+.purple{color:var(--purple)}
+
+.progress{
+    width:100%;
+    height:8px;
+    background:#182332;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress>div{
+    height:100%;
+    border-radius:20px;
+    transition:.3s;
+}
+
+button{
+    transition:.18s;
+}
+
+button:active{
+    transform:scale(.97);
+}
+
+.nav-btn{
+    background:#111b29;
+    border:1px solid var(--border);
+    padding:10px 14px;
+    border-radius:10px;
+}
+
+.nav-btn:hover{
+    background:#172536;
+    border-color:#31516b;
+}
+
+.active-strategy{
+    border-color:var(--blue)!important;
+    background:rgba(57,189,248,.08)!important;
+    color:var(--blue);
+}
+
+.status-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 12px var(--green);
+    display:inline-block;
+}
+
+.cow{
+    background:#111b29;
+    border:1px solid #203247;
+    border-radius:14px;
+    padding:14px;
+    transition:.2s;
+}
+
+.cow:hover{
+    border-color:#31516b;
+    transform:translateY(-1px);
+}
+
+.log{
+    font-family:monospace;
+    font-size:11px;
+    border-bottom:1px solid #172638;
+    padding:8px 0;
+    color:#9eb1c1;
+}
+
+.boot{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    background:#020509;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+}
+
+.boot-terminal{
+    width:min(700px,100%);
+    color:#39e58c;
+    font-family:monospace;
+    font-size:13px;
+    line-height:1.7;
+}
+
+.hidden-screen{
+    display:none;
+}
+
+.metric{
+    background:rgba(0,0,0,.18);
+    border-radius:12px;
+    padding:10px;
+}
+
+select,
+input{
+    background:#0b121c;
+    border:1px solid var(--border);
+    color:white;
+    border-radius:10px;
+    padding:10px;
+    outline:none;
+    width:100%;
+}
+
+input:focus,
+select:focus{
+    border-color:var(--blue);
+}
+
+.feed-row{
+    background:#0b121c;
+    border:1px solid #1b2b3c;
+    border-radius:12px;
+    padding:12px;
+}
+
+.feed-name{
+    font-weight:700;
+}
+
+.feed-info{
+    font-size:10px;
+    color:#71869a;
+    margin-top:3px;
+}
+
+::-webkit-scrollbar{
+    width:6px;
+}
+
+::-webkit-scrollbar-track{
+    background:#080d14;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#23374a;
+    border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     BOOT
+===================================================== -->
+
+<div id="bootScreen" class="boot">
+
+    <div class="boot-terminal">
+
+        <div class="text-lg font-bold mb-2">
+            ÇİFTLİK SİMÜLASYONU v1.2
+        </div>
+
+        <div class="mb-4">
+            ZOOTEKNİK BİYOLOJİK SİMÜLASYON MOTORU
+        </div>
+
+        <div id="bootText"></div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     APP
+===================================================== -->
+
+<div id="app" class="hidden-screen">
+
+<header class="sticky top-0 z-50 border-b border-slate-800 bg-[#070b12]/90 backdrop-blur">
+
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap gap-4 items-center justify-between">
+
+        <div>
+
+            <div class="text-xs text-slate-500 tracking-[3px] uppercase">
+                Dijital Hayvancılık
+            </div>
+
+            <h1 class="text-2xl font-black">
+                🐄 Çiftlik Simülasyonu
+            </h1>
+
+            <div class="text-xs text-slate-500 mt-1">
+                Zootekni ve Hayvancılık Yönetim Sistemi
+            </div>
+
+        </div>
+
+        <div class="flex items-center gap-4 text-sm">
+
+            <div class="flex items-center gap-2">
+                <span class="status-dot"></span>
+                Sistem Aktif
+            </div>
+
+            <div id="gameClock" class="font-mono text-blue-400">
+                Gün 1 • 06:00
+            </div>
+
+            <button onclick="resetGame()" class="nav-btn text-red-400">
+                Sıfırla
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="max-w-7xl mx-auto px-4 py-6">
+
+<!-- =====================================================
+     KPI
+===================================================== -->
+
+<section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+
+    <div class="glass kpi">
+        <div class="kpi-label">Sürü</div>
+        <div id="herdKpi" class="kpi-value">24</div>
+        <div class="text-xs text-slate-500">baş</div>
+    </div>
+
+    <div class="glass kpi">
+        <div class="kpi-label">Günlük Süt</div>
+        <div id="milkKpi" class="kpi-value green">0 L</div>
+        <div class="text-xs text-slate-500">bugün</div>
+    </div>
+
+    <div class="glass kpi">
+        <div class="kpi-label">Yem Stoğu</div>
+        <div id="feedKpi" class="kpi-value yellow">0 kg</div>
+        <div class="text-xs text-slate-500">kuru madde</div>
+    </div>
+
+    <div class="glass kpi">
+        <div class="kpi-label">Kasa</div>
+        <div id="moneyKpi" class="kpi-value blue">0 ₺</div>
+        <div class="text-xs text-slate-500">nakit</div>
+    </div>
+
+    <div class="glass kpi">
+        <div class="kpi-label">Ortalama Meme</div>
+        <div id="udderKpi" class="kpi-value">0%</div>
+        <div class="text-xs text-slate-500">doluluk</div>
+    </div>
+
+    <div class="glass kpi">
+        <div class="kpi-label">Ortalama Rumen</div>
+        <div id="rumenKpi" class="kpi-value green">0</div>
+        <div class="text-xs text-slate-500">pH</div>
+    </div>
+
+</section>
+
+
+<div class="grid lg:grid-cols-3 gap-6">
+
+
+<!-- =====================================================
+     SOL
+===================================================== -->
+
+<div class="lg:col-span-2 space-y-6">
+
+
+<!-- SÜRÜ -->
+
+<section class="glass p-5">
+
+    <div class="flex justify-between items-center mb-5">
+
+        <div>
+            <h2 class="text-lg font-bold">
+                Sürü Yönetimi
+            </h2>
+
+            <p class="text-xs text-slate-500">
+                Hayvan bazlı biyolojik durum
+            </p>
+        </div>
+
+        <button onclick="addCow()" class="nav-btn text-green-400">
+            + Hayvan Ekle
+        </button>
+
+    </div>
+
+    <div id="herdContainer"
+         class="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
+    </div>
+
+</section>
+
+
+<!-- SAĞIM -->
+
+<section class="glass p-5">
+
+    <div class="flex justify-between items-center mb-5">
+
+        <div>
+            <h2 class="text-lg font-bold">
+                Sağım Sistemi
+            </h2>
+
+            <p class="text-xs text-slate-500">
+                Meme doluluğu ve süt toplama
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="grid grid-cols-3 gap-3 mb-5">
+
+        <button id="milking2"
+                onclick="setMilkingStrategy(2)"
+                class="nav-btn">
+
+            <b>2X</b>
+
+            <div class="text-xs text-slate-500">
+                Sağım
+            </div>
+
+        </button>
+
+        <button id="milking3"
+                onclick="setMilkingStrategy(3)"
+                class="nav-btn">
+
+            <b>3X</b>
+
+            <div class="text-xs text-slate-500">
+                Sağım
+            </div>
+
+        </button>
+
+        <button id="milking4"
+                onclick="setMilkingStrategy(4)"
+                class="nav-btn">
+
+            <b>4X</b>
+
+            <div class="text-xs text-slate-500">
+                AMS
+            </div>
+
+        </button>
+
+    </div>
+
+
+    <button onclick="milkHerd()"
+            class="w-full bg-blue-500/10 border border-blue-500/40 hover:bg-blue-500/20 text-blue-300 py-4 rounded-xl font-bold">
+
+        🥛 SÜRÜYÜ SAĞ
+
+    </button>
+
+
+    <div class="mt-4 grid grid-cols-2 gap-3">
+
+        <div class="metric">
+            <div class="text-xs text-slate-500">
+                Son Sağım
+            </div>
+
+            <div id="lastMilking" class="font-bold mt-1">
+                Henüz yapılmadı
+            </div>
+        </div>
+
+        <div class="metric">
+            <div class="text-xs text-slate-500">
+                Toplam Süt
+            </div>
+
+            <div id="totalMilk" class="font-bold green mt-1">
+                0 L
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     RASYON FORMÜLATÖRÜ
+===================================================== -->
+
+<section class="glass p-5">
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
+
+        <div>
+
+            <h2 class="text-lg font-bold">
+                🌾 Rasyon Formülatörü
+            </h2>
+
+            <p class="text-xs text-slate-500">
+                İnek başına günlük yaş yem miktarı
+            </p>
+
+        </div>
+
+        <div class="text-xs text-slate-500">
+            Model: DM bazlı besin analizi
+        </div>
+
+    </div>
+
+
+    <div class="space-y-3">
+
+
+        <!-- MISIR SİLAJI -->
+
+        <div class="feed-row">
+
+            <div class="flex items-center justify-between gap-3">
+
+                <div>
+
+                    <div class="feed-name">
+                        🌽 Mısır Silajı
+                    </div>
+
+                    <div class="feed-info">
+                        DM %35 • NDF %42 • Nişasta %30 • HP %8
+                    </div>
+
+                </div>
+
+                <div class="w-28">
+
+                    <input
+                        id="feedCornSilage"
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        value="12"
+                        onchange="updateFeedAmount('cornSilage',this.value)">
+
+                </div>
+
+                <div class="text-xs text-slate-500 w-10">
+                    kg
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- YONCA -->
+
+        <div class="feed-row">
+
+            <div class="flex items-center justify-between gap-3">
+
+                <div>
+
+                    <div class="feed-name">
+                        🌿 Yonca Kuru Otu
+                    </div>
+
+                    <div class="feed-info">
+                        DM %90 • NDF %40 • Nişasta %5 • HP %18
+                    </div>
+
+                </div>
+
+                <div class="w-28">
+
+                    <input
+                        id="feedAlfalfa"
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        value="4"
+                        onchange="updateFeedAmount('alfalfaHay',this.value)">
+
+                </div>
+
+                <div class="text-xs text-slate-500 w-10">
+                    kg
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MISIR DANE -->
+
+        <div class="feed-row">
+
+            <div class="flex items-center justify-between gap-3">
+
+                <div>
+
+                    <div class="feed-name">
+                        🌽 Mısır Dane
+                    </div>
+
+                    <div class="feed-info">
+                        DM %88 • NDF %10 • Nişasta %72 • HP %9
+                    </div>
+
+                </div>
+
+                <div class="w-28">
+
+                    <input
+                        id="feedCornGrain"
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        value="4"
+                        onchange="updateFeedAmount('cornGrain',this.value)">
+
+                </div>
+
+                <div class="text-xs text-slate-500 w-10">
+                    kg
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ARPA -->
+
+        <div class="feed-row">
+
+            <div class="flex items-center justify-between gap-3">
+
+                <div>
+
+                    <div class="feed-name">
+                        🌾 Arpa
+                    </div>
+
+                    <div class="feed-info">
+                        DM %89 • NDF %20 • Nişasta %58 • HP %12
+                    </div>
+
+                </div>
+
+                <div class="w-28">
+
+                    <input
+                        id="feedBarley"
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        value="2"
+                        onchange="updateFeedAmount('barley',this.value)">
+
+                </div>
+
+                <div class="text-xs text-slate-500 w-10">
+                    kg
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SOYA -->
+
+        <div class="feed-row">
+
+            <div class="flex items-center justify-between gap-3">
+
+                <div>
+
+                    <div class="feed-name">
+                        🫘 Soya Küspesi
+                    </div>
+
+                    <div class="feed-info">
+                        DM %89 • NDF %12 • Nişasta %3 • HP %48
+                    </div>
+
+                </div>
+
+                <div class="w-28">
+
+                    <input
+                        id="feedSoybean"
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        value="1"
+                        onchange="updateFeedAmount('soybeanMeal',this.value)">
+
+                </div>
+
+                <div class="text-xs text-slate-500 w-10">
+                    kg
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
+
+        <div class="metric">
+            <div class="text-xs text-slate-500">
+                Toplam DM
+            </div>
+
+            <div id="rationDM" class="text-xl font-bold">
+                0 kg
+            </div>
+        </div>
+
+
+        <div class="metric">
+            <div class="text-xs text-slate-500">
+                NDF
+            </div>
+
+            <div id="rationNDF" class="text-xl font-bold">
+                0%
+            </div>
+        </div>
+
+
+        <div class="metric">
+            <div class="text-xs text-slate-500">
+                Nişasta
+            </div>
+
+            <div id="rationStarch" class="text-xl font-bold">
+                0%
+            </div>
+        </div>
+
+
+        <div class="metric">
+            <div class="text-xs text-slate-500">
+                Ham Protein
+            </div>
+
+            <div id="rationCP" class="text-xl font-bold">
+                0%
+            </div>
+        </div>
+
+
+        <div class="metric">
+            <div class="text-xs text-slate-500">
+                ADF
+            </div>
+
+            <div id="rationADF" class="text-xl font-bold">
+                0%
+            </div>
+        </div>
+
+
+        <div class="metric">
+            <div class="text-xs text-slate-500">
+                Forage NDF
+            </div>
+
+            <div id="rationFNDF" class="text-xl font-bold">
+                0%
+            </div>
+        </div>
+
+
+        <div class="metric">
+            <div class="text-xs text-slate-500">
+                Forage
+            </div>
+
+            <div id="rationForage" class="text-xl font-bold">
+                0%
+            </div>
+        </div>
+
+
+        <div class="metric">
+            <div class="text-xs text-slate-500">
+                NDFD
+            </div>
+
+            <div id="rationNDFD" class="text-xl font-bold">
+                0%
+            </div>
+        </div>
+
+    </div>
+
+
+    <div id="rationWarning"
+         class="mt-4 rounded-xl border border-slate-700 p-4 text-sm">
+
+        Rasyon analiz ediliyor...
+
+    </div>
+
+</section>
+
+
+<!-- YEM -->
+
+<section class="glass p-5">
+
+    <div class="flex justify-between items-center mb-5">
+
+        <div>
+
+            <h2 class="text-lg font-bold">
+                Yem Yönetimi
+            </h2>
+
+            <p class="text-xs text-slate-500">
+                Kuru madde tüketimi ve stok
+            </p>
+
+        </div>
+
+        <button onclick="buyFeed()" class="nav-btn text-yellow-400">
+            + 500 kg Yem Al
+        </button>
+
+    </div>
+
+
+    <div class="grid md:grid-cols-3 gap-4">
+
+        <div class="metric">
+
+            <div class="text-xs text-slate-500">
+                Sürü DMI
+            </div>
+
+            <div id="dmiValue" class="text-xl font-bold yellow">
+                0 kg
+            </div>
+
+        </div>
+
+
+        <div class="metric">
+
+            <div class="text-xs text-slate-500">
+                Günlük Yem Maliyeti
+            </div>
+
+            <div id="feedCost" class="text-xl font-bold">
+                0 ₺
+            </div>
+
+        </div>
+
+
+        <div class="metric">
+
+            <div class="text-xs text-slate-500">
+                Yem Durumu
+            </div>
+
+            <div id="feedStatus" class="text-xl font-bold green">
+                NORMAL
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+</div>
+
+
+<!-- =====================================================
+     SAĞ KOLON
+===================================================== -->
+
+<div class="space-y-6">
+
+
+<section class="glass p-5">
+
+    <h2 class="font-bold mb-4">
+        ⏱️ Çiftlik Saati
+    </h2>
+
+    <div id="bigClock" class="text-4xl font-black text-blue-400">
+        06:00
+    </div>
+
+    <div id="dayText" class="text-sm text-slate-500 mt-2">
+        1. Gün
+    </div>
+
+    <div class="mt-5">
+
+        <div class="flex justify-between text-xs mb-2">
+
+            <span>
+                Gün ilerlemesi
+            </span>
+
+            <span id="dayProgressText">
+                0%
+            </span>
+
+        </div>
+
+        <div class="progress">
+
+            <div id="dayProgress"
+                 style="width:0%;background:var(--blue)">
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="mt-5 text-xs text-slate-500">
+
+        Gerçek zaman:
+
+        <b class="text-slate-300">
+            1,25 saniye = 1 oyun dakikası
+        </b>
+
+    </div>
+
+</section>
+
+
+<!-- RASYON ANALİZ -->
+
+<section class="glass p-5">
+
+    <h2 class="font-bold mb-4">
+        🧬 Besleme Analizi
+    </h2>
+
+
+    <div class="space-y-3">
+
+
+        <div>
+
+            <div class="flex justify-between text-xs mb-1">
+
+                <span>
+                    Nişasta
+                </span>
+
+                <span id="starchStatus">
+                    -
+                </span>
+
+            </div>
+
+            <div class="progress">
+
+                <div id="starchBar"
+                     style="width:0%;background:var(--yellow)">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div>
+
+            <div class="flex justify-between text-xs mb-1">
+
+                <span>
+                    NDF
+                </span>
+
+                <span id="ndfStatus">
+                    -
+                </span>
+
+            </div>
+
+            <div class="progress">
+
+                <div id="ndfBar"
+                     style="width:0%;background:var(--green)">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div>
+
+            <div class="flex justify-between text-xs mb-1">
+
+                <span>
+                    Forage NDF
+                </span>
+
+                <span id="fndfStatus">
+                    -
+                </span>
+
+            </div>
+
+            <div class="progress">
+
+                <div id="fndfBar"
+                     style="width:0%;background:var(--blue)">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- FİNANS -->
+
+<section class="glass p-5">
+
+    <h2 class="font-bold mb-4">
+        💰 Finans
+    </h2>
+
+    <div class="space-y-3">
+
+        <div class="flex justify-between">
+
+            <span class="text-slate-500">
+                Süt Geliri
+            </span>
+
+            <span id="income" class="green">
+                0 ₺
+            </span>
+
+        </div>
+
+        <div class="flex justify-between">
+
+            <span class="text-slate-500">
+                Gider
+            </span>
+
+            <span id="expenses" class="red">
+                0 ₺
+            </span>
+
+        </div>
+
+        <div class="border-t border-slate-800 pt-3 flex justify-between font-bold">
+
+            <span>
+                Net
+            </span>
+
+            <span id="netFinance">
+                0 ₺
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- GÜNLÜK -->
+
+<section class="glass p-5">
+
+    <h2 class="font-bold mb-4">
+        📡 Sistem Günlüğü
+    </h2>
+
+    <div id="eventLog"
+         class="max-h-96 overflow-y-auto">
+    </div>
+
+</section>
+
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   ÇİFTLİK SİMÜLASYONU
+   CORE ENGINE v1.2
+========================================================= */
+
+
+/* =========================================================
+   SABİTLER
+========================================================= */
+
+const REAL_SECONDS_PER_GAME_MINUTE = 1.25;
+
+const FEED_PRICE = 14;
+
+const MILK_PRICE = 18;
+
+const INITIAL_MONEY = 150000;
+
+const INITIAL_FEED = 1200;
+
+
+/* =========================================================
+   OYUN
+========================================================= */
+
+let game = {
+
+    day:1,
+
+    minute:360,
+
+    money:INITIAL_MONEY,
+
+    feed:INITIAL_FEED,
+
+    totalMilk:0,
+
+    todayMilk:0,
+
+    income:0,
+
+    expenses:0,
+
+    milkingStrategy:3,
+
+    lastRealTime:Date.now(),
+
+    lastMilking:"",
+
+    cows:[],
+
+    ration:{
+
+        ingredients:{
+
+            cornSilage:{
+                name:"Mısır Silajı",
+                dm:35,
+                ndf:42,
+                starch:30,
+                cp:8,
+                adf:25,
+                ndfd:45,
+                price:4.5
+            },
+
+            alfalfaHay:{
+                name:"Yonca Kuru Otu",
+                dm:90,
+                ndf:40,
+                starch:5,
+                cp:18,
+                adf:30,
+                ndfd:50,
+                price:9
+            },
+
+            cornGrain:{
+                name:"Mısır Dane",
+                dm:88,
+                ndf:10,
+                starch:72,
+                cp:9,
+                adf:3,
+                ndfd:80,
+                price:11
+            },
+
+            barley:{
+                name:"Arpa",
+                dm:89,
+                ndf:20,
+                starch:58,
+                cp:12,
+                adf:7,
+                ndfd:65,
+                price:10
+            },
+
+            soybeanMeal:{
+                name:"Soya Küspesi",
+                dm:89,
+                ndf:12,
+                starch:3,
+                cp:48,
+                adf:7,
+                ndfd:60,
+                price:18
+            }
+
+        },
+
+        amounts:{
+
+            cornSilage:12,
+
+            alfalfaHay:4,
+
+            cornGrain:4,
+
+            barley:2,
+
+            soybeanMeal:1
+
+        },
+
+        totalDM:0,
+
+        totalNDF:0,
+
+        forageNDF:0,
+
+        starch:0,
+
+        crudeProtein:0,
+
+        ADF:0,
+
+        FNDFD:0,
+
+        forage:0,
+
+        concentrate:0
+
+    }
+
+};
+
+
+/* =========================================================
+   İNEK
+========================================================= */
+
+function createCow(id){
+
+    const weight =
+        570+
+        Math.random()*90;
+
+    const potential =
+        28+
+        Math.random()*8;
+
+    return{
+
+        id:id,
+
+        name:"İnek "+id,
+
+        weight:Math.round(weight),
+
+        lactationDay:
+            Math.floor(
+                Math.random()*180
+            )+1,
+
+        milkPotential:potential,
+
+        milkYield:potential,
+
+        udderFill:
+            30+
+            Math.random()*20,
+
+        bcs:
+            2.8+
+            Math.random()*.5,
+
+        health:100,
+
+        rumenPH:6.1,
+
+        saraRisk:0,
+
+        energyBalance:0,
+
+        diseaseRisk:0
+
+    };
+
+}
+
+
+/* =========================================================
+   SÜRÜ OLUŞTUR
+========================================================= */
+
+function createInitialHerd(){
+
+    game.cows=[];
+
+    for(
+        let i=1;
+        i<=24;
+        i++
+    ){
+
+        game.cows.push(
+            createCow(i)
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   KAYDET
+========================================================= */
+
+function saveGame(){
+
+    game.lastRealTime =
+        Date.now();
+
+    localStorage.setItem(
+        "ciftlikSimulasyonu",
+        JSON.stringify(game)
+    );
+
+}
+
+
+/* =========================================================
+   YÜKLE
+========================================================= */
+
+function loadGame(){
+
+    const saved =
+        localStorage.getItem(
+            "ciftlikSimulasyonu"
+        );
+
+    if(!saved){
+
+        createInitialHerd();
+
+        updateRationAnalysis();
+
+        return;
+
+    }
+
+    try{
+
+        const old =
+            JSON.parse(saved);
+
+        game={
+            ...game,
+            ...old
+        };
+
+
+        /*
+          Yeni rasyon sistemi.
+        */
+
+        if(
+            !game.ration ||
+            !game.ration.ingredients
+        ){
+
+            game.ration={
+                ...game.ration,
+
+                ingredients:{
+
+                    cornSilage:{
+                        name:"Mısır Silajı",
+                        dm:35,
+                        ndf:42,
+                        starch:30,
+                        cp:8,
+                        adf:25,
+                        ndfd:45,
+                        price:4.5
+                    },
+
+                    alfalfaHay:{
+                        name:"Yonca Kuru Otu",
+                        dm:90,
+                        ndf:40,
+                        starch:5,
+                        cp:18,
+                        adf:30,
+                        ndfd:50,
+                        price:9
+                    },
+
+                    cornGrain:{
+                        name:"Mısır Dane",
+                        dm:88,
+                        ndf:10,
+                        starch:72,
+                        cp:9,
+                        adf:3,
+                        ndfd:80,
+                        price:11
+                    },
+
+                    barley:{
+                        name:"Arpa",
+                        dm:89,
+                        ndf:20,
+                        starch:58,
+                        cp:12,
+                        adf:7,
+                        ndfd:65,
+                        price:10
+                    },
+
+                    soybeanMeal:{
+                        name:"Soya Küspesi",
+                        dm:89,
+                        ndf:12,
+                        starch:3,
+                        cp:48,
+                        adf:7,
+                        ndfd:60,
+                        price:18
+                    }
+
+                },
+
+                amounts:{
+                    cornSilage:12,
+                    alfalfaHay:4,
+                    cornGrain:4,
+                    barley:2,
+                    soybeanMeal:1
+                }
+
+            };
+
+        }
+
+
+        if(
+            !game.ration.amounts
+        ){
+
+            game.ration.amounts={
+                cornSilage:12,
+                alfalfaHay:4,
+                cornGrain:4,
+                barley:2,
+                soybeanMeal:1
+            };
+
+        }
+
+
+        game.cows.forEach(
+            cow=>{
+
+                if(cow.milkYield===undefined)
+                    cow.milkYield=
+                        cow.milkPotential;
+
+                if(cow.rumenPH===undefined)
+                    cow.rumenPH=6.1;
+
+                if(cow.saraRisk===undefined)
+                    cow.saraRisk=0;
+
+                if(cow.energyBalance===undefined)
+                    cow.energyBalance=0;
+
+                if(cow.diseaseRisk===undefined)
+                    cow.diseaseRisk=0;
+
+            }
+        );
+
+
+        updateRationAnalysis();
+
+        calculateOfflineProgress();
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        createInitialHerd();
+
+        updateRationAnalysis();
+
+    }
+
+}
+
+
+/* =========================================================
+   RASYON ANALİZİ
+========================================================= */
+
+function calculateRation(){
+
+    const r =
+        game.ration;
+
+    let totalDM=0;
+
+    let ndf=0;
+
+    let starch=0;
+
+    let cp=0;
+
+    let adf=0;
+
+    let forageNDF=0;
+
+    let forageDM=0;
+
+    let concentrateDM=0;
+
+    let weightedNDFD=0;
+
+
+    Object.entries(
+        r.amounts
+    ).forEach(
+        ([key,amount])=>{
+
+            const feed =
+                r.ingredients[key];
+
+            if(!feed)
+                return;
+
+            const safeAmount =
+                Math.max(
+                    0,
+                    Number(amount)||0
+                );
+
+
+            const dm =
+                safeAmount*
+                (
+                    feed.dm/
+                    100
+                );
+
+
+            totalDM+=dm;
+
+
+            ndf+=
+                dm*
+                (
+                    feed.ndf/
+                    100
+                );
+
+
+            starch+=
+                dm*
+                (
+                    feed.starch/
+                    100
+                );
+
+
+            cp+=
+                dm*
+                (
+                    feed.cp/
+                    100
+                );
+
+
+            adf+=
+                dm*
+                (
+                    feed.adf/
+                    100
+                );
+
+
+            weightedNDFD+=
+                dm*
+                (
+                    feed.ndfd/
+                    100
+                );
+
+
+            if(
+                key==="cornSilage" ||
+                key==="alfalfaHay"
+            ){
+
+                forageNDF+=
+                    dm*
+                    (
+                        feed.ndf/
+                        100
+                    );
+
+                forageDM+=dm;
+
+            }
+
+            else{
+
+                concentrateDM+=dm;
+
+            }
+
+        }
+    );
+
+
+    if(totalDM<=0){
+
+        return{
+
+            dm:0,
+            ndf:0,
+            starch:0,
+            cp:0,
+            adf:0,
+            forageNDF:0,
+            forage:0,
+            concentrate:0,
+            ndfd:0
+
+        };
+
+    }
+
+
+    return{
+
+        dm:totalDM,
+
+        ndf:
+            (
+                ndf/
+                totalDM
+            )*
+            100,
+
+        starch:
+            (
+                starch/
+                totalDM
+            )*
+            100,
+
+        cp:
+            (
+                cp/
+                totalDM
+            )*
+            100,
+
+        adf:
+            (
+                adf/
+                totalDM
+            )*
+            100,
+
+        forageNDF:
+            (
+                forageNDF/
+                totalDM
+            )*
+            100,
+
+        forage:
+            (
+                forageDM/
+                totalDM
+            )*
+            100,
+
+        concentrate:
+            (
+                concentrateDM/
+                totalDM
+            )*
+            100,
+
+        ndfd:
+            (
+                weightedNDFD/
+                totalDM
+            )*
+            100
+
+    };
+
+}
+
+
+/* =========================================================
+   RASYON DEĞERLERİNİ OYUNA AKTAR
+========================================================= */
+
+function updateRationAnalysis(){
+
+    const analysis =
+        calculateRation();
+
+
+    game.ration.totalDM =
+        analysis.dm;
+
+    game.ration.totalNDF =
+        analysis.ndf;
+
+    game.ration.starch =
+        analysis.starch;
+
+    game.ration.crudeProtein =
+        analysis.cp;
+
+    game.ration.ADF =
+        analysis.adf;
+
+    game.ration.forageNDF =
+        analysis.forageNDF;
+
+    game.ration.forage =
+        analysis.forage;
+
+    game.ration.concentrate =
+        analysis.concentrate;
+
+    game.ration.FNDFD =
+        analysis.ndfd;
+
+}
+
+
+/* =========================================================
+   YEM MİKTARI DEĞİŞTİR
+========================================================= */
+
+function updateFeedAmount(
+    key,
+    value
+){
+
+    if(
+        !game.ration.amounts[key]
+        &&
+        game.ration.amounts[key]!==0
+    ){
+
+        return;
+
+    }
+
+
+    game.ration.amounts[key] =
+        Math.max(
+            0,
+            Number(value)||0
+        );
+
+
+    updateRationAnalysis();
+
+    render();
+
+    saveGame();
+
+}
+
+
+/* =========================================================
+   RASYON UYARILARI
+========================================================= */
+
+function getRationWarnings(){
+
+    const r =
+        game.ration;
+
+    const warnings=[];
+
+
+    if(
+        r.starch>28
+    ){
+
+        warnings.push(
+            "⚠ Yüksek nişasta: rumen asidozu/SARA riski artabilir."
+        );
+
+    }
+
+
+    if(
+        r.starch<18
+    ){
+
+        warnings.push(
+            "ℹ Nişasta düzeyi düşük; yüksek verimli hayvanlarda enerji arzı ayrıca değerlendirilmelidir."
+        );
+
+    }
+
+
+    if(
+        r.totalNDF<28
+    ){
+
+        warnings.push(
+            "⚠ Toplam NDF düşük."
+        );
+
+    }
+
+
+    if(
+        r.totalNDF>40
+    ){
+
+        warnings.push(
+            "⚠ Toplam NDF yüksek; DMI sınırlanabilir."
+        );
+
+    }
+
+
+    if(
+        r.forageNDF<18
+    ){
+
+        warnings.push(
+            "⚠ Forage NDF düşük; fiziksel etkin lif açısından dikkat."
+        );
+
+    }
+
+
+    if(
+        r.crudeProtein<14
+    ){
+
+        warnings.push(
+            "⚠ Ham protein düşük."
+        );
+
+    }
+
+
+    if(
+        r.crudeProtein>19
+    ){
+
+        warnings.push(
+            "ℹ Ham protein yüksek; protein/enerji dengesi değerlendirilmelidir."
+        );
+
+    }
+
+
+    if(
+        warnings.length===0
+    ){
+
+        warnings.push(
+            "✓ Rasyon temel simülasyon sınırları içerisinde."
+        );
+
+    }
+
+
+    return warnings;
+
+}
+
+
+/* =========================================================
+   DMI
+========================================================= */
+
+function calculateDMI(cow){
+
+    const r =
+        game.ration;
+
+
+    const MY =
+        cow.milkYield*
+        2.20462;
+
+
+    const ADF_NDF =
+        r.ADF/
+        Math.max(
+            0.01,
+            r.totalNDF
+        );
+
+
+    let dmiLb =
+
+        12.0
+
+        -0.107*
+        r.forageNDF
+
+        +8.17*
+        ADF_NDF
+
+        +0.0253*
+        r.FNDFD
+
+        -0.328*
+        (
+            ADF_NDF-
+            0.602
+        )*
+        (
+            r.FNDFD-
+            48.3
+        )
+
+        +0.225*
+        MY
+
+        +0.00390*
+        (
+            r.FNDFD-
+            48.3
+        )*
+        (
+            MY-
+            33.1
+        );
+
+
+    let dmiKg =
+        dmiLb*
+        0.453592;
+
+
+    dmiKg =
+        Math.max(
+            8,
+            Math.min(
+                30,
+                dmiKg
+            )
+        );
+
+
+    if(cow.bcs<2.5){
+
+        dmiKg*=0.95;
+
+    }
+
+
+    if(cow.health<80){
+
+        dmiKg*=
+            0.95+
+            (
+                cow.health/
+                1000
+            );
+
+    }
+
+
+    return dmiKg;
+
+}
+
+
+/* =========================================================
+   WOOD
+========================================================= */
+
+function calculateMilkProduction(cow){
+
+    const t =
+        Math.max(
+            1,
+            cow.lactationDay
+        );
+
+
+    const a =
+        cow.milkPotential*
+        1.8;
+
+    const b =
+        0.18;
+
+    const c =
+        0.003;
+
+
+    let milk =
+
+        a*
+        Math.pow(
+            t,
+            b
+        )*
+        Math.exp(
+            -c*t
+        );
+
+
+    const bcsPenalty =
+        Math.abs(
+            cow.bcs-
+            3.0
+        )*
+        0.08;
+
+
+    milk*=
+        1-
+        bcsPenalty;
+
+
+    milk*=
+        cow.health/
+        100;
+
+
+    if(
+        cow.rumenPH<5.8
+    ){
+
+        milk*=0.95;
+
+    }
+
+
+    if(
+        cow.rumenPH<5.5
+    ){
+
+        milk*=0.88;
+
+    }
+
+
+    if(
+        cow.udderFill>100
+    ){
+
+        const penalty =
+            Math.min(
+                0.30,
+                (
+                    cow.udderFill-
+                    100
+                )/
+                100
+            );
+
+
+        milk*=
+            1-
+            penalty;
+
+    }
+
+
+    return Math.max(
+        0,
+        milk
+    );
+
+}
+
+
+/* =========================================================
+   RUMEN pH
+========================================================= */
+
+function calculateRumenPH(cow){
+
+    const r =
+        game.ration;
+
+
+    let ph=6.2;
+
+
+    ph+=
+        (
+            r.totalNDF-
+            30
+        )*
+        0.025;
+
+
+    ph-=
+        (
+            r.starch-
+            20
+        )*
+        0.035;
+
+
+    ph-=
+        Math.max(
+            0,
+            r.concentrate-
+            45
+        )*
+        0.015;
+
+
+    ph+=
+        (
+            r.forageNDF-
+            20
+        )*
+        0.01;
+
+
+    return Math.max(
+        5.2,
+        Math.min(
+            6.6,
+            ph
+        )
+    );
+
+}
+
+
+/* =========================================================
+   SARA
+========================================================= */
+
+function calculateSARARisk(cow){
+
+    const ph =
+        cow.rumenPH;
+
+
+    if(ph>=5.8)
+        return 0;
+
+
+    if(ph>=5.6)
+        return 25;
+
+
+    if(ph>=5.4)
+        return 55;
+
+
+    return 85;
+
+}
+
+
+/* =========================================================
+   BİYOLOJİ
+========================================================= */
+
+function updateCowBiology(cow){
+
+    cow.rumenPH =
+        calculateRumenPH(
+            cow
+        );
+
+
+    cow.saraRisk =
+        calculateSARARisk(
+            cow
+        );
+
+
+    if(
+        cow.saraRisk>50
+    ){
+
+        cow.health-=0.002;
+
+    }
+
+
+    const dmi =
+        calculateDMI(
+            cow
+        );
+
+
+    const energyDemand =
+
+        9+
+        (
+            cow.milkYield*
+            0.70
+        );
+
+
+    const energySupply =
+
+        dmi*
+        1.60;
+
+
+    cow.energyBalance =
+
+        energySupply-
+        energyDemand;
+
+
+    if(
+        cow.energyBalance<0
+    ){
+
+        cow.bcs-=0.0005;
+
+    }
+
+
+    if(
+        cow.energyBalance>4 &&
+        cow.lactationDay>100
+    ){
+
+        cow.bcs+=0.0001;
+
+    }
+
+
+    cow.diseaseRisk =
+
+        (
+            cow.saraRisk*
+            0.45
+        )
+
+        +
+
+        (
+            Math.max(
+                0,
+                2.75-
+                cow.bcs
+            )*
+            15
+        )
+
+        +
+
+        (
+            Math.max(
+                0,
+                85-
+                cow.health
+            )*
+            0.25
+        );
+
+
+    cow.diseaseRisk =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                cow.diseaseRisk
+            )
+        );
+
+
+    cow.bcs =
+        Math.max(
+            2,
+            Math.min(
+                4.5,
+                cow.bcs
+            )
+        );
+
+
+    cow.health =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                cow.health
+            )
+        );
+
+}
+
+
+/* =========================================================
+   BİYOLOJİK TICK
+========================================================= */
+
+function biologicalTick(){
+
+    updateRationAnalysis();
+
+
+    game.cows.forEach(
+        cow=>{
+
+            updateCowBiology(
+                cow
+            );
+
+
+            cow.milkYield =
+                calculateMilkProduction(
+                    cow
+                );
+
+
+            const milkPerMinute =
+                cow.milkYield/
+                1440;
+
+
+            const fillIncrease =
+
+                (
+                    milkPerMinute/
+                    Math.max(
+                        0.1,
+                        cow.milkPotential
+                    )
+                )*
+                100;
+
+
+            cow.udderFill+=
+                fillIncrease;
+
+
+            if(
+                cow.udderFill>100
+            ){
+
+                cow.health-=0.0005;
+
+            }
+
+        }
+    );
+
+
+    const totalDMI =
+
+        game.cows.reduce(
+            (
+                sum,
+                cow
+            )=>
+
+                sum+
+                calculateDMI(
+                    cow
+                ),
+
+            0
+        );
+
+
+    const feedPerMinute =
+        totalDMI/
+        1440;
+
+
+    game.feed-=
+        feedPerMinute;
+
+
+    if(
+        game.feed<=0
+    ){
+
+        game.feed=0;
+
+
+        game.cows.forEach(
+            cow=>{
+
+                cow.health-=0.01;
+
+                cow.energyBalance-=0.1;
+
+            }
+        );
+
+    }
+
+
+    game.expenses+=
+        feedPerMinute*
+        FEED_PRICE;
+
+}
+
+
+/* =========================================================
+   OFFLINE
+========================================================= */
+
+function calculateOfflineProgress(){
+
+    const now =
+        Date.now();
+
+
+    const elapsed =
+        Math.max(
+            0,
+            now-game.lastRealTime
+        );
+
+
+    const gameMinutes =
+        Math.floor(
+            elapsed/
+            (
+                REAL_SECONDS_PER_GAME_MINUTE*
+                1000
+            )
+        );
+
+
+    if(gameMinutes<1)
+        return;
+
+
+    const processedMinutes =
+        Math.min(
+            gameMinutes,
+            10080
+        );
+
+
+    advanceGameTime(
+        processedMinutes
+    );
+
+
+    addLog(
+        `Offline ilerleme: ${processedMinutes} oyun dakikası işlendi.`
+    );
+
+}
+
+
+/* =========================================================
+   ZAMAN
+========================================================= */
+
+function advanceGameTime(minutes){
+
+    for(
+        let i=0;
+        i<minutes;
+        i++
+    ){
+
+        game.minute++;
+
+
+        if(
+            game.minute>=1440
+        ){
+
+            game.minute=0;
+
+            game.day++;
+
+            game.todayMilk=0;
+
+
+            game.cows.forEach(
+                cow=>{
+                    cow.lactationDay++;
+                }
+            );
+
+
+            addLog(
+                `Yeni gün başladı: ${game.day}. gün`
+            );
+
+        }
+
+
+        biologicalTick();
+
+    }
+
+}
+
+
+/* =========================================================
+   SAĞIM
+========================================================= */
+
+function milkHerd(){
+
+    let milk=0;
+
+    let stressed=0;
+
+
+    game.cows.forEach(
+        cow=>{
+
+            let yieldAmount =
+
+                cow.milkYield*
+                (
+                    cow.udderFill/
+                    100
+                );
+
+
+            if(
+                cow.udderFill>100
+            ){
+
+                const penalty =
+                    Math.min(
+                        0.30,
+                        (
+                            cow.udderFill-
+                            100
+                        )/
+                        100
+                    );
+
+
+                yieldAmount*=
+                    1-
+                    penalty;
+
+
+                stressed++;
+
+            }
+
+
+            milk+=
+                yieldAmount;
+
+
+            cow.udderFill=
+                Math.max(
+                    5,
+                    cow.udderFill-
+                    82
+                );
+
+        }
+    );
+
+
+    if(
+        game.milkingStrategy===4
+    ){
+
+        milk*=1.06;
+
+    }
+
+    else if(
+        game.milkingStrategy===2
+    ){
+
+        milk*=0.94;
+
+    }
+
+
+    milk=Math.max(
+        0,
+        milk
+    );
+
+
+    game.totalMilk+=milk;
+
+    game.todayMilk+=milk;
+
+
+    const income =
+        milk*
+        MILK_PRICE;
+
+
+    game.money+=income;
+
+    game.income+=income;
+
+
+    game.lastMilking=
+        formatGameTime();
+
+
+    addLog(
+        `Sağım tamamlandı: ${milk.toFixed(1)} L | Gelir: ${income.toFixed(0)} ₺`
+    );
+
+
+    if(
+        stressed>0
+    ){
+
+        addLog(
+            `⚠ ${stressed} hayvanda yüksek meme doluluğu tespit edildi.`
+        );
+
+    }
+
+
+    render();
+
+    saveGame();
+
+}
+
+
+/* =========================================================
+   SAĞIM STRATEJİSİ
+========================================================= */
+
+function setMilkingStrategy(times){
+
+    game.milkingStrategy=
+        times;
+
+    addLog(
+        `Sağım stratejisi ${times}X olarak ayarlandı.`
+    );
+
+    render();
+
+    saveGame();
+
+}
+
+
+/* =========================================================
+   HAYVAN EKLE
+========================================================= */
+
+function addCow(){
+
+    const id =
+        game.cows.length+
+        1;
+
+
+    game.cows.push(
+        createCow(id)
+    );
+
+
+    addLog(
+        `Sürüye İnek ${id} eklendi.`
+    );
+
+
+    render();
+
+    saveGame();
+
+}
+
+
+/* =========================================================
+   YEM AL
+========================================================= */
+
+function buyFeed(){
+
+    const amount=500;
+
+    const cost =
+        amount*
+        FEED_PRICE;
+
+
+    if(
+        game.money<
+        cost
+    ){
+
+        addLog(
+            "⚠ Yem almak için yeterli nakit yok."
+        );
+
+        return;
+
+    }
+
+
+    game.money-=cost;
+
+    game.expenses+=cost;
+
+    game.feed+=amount;
+
+
+    addLog(
+        `500 kg yem satın alındı. Maliyet: ${cost.toLocaleString("tr-TR")} ₺`
+    );
+
+
+    render();
+
+    saveGame();
+
+}
+
+
+/* =========================================================
+   SAAT
+========================================================= */
+
+function formatGameTime(){
+
+    const hours =
+        Math.floor(
+            game.minute/
+            60
+        );
+
+
+    const minutes =
+        game.minute%
+        60;
+
+
+    return(
+
+        String(hours)
+        .padStart(2,"0")
+
+        +
+
+        ":"
+
+        +
+
+        String(minutes)
+        .padStart(2,"0")
+
+    );
+
+}
+
+
+/* =========================================================
+   LOG
+========================================================= */
+
+function addLog(message){
+
+    const time =
+        new Date()
+        .toLocaleTimeString(
+            "tr-TR",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit"
+            }
+        );
+
+
+    const logs =
+        JSON.parse(
+            localStorage.getItem(
+                "ciftlikLogs"
+            )||
+            "[]"
+        );
+
+
+    logs.unshift(
+        `${time} | ${message}`
+    );
+
+
+    logs.splice(40);
+
+
+    localStorage.setItem(
+        "ciftlikLogs",
+        JSON.stringify(logs)
+    );
+
+
+    renderLogs();
+
+}
+
+
+/* =========================================================
+   LOG RENDER
+========================================================= */
+
+function renderLogs(){
+
+    const container =
+        document.getElementById(
+            "eventLog"
+        );
+
+
+    if(!container)
+        return;
+
+
+    const logs =
+        JSON.parse(
+            localStorage.getItem(
+                "ciftlikLogs"
+            )||
+            "[]"
+        );
+
+
+    container.innerHTML =
+
+        logs.map(
+            log=>
+                `<div class="log">
+                    ${log}
+                </div>`
+        ).join("");
+
+}
+
+
+/* =========================================================
+   RASYON RENDER
+========================================================= */
+
+function renderRation(){
+
+    updateRationAnalysis();
+
+
+    const r =
+        game.ration;
+
+
+    document.getElementById(
+        "rationDM"
+    ).textContent =
+        `${r.totalDM.toFixed(1)} kg`;
+
+
+    document.getElementById(
+        "rationNDF"
+    ).textContent =
+        `${r.totalNDF.toFixed(1)}%`;
+
+
+    document.getElementById(
+        "rationStarch"
+    ).textContent =
+        `${r.starch.toFixed(1)}%`;
+
+
+    document.getElementById(
+        "rationCP"
+    ).textContent =
+        `${r.crudeProtein.toFixed(1)}%`;
+
+
+    document.getElementById(
+        "rationADF"
+    ).textContent =
+        `${r.ADF.toFixed(1)}%`;
+
+
+    document.getElementById(
+        "rationFNDF"
+    ).textContent =
+        `${r.forageNDF.toFixed(1)}%`;
+
+
+    document.getElementById(
+        "rationForage"
+    ).textContent =
+        `${r.forage.toFixed(1)}%`;
+
+
+    document.getElementById(
+        "rationNDFD"
+    ).textContent =
+        `${r.FNDFD.toFixed(1)}%`;
+
+
+    /*
+      Input değerlerini
+      kayıt ile senkronize et.
+    */
+
+    const fields={
+
+        feedCornSilage:
+            "cornSilage",
+
+        feedAlfalfa:
+            "alfalfaHay",
+
+        feedCornGrain:
+            "cornGrain",
+
+        feedBarley:
+            "barley",
+
+        feedSoybean:
+            "soybeanMeal"
+
+    };
+
+
+    Object.entries(
+        fields
+    ).forEach(
+        ([id,key])=>{
+
+            const input =
+                document.getElementById(
+                    id
+                );
+
+
+            if(
+                input &&
+                document.activeElement!==input
+            ){
+
+                input.value =
+                    game.ration.amounts[key];
+
+            }
+
+        }
+    );
+
+
+    /*
+      Uyarı
+    */
+
+    const warnings =
+        getRationWarnings();
+
+
+    const warningBox =
+        document.getElementById(
+            "rationWarning"
+        );
+
+
+    warningBox.innerHTML =
+        warnings.map(
+            warning=>
+                `<div class="mb-1">
+                    ${warning}
+                </div>`
+        ).join("");
+
+
+    /*
+      Barlar
+    */
+
+    const starchBar =
+        document.getElementById(
+            "starchBar"
+        );
+
+
+    starchBar.style.width =
+        `${Math.min(
+            100,
+            (
+                r.starch/
+                35
+            )*
+            100
+        )}%`;
+
+
+    document.getElementById(
+        "starchStatus"
+    ).textContent =
+        `${r.starch.toFixed(1)}%`;
+
+
+    const ndfBar =
+        document.getElementById(
+            "ndfBar"
+        );
+
+
+    ndfBar.style.width =
+        `${Math.min(
+            100,
+            (
+                r.totalNDF/
+                45
+            )*
+            100
+        )}%`;
+
+
+    document.getElementById(
+        "ndfStatus"
+    ).textContent =
+        `${r.totalNDF.toFixed(1)}%`;
+
+
+    const fndfBar =
+        document.getElementById(
+            "fndfBar"
+        );
+
+
+    fndfBar.style.width =
+        `${Math.min(
+            100,
+            (
+                r.forageNDF/
+                35
+            )*
+            100
+        )}%`;
+
+
+    document.getElementById(
+        "fndfStatus"
+    ).textContent =
+        `${r.forageNDF.toFixed(1)}%`;
+
+}
+
+
+/* =========================================================
+   SÜRÜ RENDER
+========================================================= */
+
+function renderHerd(){
+
+    const container =
+        document.getElementById(
+            "herdContainer"
+        );
+
+
+    container.innerHTML =
+
+        game.cows.map(
+            cow=>{
+
+                let status="NORMAL";
+
+                let statusClass="green";
+
+
+                if(
+                    cow.udderFill>=100
+                ){
+
+                    status=
+                        "YÜKSEK MEME DOLULUĞU";
+
+                    statusClass=
+                        "red";
+
+                }
+
+                else if(
+                    cow.saraRisk>=50
+                ){
+
+                    status=
+                        "SARA RİSKİ";
+
+                    statusClass=
+                        "red";
+
+                }
+
+                else if(
+                    cow.health<80
+                ){
+
+                    status=
+                        "SAĞLIK TAKİBİ";
+
+                    statusClass=
+                        "yellow";
+
+                }
+
+
+                return`
+
+                <div class="cow">
+
+                    <div class="flex justify-between">
+
+                        <b>
+                            🐄 ${cow.name}
+                        </b>
+
+                        <span class="${statusClass}">
+                            ●
+                        </span>
+
+                    </div>
+
+
+                    <div class="text-xs text-slate-500 mt-2">
+                        BW: ${cow.weight} kg
+                    </div>
+
+
+                    <div class="text-xs text-slate-500">
+                        Laktasyon: ${cow.lactationDay}. gün
+                    </div>
+
+
+                    <div class="mt-3">
+
+                        <div class="flex justify-between text-xs mb-1">
+
+                            <span>
+                                Meme doluluğu
+                            </span>
+
+                            <span>
+                                ${cow.udderFill.toFixed(1)}%
+                            </span>
+
+                        </div>
+
+
+                        <div class="progress">
+
+                            <div
+                                style="
+                                width:${Math.min(
+                                    100,
+                                    cow.udderFill
+                                )}%;
+                                background:${
+                                    cow.udderFill>=100
+                                    ?
+                                    'var(--red)'
+                                    :
+                                    'var(--blue)'
+                                };
+                                ">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mt-3 grid grid-cols-2 gap-2">
+
+
+                        <div class="metric">
+
+                            <div class="text-xs text-slate-500">
+                                DMI
+                            </div>
+
+                            <b>
+                                ${calculateDMI(cow).toFixed(1)} kg
+                            </b>
+
+                        </div>
+
+
+                        <div class="metric">
+
+                            <div class="text-xs text-slate-500">
+                                Süt
+                            </div>
+
+                            <b class="green">
+                                ${cow.milkYield.toFixed(1)} L
+                            </b>
+
+                        </div>
+
+
+                        <div class="metric">
+
+                            <div class="text-xs text-slate-500">
+                                Rumen pH
+                            </div>
+
+                            <b class="${
+                                cow.rumenPH<5.8
+                                ?
+                                'red'
+                                :
+                                'green'
+                            }">
+
+                                ${cow.rumenPH.toFixed(2)}
+
+                            </b>
+
+                        </div>
+
+
+                        <div class="metric">
+
+                            <div class="text-xs text-slate-500">
+                                SARA
+                            </div>
+
+                            <b class="${
+                                cow.saraRisk>=50
+                                ?
+                                'red'
+                                :
+                                'green'
+                            }">
+
+                                ${cow.saraRisk.toFixed(0)}%
+
+                            </b>
+
+                        </div>
+
+
+                        <div class="metric">
+
+                            <div class="text-xs text-slate-500">
+                                BCS
+                            </div>
+
+                            <b>
+                                ${cow.bcs.toFixed(2)}
+                            </b>
+
+                        </div>
+
+
+                        <div class="metric">
+
+                            <div class="text-xs text-slate-500">
+                                Sağlık
+                            </div>
+
+                            <b class="${
+                                cow.health<80
+                                ?
+                                'red'
+                                :
+                                'green'
+                            }">
+
+                                ${cow.health.toFixed(1)}%
+
+                            </b>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mt-3 text-xs ${statusClass}">
+                        ● ${status}
+                    </div>
+
+                </div>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* =========================================================
+   ANA RENDER
+========================================================= */
+
+function render(){
+
+    updateRationAnalysis();
+
+
+    document.getElementById(
+        "gameClock"
+    ).textContent =
+        `Gün ${game.day} • ${formatGameTime()}`;
+
+
+    document.getElementById(
+        "bigClock"
+    ).textContent =
+        formatGameTime();
+
+
+    document.getElementById(
+        "dayText"
+    ).textContent =
+        `${game.day}. Gün`;
+
+
+    const dayProgress =
+        (
+            game.minute/
+            1440
+        )*
+        100;
+
+
+    document.getElementById(
+        "dayProgress"
+    ).style.width =
+        `${dayProgress}%`;
+
+
+    document.getElementById(
+        "dayProgressText"
+    ).textContent =
+        `${dayProgress.toFixed(1)}%`;
+
+
+    document.getElementById(
+        "herdKpi"
+    ).textContent =
+        game.cows.length;
+
+
+    document.getElementById(
+        "milkKpi"
+    ).textContent =
+        `${game.todayMilk.toFixed(1)} L`;
+
+
+    document.getElementById(
+        "totalMilk"
+    ).textContent =
+        `${game.totalMilk.toFixed(1)} L`;
+
+
+    document.getElementById(
+        "feedKpi"
+    ).textContent =
+        `${Math.max(
+            0,
+            game.feed
+        ).toFixed(0)} kg`;
+
+
+    document.getElementById(
+        "moneyKpi"
+    ).textContent =
+        `${game.money.toLocaleString(
+            "tr-TR",
+            {
+                maximumFractionDigits:0
+            }
+        )} ₺`;
+
+
+    const averageUdder =
+
+        game.cows.length
+
+        ?
+
+        game.cows.reduce(
+            (
+                sum,
+                cow
+            )=>
+                sum+
+                cow.udderFill,
+            0
+        )/
+        game.cows.length
+
+        :
+        0;
+
+
+    document.getElementById(
+        "udderKpi"
+    ).textContent =
+        `${averageUdder.toFixed(1)}%`;
+
+
+    const averagePH =
+
+        game.cows.length
+
+        ?
+
+        game.cows.reduce(
+            (
+                sum,
+                cow
+            )=>
+                sum+
+                cow.rumenPH,
+            0
+        )/
+        game.cows.length
+
+        :
+        0;
+
+
+    document.getElementById(
+        "rumenKpi"
+    ).textContent =
+        averagePH.toFixed(2);
+
+
+    const herdDMI =
+
+        game.cows.reduce(
+            (
+                sum,
+                cow
+            )=>
+
+                sum+
+                calculateDMI(
+                    cow
+                ),
+
+            0
+        );
+
+
+    document.getElementById(
+        "dmiValue"
+    ).textContent =
+        `${herdDMI.toFixed(1)} kg`;
+
+
+    document.getElementById(
+        "feedCost"
+    ).textContent =
+        `${(
+            herdDMI*
+            FEED_PRICE
+        ).toLocaleString(
+            "tr-TR"
+        )} ₺/gün`;
+
+
+    document.getElementById(
+        "income"
+    ).textContent =
+        `${game.income.toLocaleString(
+            "tr-TR",
+            {
+                maximumFractionDigits:0
+            }
+        )} ₺`;
+
+
+    document.getElementById(
+        "expenses"
+    ).textContent =
+        `${game.expenses.toLocaleString(
+            "tr-TR",
+            {
+                maximumFractionDigits:0
+            }
+        )} ₺`;
+
+
+    const net =
+        game.income-
+        game.expenses;
+
+
+    const netElement =
+        document.getElementById(
+            "netFinance"
+        );
+
+
+    netElement.textContent =
+        `${net.toLocaleString(
+            "tr-TR",
+            {
+                maximumFractionDigits:0
+            }
+        )} ₺`;
+
+
+    netElement.className =
+        net>=0
+        ?
+        "green"
+        :
+        "red";
+
+
+    document.getElementById(
+        "lastMilking"
+    ).textContent =
+        game.lastMilking||
+        "Henüz yapılmadı";
+
+
+    const feedStatus =
+        document.getElementById(
+            "feedStatus"
+        );
+
+
+    if(
+        game.feed<200
+    ){
+
+        feedStatus.textContent=
+            "KRİTİK";
+
+        feedStatus.className=
+            "text-xl font-bold red";
+
+    }
+
+    else if(
+        game.feed<500
+    ){
+
+        feedStatus.textContent=
+            "AZALIYOR";
+
+        feedStatus.className=
+            "text-xl font-bold yellow";
+
+    }
+
+    else{
+
+        feedStatus.textContent=
+            "NORMAL";
+
+        feedStatus.className=
+            "text-xl font-bold green";
+
+    }
+
+
+    [2,3,4].forEach(
+        strategy=>{
+
+            const button=
+                document.getElementById(
+                    "milking"+
+                    strategy
+                );
+
+
+            button.classList.toggle(
+                "active-strategy",
+                game.milkingStrategy===
+                strategy
+            );
+
+        }
+    );
+
+
+    renderRation();
+
+    renderHerd();
+
+    renderLogs();
+
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetGame(){
+
+    const confirmed=
+        confirm(
+            "Tüm çiftlik verileri silinsin mi?"
+        );
+
+
+    if(!confirmed)
+        return;
+
+
+    localStorage.removeItem(
+        "ciftlikSimulasyonu"
+    );
+
+
+    localStorage.removeItem(
+        "ciftlikLogs"
+    );
+
+
+    location.reload();
+
+}
+
+
+/* =========================================================
+   GERÇEK ZAMAN
+========================================================= */
+
+let lastTick=
+    Date.now();
+
+
+function realTimeLoop(){
+
+    const now=
+        Date.now();
+
+
+    const elapsed=
+        now-lastTick;
+
+
+    const gameMinutes=
+        Math.floor(
+            elapsed/
+            (
+                REAL_SECONDS_PER_GAME_MINUTE*
+                1000
+            )
+        );
+
+
+    if(
+        gameMinutes>0
+    ){
+
+        const safeMinutes=
+            Math.min(
+                gameMinutes,
+                10
+            );
+
+
+        advanceGameTime(
+            safeMinutes
+        );
+
+
+        lastTick=
+            now;
+
+
+        render();
+
+        saveGame();
+
+    }
+
+
+    requestAnimationFrame(
+        realTimeLoop
+    );
+
+}
+
+
+/* =========================================================
+   BOOT
+========================================================= */
+
+function boot(){
+
+    const lines=[
+
+        "Biyolojik motor başlatılıyor...",
+
+        "Sürü yönetim sistemi yükleniyor...",
+
+        "Wood laktasyon modeli hazırlanıyor...",
+
+        "DMI motoru hazırlanıyor...",
+
+        "Yem hammaddeleri yükleniyor...",
+
+        "Rasyon formülatörü hazırlanıyor...",
+
+        "NDF / ADF / NDFD hesaplayıcı aktif...",
+
+        "Rumen pH modeli hazırlanıyor...",
+
+        "SARA risk motoru hazırlanıyor...",
+
+        "Ekonomik motor başlatılıyor...",
+
+        "Gerçek zaman motoru aktif...",
+
+        "Çiftlik bağlantısı kuruldu.",
+
+        "",
+
+        "SİSTEM HAZIR."
+
+    ];
+
+
+    let index=0;
+
+
+    const bootText=
+        document.getElementById(
+            "bootText"
+        );
+
+
+    const interval=
+        setInterval(
+            ()=>{
+
+                bootText.innerHTML+=
+                    `<div>> ${lines[index]}</div>`;
+
+
+                index++;
+
+
+                if(
+                    index>=lines.length
+                ){
+
+                    clearInterval(
+                        interval
+                    );
+
+
+                    setTimeout(
+                        ()=>{
+
+                            document
+                                .getElementById(
+                                    "bootScreen"
+                                )
+                                .remove();
+
+
+                            document
+                                .getElementById(
+                                    "app"
+                                )
+                                .classList
+                                .remove(
+                                    "hidden-screen"
+                                );
+
+
+                            render();
+
+                            realTimeLoop();
+
+
+                            addLog(
+                                "Çiftlik Simülasyonu v1.2 başlatıldı."
+                            );
+
+                        },
+                        700
+                    );
+
+                }
+
+            },
+            130
+        );
+
+}
+
+
+/* =========================================================
+   BAŞLAT
+========================================================= */
+
+loadGame();
+
+boot();
+
+</script>
+
+</body>
+</html>
