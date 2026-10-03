@@ -1368,6 +1368,12 @@ select:focus{
 
 </main>
 
+<div class="sound-control">
+    <button id="soundToggle" class="sound-btn">🔊 Sesi Başlat</button>
+    <span id="soundLabel" class="sound-label">🔇 Ses kapalı</span>
+    <input id="soundVolume" class="sound-volume" type="range" min="0" max="100" value="42" aria-label="Çiftlik ses seviyesi">
+</div>
+
 </div>
 
 
@@ -2733,42 +2739,28 @@ function biologicalTick(){
 
 function calculateOfflineProgress(){
 
-    const now =
-        Date.now();
+    const now=Date.now();
 
+    const elapsed=Math.max(0,now-(game.lastRealTime||now));
 
-    const elapsed =
-        Math.max(
-            0,
-            now-game.lastRealTime
-        );
-
-
-    const gameMinutes =
-        Math.floor(
-            elapsed/
-            (
-                REAL_SECONDS_PER_GAME_MINUTE*
-                1000
-            )
-        );
-
-
-    if(gameMinutes<1)
-        return;
-
-
-    const processedMinutes =
-        Math.min(
-            gameMinutes,
-            10080
-        );
-
-
-    advanceGameTime(
-        processedMinutes
+    const gameMinutes=Math.floor(
+        elapsed/(REAL_SECONDS_PER_GAME_MINUTE*1000)
     );
 
+    if(gameMinutes<1){
+        game.lastRealTime=now;
+        return;
+    }
+
+    /*
+      Uygulama açılışında binlerce tick çalıştırmak ekranı kilitleyebiliyordu.
+      Offline hesap kontrollü tutuluyor; arayüz önce açılıyor.
+    */
+    const processedMinutes=Math.min(gameMinutes,240);
+
+    advanceGameTime(processedMinutes);
+
+    game.lastRealTime=now;
 
     addLog(
         `Offline ilerleme: ${processedMinutes} oyun dakikası işlendi.`
@@ -2883,7 +2875,13 @@ function milkHerd(automatic=false){
     if(!isMilkingTime()){
 
         if(!automatic){
-            addLog(`⚠ Sağım zamanı değil. Programlı saatler: ${getAutomaticMilkingHours().map(h=>String(h).padStart(2,"0")+":00").join(", ")}`);
+            const hours=getAutomaticMilkingHours();
+            const now=game.minute;
+            let next=hours.find(h=>h*60>now);
+            if(next===undefined) next=hours[0]+24;
+
+            const nextText=String(next%24).padStart(2,"0")+":00";
+            addLog(`⚠ Sağım zamanı değil. Sonraki programlı sağım: ${nextText} | Program: ${hours.map(h=>String(h).padStart(2,"0")+":00").join(", ")}`);
         }
 
         return;
@@ -3755,25 +3753,33 @@ function render(){
 
     const nextMilkingElement=document.getElementById("nextMilkingText");
     if(nextMilkingElement){
-        const hours=getAutomaticMilkingHours();
-        const now=game.minute;
-        let next=null;
-        for(const h of hours){
-            if(h*60>now){ next=h*60; break; }
+        try{
+            const hours=getAutomaticMilkingHours();
+            const now=Math.max(0,Math.min(1439,Number(game.minute)||0));
+            let next=null;
+            for(const h of hours){
+                if(h*60>now){ next=h*60; break; }
+            }
+            if(next===null) next=hours[0]*60+1440;
+            const diff=Math.max(0,next-now);
+            const hh=Math.floor(diff/60);
+            const mm=diff%60;
+            const nextClock=formatMinutesToTime(next%1440);
+            nextMilkingElement.textContent=`${nextClock} • ${hh}s ${mm}dk`;
+        }catch(e){
+            nextMilkingElement.textContent="Program hazır";
         }
-        if(next===null) next=hours[0]*60+1440;
-        const diff=next-now;
-        const hh=Math.floor(diff/60);
-        const mm=diff%60;
-        const nextClock=formatMinutesToTime(next%1440);
-        nextMilkingElement.textContent=`${nextClock} • ${hh}s ${mm}dk`;
     }
 
     const feedDaysElement=document.getElementById("feedDaysText");
     if(feedDaysElement){
-        const herdDmiPreview=game.cows.reduce((sum,cow)=>sum+calculateDMI(cow),0);
-        const days=herdDmiPreview>0 ? game.feed/herdDmiPreview : 0;
-        feedDaysElement.textContent=`${days.toFixed(1)} gün stok`;
+        try{
+            const herdDmiPreview=game.cows.reduce((sum,cow)=>sum+calculateDMI(cow),0);
+            const days=herdDmiPreview>0 ? Math.max(0,game.feed)/herdDmiPreview : 0;
+            feedDaysElement.textContent=`${days.toFixed(1)} gün stok`;
+        }catch(e){
+            feedDaysElement.textContent="Veri hazır";
+        }
     }
 
     const dashboardNet=document.getElementById("dashboardNet");
@@ -4279,8 +4285,12 @@ function startFarmAmbience(){
         schedule(()=>playRooster(ctx,master),45000,90000);
 
         farmAudio={ctx,master,noise,barnOsc,timers};
-        ctx.resume().catch(()=>{});
-        updateSoundUI(true);
+        ctx.resume().then(()=>{
+            updateSoundUI(true);
+        }).catch(()=>{
+            /* Tarayıcı sesi askıya alırsa kullanıcı ses düğmesine tekrar basabilir. */
+            updateSoundUI(false);
+        });
         return true;
     }catch(error){
         console.warn("Çiftlik sesi başlatılamadı:",error);
@@ -4518,13 +4528,10 @@ function boot(){
 ========================================================= */
 
 /*
-  Başlangıç sırası özellikle güvenli tutuldu:
-  1) Boot hemen çalışır.
-  2) Kayıt yüklenir.
-  3) Boot takılsa bile güvenlik geçişi uygulamayı açar.
+  Başlangıç sırası:
+  Kayıt verisi önce güvenli şekilde yüklenir, ağır offline hesap
+  sınırlı tutulur; ardından giriş ekranı açılır.
 */
-boot();
-
 try{
     loadGame();
 }catch(error){
@@ -4536,6 +4543,8 @@ try{
         console.error("İlk çiftlik oluşturulamadı:",e);
     }
 }
+
+boot();
 
 </script>
 
