@@ -760,6 +760,15 @@ main.accounting-layout .accounting-module--operations{grid-column:1/-1}
  .accounting-action-card button{width:100%}
 }
 </style>
+<style>
+.accounting-command-bar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 20px;margin-bottom:0;background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(15,23,42,.72));border:1px solid rgba(148,163,184,.13);border-radius:18px;box-shadow:0 16px 40px rgba(0,0,0,.18)}
+.accounting-command-title{font-size:22px;font-weight:900;letter-spacing:-.5px}.accounting-command-sub{font-size:11px;color:#64748b;margin-top:4px}
+.accounting-subnav{display:flex;flex-wrap:wrap;gap:7px}.accounting-subnav-btn{border:1px solid rgba(148,163,184,.12);background:rgba(2,6,23,.35);color:#94a3b8;border-radius:11px;padding:9px 11px;font-size:11px;font-weight:800;min-height:40px}.accounting-subnav-btn.active{background:rgba(34,197,94,.14);border-color:rgba(34,197,94,.3);color:#86efac}
+.accounting-report-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}.accounting-report-card{padding:13px;border-radius:15px;background:rgba(2,6,23,.25);border:1px solid rgba(148,163,184,.08)}.accounting-report-card span{display:block;font-size:10px;color:#64748b}.accounting-report-card strong{display:block;font-size:18px;margin-top:6px}.accounting-report-card small{display:block;color:#475569;font-size:9px;margin-top:3px}
+.accounting-report-bottom{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:12px;margin-top:12px}.accounting-report-panel{padding:14px;border-radius:15px;background:rgba(2,6,23,.2);border:1px solid rgba(148,163,184,.08)}.accounting-panel-title{font-size:11px;font-weight:900;color:#cbd5e1;margin-bottom:12px}.accounting-progress-row{display:flex;justify-content:space-between;font-size:10px;color:#64748b;margin:8px 0}.accounting-progress-row b{color:#cbd5e1}.accounting-progress{height:7px;background:rgba(148,163,184,.1);border-radius:999px;overflow:hidden}.accounting-progress i{display:block;height:100%;width:0;background:#22c55e;border-radius:999px;transition:width .3s}.accounting-progress.debt i{background:#ef4444}.accounting-stock-lines{display:grid;gap:9px}.accounting-stock-lines span{display:flex;justify-content:space-between;font-size:11px;color:#64748b}.accounting-stock-lines b{color:#cbd5e1}.accounting-recent-ledger{display:grid;gap:6px;max-height:125px;overflow:auto}.accounting-recent-ledger div{display:flex;justify-content:space-between;gap:8px;padding:7px 8px;border-radius:9px;background:rgba(15,23,42,.4);font-size:9px;color:#94a3b8}.accounting-recent-ledger b{color:#cbd5e1}
+@media(max-width:900px){.accounting-command-bar{flex-direction:column;align-items:stretch}.accounting-report-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.accounting-report-bottom{grid-template-columns:1fr 1fr}.accounting-report-panel:last-child{grid-column:1/-1}}
+@media(max-width:560px){.accounting-report-grid{grid-template-columns:1fr 1fr}.accounting-report-bottom{grid-template-columns:1fr}.accounting-report-panel:last-child{grid-column:auto}.accounting-subnav{display:grid;grid-template-columns:repeat(2,1fr)}.accounting-subnav-btn{width:100%}}
+</style>
 </head>
 
 <body>
@@ -867,6 +876,60 @@ main.accounting-layout .accounting-module--operations{grid-column:1/-1}
 </nav>
 
 <main class="max-w-7xl mx-auto px-4 py-6">
+<div class="accounting-command-bar">
+  <div>
+    <div class="accounting-eyebrow">MUHASEBE MERKEZİ</div>
+    <div class="accounting-command-title">Finans Yönetim Paneli</div>
+    <div class="accounting-command-sub">Gelir • Gider • Banka • Varlık • Borç • Kâr/Zarar</div>
+  </div>
+  <div class="accounting-subnav">
+    <button class="accounting-subnav-btn active" data-accounting-jump="accounting-summary">📊 Genel</button>
+    <button class="accounting-subnav-btn" data-accounting-jump="accounting-report">📈 Raporlar</button>
+    <button class="accounting-subnav-btn" data-accounting-jump="accounting-bank">🏦 Banka</button>
+    <button class="accounting-subnav-btn" data-accounting-jump="accounting-operations">🧾 İşlemler</button>
+    <button class="accounting-subnav-btn" data-accounting-jump="accounting-processing">🥛 Ürünler</button>
+  </div>
+</div>
+
+<section id="accounting-report" class="glass p-5 accounting-module accounting-module--report" data-menu-section="muhasebe">
+  <div class="accounting-module-header">
+    <div>
+      <div class="accounting-eyebrow">YÖNETİCİ RAPORU</div>
+      <h2 class="font-bold text-xl">📈 Muhasebe ve Kârlılık Raporu</h2>
+      <p class="text-xs text-slate-500 mt-1">Çiftliğin nakit, kârlılık, varlık ve borç durumunu tek bakışta değerlendir.</p>
+    </div>
+    <div id="accountingHealthBadge" class="accounting-status">● İzleniyor</div>
+  </div>
+  <div class="accounting-report-grid">
+    <div class="accounting-report-card"><span>Toplam Gelir</span><strong id="reportIncome">0 ₺</strong><small>Satış ve diğer gelirler</small></div>
+    <div class="accounting-report-card"><span>Toplam Gider</span><strong id="reportExpenses">0 ₺</strong><small>Yem, sağlık, işçilik vb.</small></div>
+    <div class="accounting-report-card"><span>Net Sonuç</span><strong id="reportNet">0 ₺</strong><small>Gelir − gider</small></div>
+    <div class="accounting-report-card"><span>Nakit</span><strong id="reportCash">0 ₺</strong><small>Mevcut kasa</small></div>
+    <div class="accounting-report-card"><span>Çiftlik Varlığı</span><strong id="reportAssets">0 ₺</strong><small>Hayvan + nakit + stok</small></div>
+    <div class="accounting-report-card"><span>Toplam Borç</span><strong id="reportDebt">0 ₺</strong><small>Aktif kredi yükü</small></div>
+  </div>
+  <div class="accounting-report-bottom">
+    <div class="accounting-report-panel">
+      <div class="accounting-panel-title">💹 Finansal Durum</div>
+      <div class="accounting-progress-row"><span>Kârlılık</span><b id="reportProfitRate">0%</b></div>
+      <div class="accounting-progress"><i id="reportProfitBar"></i></div>
+      <div class="accounting-progress-row"><span>Borç / Varlık</span><b id="reportDebtRate">0%</b></div>
+      <div class="accounting-progress debt"><i id="reportDebtBar"></i></div>
+    </div>
+    <div class="accounting-report-panel">
+      <div class="accounting-panel-title">📦 Stok Değeri</div>
+      <div class="accounting-stock-lines">
+        <span>Yem <b id="reportFeedValue">0 ₺</b></span>
+        <span>Çiğ süt <b id="reportRawMilkValue">0 ₺</b></span>
+        <span>İşlenmiş ürün <b id="reportProcessedValue">0 ₺</b></span>
+      </div>
+    </div>
+    <div class="accounting-report-panel">
+      <div class="accounting-panel-title">🧾 Son Muhasebe Hareketleri</div>
+      <div id="reportRecentLedger" class="accounting-recent-ledger"></div>
+    </div>
+  </div>
+</section>
 
 <!-- =====================================================
      KPI
@@ -1647,7 +1710,7 @@ main.accounting-layout .accounting-module--operations{grid-column:1/-1}
 
 <!-- FİNANS -->
 
-<section class="glass p-5 accounting-module accounting-module--processing" data-menu-section="muhasebe">
+<section id="accounting-processing" class="glass p-5 accounting-module accounting-module--processing" data-menu-section="muhasebe">
     <div class="flex justify-between items-center mb-4">
         <div><h2 class="font-bold">🏭 Süt İşleme Tesisi</h2><p class="text-xs text-slate-500 mt-1">Çiğ sütü katma değerli ürüne dönüştür.</p></div>
         <span id="rawMilkStock" class="text-xs font-bold text-blue-300">0 L</span>
@@ -1725,7 +1788,7 @@ main.accounting-layout .accounting-module--operations{grid-column:1/-1}
 
 <!-- MUHASEBE -->
 
-<section class="glass p-5 accounting-module accounting-module--bank" data-menu-section="muhasebe">
+<section id="accounting-bank" class="glass p-5 accounting-module accounting-module--bank" data-menu-section="muhasebe">
     <div class="accounting-module-header">
         <div><div class="accounting-eyebrow">TARIM FİNANSMANI</div><h2 class="font-bold text-xl">🏦 Çiftlik Bankası & Destekler</h2><p class="text-xs text-slate-500 mt-1">Kredi, hibe, borçluluk ve banka değerlendirmelerini yönet.</p></div>
         <div class="accounting-status blue-status">● Finans</div>
@@ -1754,7 +1817,7 @@ main.accounting-layout .accounting-module--operations{grid-column:1/-1}
     <div id="grantApplicationsList" class="mt-3 space-y-2"></div>
 </section>
 
-<section class="glass p-5 accounting-module accounting-module--operations" data-menu-section="muhasebe">
+<section id="accounting-operations" class="glass p-5 accounting-module accounting-module--operations" data-menu-section="muhasebe">
 
     <div class="accounting-module-header">
         <div>
@@ -5466,10 +5529,47 @@ function renderMilkPerformance(){
         rows.map(row=>'<div class="milk-performance-row"><div><b>🐄 '+(row.cow.name||("İnek "+row.cow.id))+'</b></div><div class="green">'+row.latest.toFixed(1)+' L</div><div>'+row.avg.toFixed(1)+' L</div><div class="milk-cause '+(row.drop>=15?'red':'')+'">'+(row.drop>=15?'↓ %'+row.drop.toFixed(0)+' düşüş • ':'')+row.causes+'</div></div>').join("");
 }
 
+function renderAccountingCenter(){
+    const bank=ensureBankState();
+    const income=Number(game.income)||0;
+    const expenses=Number(game.expenses)||0;
+    const net=income-expenses;
+    const cash=Number(game.money)||0;
+    const debt=bank.loans.reduce((s,l)=>s+Math.max(0,Number(l.remaining)||0),0);
+    const cows=Array.isArray(game.cows)?game.cows:[];
+    const cowValue=cows.reduce((s,c)=>s+(c.isCalf?Math.min(25000,Math.max(5000,(Number(c.weight)||40)*120)):25000),0);
+    const feedValue=Math.max(0,Number(game.feed)||0)*FEED_PRICE;
+    const rawMilkValue=Math.max(0,Number(game.rawMilkStock)||0)*MILK_PRICE;
+    const processed=(game.coldStorage||{});
+    const processedValue=(Number(processed.pasteurizedMilk)||0)*32+(Number(processed.yogurt)||0)*55+(Number(processed.cheese)||0)*240;
+    const assets=Math.max(0,cash+cowValue+feedValue+rawMilkValue+processedValue);
+    const profitRate=income>0?Math.max(-100,Math.min(100,(net/income)*100)):0;
+    const debtRate=assets>0?Math.max(0,Math.min(100,(debt/assets)*100)):0;
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+    const money=v=>Number(v||0).toLocaleString("tr-TR",{maximumFractionDigits:0})+" ₺";
+    set("reportIncome",money(income));set("reportExpenses",money(expenses));set("reportNet",money(net));set("reportCash",money(cash));set("reportAssets",money(assets));set("reportDebt",money(debt));
+    set("reportProfitRate",profitRate.toFixed(1)+"%");set("reportDebtRate",debtRate.toFixed(1)+"%");
+    set("reportFeedValue",money(feedValue));set("reportRawMilkValue",money(rawMilkValue));set("reportProcessedValue",money(processedValue));
+    const pb=document.getElementById("reportProfitBar");if(pb){pb.style.width=Math.min(100,Math.max(0,(profitRate+100)/2))+"%";pb.style.background=net>=0?"#22c55e":"#ef4444";}
+    const db=document.getElementById("reportDebtBar");if(db)db.style.width=debtRate+"%";
+    const badge=document.getElementById("accountingHealthBadge");if(badge){badge.textContent=net>=0&&debtRate<50?"● Sağlıklı":debtRate>=70?"● Borç Riski":"● Yakın İzleme";badge.className="accounting-status "+(net>=0&&debtRate<50?"":"blue-status");}
+    const ledger=Array.isArray(game.accountingLedger)?game.accountingLedger:[];
+    const recent=document.getElementById("reportRecentLedger");
+    if(recent) recent.innerHTML=ledger.slice(0,6).map(x=>'<div><span>'+(x.category||"İşlem")+'</span><b class="'+(x.type==="Gelir"?"green":"red")+'">'+(x.type==="Gelir"?"+":"−")+money(x.amount)+'</b></div>').join("")||'<div>Henüz muhasebe hareketi yok.</div>';
+}
+function setupAccountingCenter(){
+    document.querySelectorAll("[data-accounting-jump]").forEach(btn=>btn.addEventListener("click",()=>{
+        const id=btn.dataset.accountingJump; const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:"smooth",block:"start"});
+        document.querySelectorAll(".accounting-subnav-btn").forEach(x=>x.classList.toggle("active",x===btn));
+    }));
+}
+
+
 function render(){
 
     updateFarmAtmosphere();
     updateRationAnalysis();
+    renderAccountingCenter();
 
 
     document.getElementById(
@@ -6223,6 +6323,7 @@ function initFarmApp(){
     try{
         document.getElementById("app")?.classList.remove("hidden-screen");
         setupAppMenu();
+        setupAccountingCenter();
         setupNotifications();
         setupAnimalCardModal();
         setupFarmSound();
