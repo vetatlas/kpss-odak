@@ -3164,7 +3164,80 @@ function calculateSARARisk(cow){
    BİYOLOJİ
 ========================================================= */
 
+function processCalfBiology(cow){
+    if(!cow.isCalf) return;
+
+    const care=cow.calfCare||(cow.calfCare={
+        colostrumReceived:true,
+        milkFedDays:0,
+        weaningDay:null,
+        weaned:false,
+        starterFeedIntake:0,
+        lastCareDay:null
+    });
+
+    if(care.lastCareDay===game.day) return;
+    care.lastCareDay=game.day;
+
+    const age=Number(cow.ageDays)||0;
+
+    if(age<=3){
+        if(!care.colostrumReceived){
+            cow.health-=2;
+            cow.diseaseRisk=Math.min(100,(cow.diseaseRisk||0)+8);
+        }else{
+            cow.health=Math.min(100,(cow.health||100)+0.2);
+        }
+    }
+
+    if(age<=60){
+        care.milkFedDays++;
+        cow.weight+=0.70;
+        care.starterFeedIntake+=0.15;
+    }else if(age<=90){
+        care.milkFedDays++;
+        cow.weight+=0.78;
+        care.starterFeedIntake+=0.90;
+    }else{
+        cow.weight+=0.70;
+        care.starterFeedIntake+=2.50;
+    }
+
+    if(age===60 && !care.weaningDay){
+        care.weaningDay=game.day+30;
+        addNotification(
+            "Buzağı Sütten Kesim",
+            cow.name+" için kademeli sütten kesim başladı. Başlangıç yemi artırılıyor.",
+            "info",
+            true
+        );
+    }
+
+    if(age>=90 && !care.weaned){
+        care.weaned=true;
+        addAnimalHealthRecord(cow,"Buzağı Bakımı","Sütten kesim tamamlandı");
+        addNotification(
+            "Sütten Kesim Tamamlandı",
+            cow.name+" sütten kesildi ve genç hayvan dönemine geçti.",
+            "success",
+            true
+        );
+    }
+
+    if(age>90 && cow.weight<80){
+        cow.diseaseRisk=Math.min(100,(cow.diseaseRisk||0)+0.5);
+    }
+
+    cow.bcs=Math.max(2.5,Math.min(3.5,Number(cow.bcs)||2.8));
+    cow.health=Math.max(0,Math.min(100,Number(cow.health)||100));
+}
+
 function updateCowBiology(cow){
+
+    if(cow.isCalf){
+        processCalfBiology(cow);
+        return;
+    }
 
     cow.rumenPH =
         calculateRumenPH(
@@ -3449,7 +3522,9 @@ function biologicalTick(){
                 cow
             )=>
 
-                sum+
+                cow.isCalf
+                ? sum
+                : sum+
                 calculateDMI(
                     cow
                 ),
@@ -4593,6 +4668,14 @@ function createCalf(mother){
             lastCalvingDay:null,
             dryOffDay:null,
             nextHeatDay:null
+        },
+        calfCare:{
+            colostrumReceived:true,
+            milkFedDays:0,
+            weaningDay:null,
+            weaned:false,
+            starterFeedIntake:0,
+            lastCareDay:null
         }
     };
 }
