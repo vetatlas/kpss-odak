@@ -4324,57 +4324,43 @@ function startFarmAmbience(){
     try{
         const savedVolume=0.55;
         const masterVolume=Math.max(0,Math.min(1,savedVolume));
-        const birds=createRealFarmAudio(FARM_AUDIO_SOURCES.birds,.32,true);
-        const cow=createRealFarmAudio(FARM_AUDIO_SOURCES.cow,.38,false);
-        const rooster=createRealFarmAudio(FARM_AUDIO_SOURCES.rooster,.28,false);
-        farmAudio={enabled:true,masterVolume,birds,cow,rooster,timers:[]};
-        [birds,cow,rooster].forEach(audio=>{
-            try{ audio.load(); }catch(e){}
-            audio.addEventListener("error",()=>console.warn("Çiftlik ses dosyası yüklenemedi:",audio.src),{once:true});
-        });
+        const nature=createRealFarmAudio(FARM_AUDIO_SOURCES.nature,.45,true);
+        farmAudio={enabled:true,masterVolume,nature,timers:[]};
+        try{ nature.load(); }catch(e){}
+        nature.addEventListener("error",()=>console.warn("Doğa ambiyansı yüklenemedi:",nature.src),{once:true});
         updateSoundUI(true);
         resumeFarmAudio();
-        scheduleRealFarmSound("cow",30000,60000);
-        scheduleRealFarmSound("rooster",180000,360000);
         return true;
     }catch(error){
-        console.warn("Gerçek çiftlik sesleri başlatılamadı:",error);
+        console.warn("Doğa ambiyansı başlatılamadı:",error);
         return false;
     }
 }
 
 function resumeFarmAudio(){
     if(!farmAudio || !farmAudio.enabled) return;
-    ["birds","cow","rooster"].forEach(name=>{
-        const audio=farmAudio[name];
-        if(!audio) return;
-        try{
-            audio.volume=Math.max(0,Math.min(1,farmAudio.masterVolume*(name==="birds"?.32:1)));
-            const p=audio.play();
-            if(p && p.catch) p.catch(()=>{});
-        }catch(e){}
-    });
+    const audio=farmAudio.nature;
+    if(!audio) return;
+    try{
+        audio.volume=Math.max(0,Math.min(1,farmAudio.masterVolume*.45));
+        const p=audio.play();
+        if(p && p.catch) p.catch(()=>{});
+    }catch(e){}
 }
 
 function stopFarmAmbience(){
     if(!farmAudio) return;
-
     try{
         (farmAudio.timers||[]).forEach(timer=>clearTimeout(timer));
-        ["birds","cow","rooster"].forEach(name=>{
-            const audio=farmAudio[name];
-            if(audio){
-                try{
-                    audio.pause();
-                    audio.currentTime=0;
-                }catch(e){}
-            }
-        });
+        const audio=farmAudio.nature;
+        if(audio){
+            try{ audio.pause(); audio.currentTime=0; }catch(e){}
+        }
     }catch(error){}
-
     farmAudio=null;
     updateSoundUI(false);
 }
+
 
 function setFarmVolume(value){
     const volume=Math.max(0,Math.min(100,Number(value)))/100;
@@ -4382,9 +4368,7 @@ function setFarmVolume(value){
 
     if(farmAudio){
         farmAudio.masterVolume=volume;
-        if(farmAudio.birds) farmAudio.birds.volume=volume*.20;
-        if(farmAudio.cow) farmAudio.cow.volume=volume*.38;
-        if(farmAudio.rooster) farmAudio.rooster.volume=volume*.28;
+        if(farmAudio.nature) farmAudio.nature.volume=volume*.45;
     }
 
     const label=document.getElementById("soundLabel");
@@ -4401,7 +4385,7 @@ function updateSoundUI(active){
     if(!button||!label) return;
 
     button.textContent=active?"🔇 Sesi Kapat":"🔊 Sesi Başlat";
-    label.textContent=active?"🔊 Ahır + hayvan sesleri":"🔇 Ses kapalı";
+    label.textContent=active?"🌿 Doğa ambiyansı":"🔇 Ses kapalı";
 }
 
 /* Gerçek kayıtlar kullanıcı butonuyla başlatılır; mobil tarayıcı politikalarına uygundur. */
