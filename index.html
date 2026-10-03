@@ -3835,23 +3835,36 @@ function getAutomaticMilkingHours(){
 }
 
 
-function isMilkingTime(){
+const MILKING_MANUAL_WINDOW_MINUTES=8;
 
-    const hour=Math.floor(game.minute/60);
-    const minute=game.minute%60;
-
-    return minute===0 &&
-           getAutomaticMilkingHours().includes(hour);
-
+function getMilkingScheduleInfo(){
+    const minute=Math.max(0,Math.min(1439,Number(game.minute)||0));
+    const day=Math.max(1,Number(game.day)||1);
+    const hours=getAutomaticMilkingHours();
+    for(const hour of hours){
+        const scheduled=hour*60;
+        const diff=minute-scheduled;
+        if(diff>=0 && diff<=MILKING_MANUAL_WINDOW_MINUTES){
+            return {day,hour,scheduled,diff};
+        }
+    }
+    return null;
 }
 
+function isMilkingTime(){
+    /*
+      Ortak dünya saati saniyede 4 oyun dakikası ilerlediği için
+      tam 00. dakikaya dokunmak zorunlu değildir.
+      Programlı saatten sonraki ilk 8 oyun dakikası manuel sağım penceresidir.
+    */
+    return !!getMilkingScheduleInfo();
+}
 
 function getMilkingSlotKey(){
-
-    return `${game.day}-${game.minute}`;
-
+    const info=getMilkingScheduleInfo();
+    if(info) return info.day+"-"+info.hour;
+    return game.day+"-none";
 }
-
 
 function hireMilkingWorker(){
     game.milkingWorker=game.milkingWorker||{hired:false,name:"Sağım İşçisi",hireCost:2500,dailyWage:750,hiredDay:null};
@@ -3887,12 +3900,12 @@ function milkHerd(automatic=false){
 
         if(!automatic){
             const hours=getAutomaticMilkingHours();
-            const now=game.minute;
+            const now=Math.max(0,Math.min(1439,Number(game.minute)||0));
             let next=hours.find(h=>h*60>now);
             if(next===undefined) next=hours[0]+24;
 
             const nextText=String(next%24).padStart(2,"0")+":00";
-            addLog(`⚠ Sağım zamanı değil. Sonraki programlı sağım: ${nextText} | Program: ${hours.map(h=>String(h).padStart(2,"0")+":00").join(", ")}`);
+            addLog("⚠ Sağım zamanı değil. Sonraki programlı sağım: "+nextText+" | Program: "+hours.map(h=>String(h).padStart(2,"0")+":00").join(", ")+" | Program saatinden sonra "+MILKING_MANUAL_WINDOW_MINUTES+" dk içinde manuel sağım yapılabilir.");
         }
 
         return;
