@@ -5286,14 +5286,22 @@ function realTimeLoop(){
     const changed=syncToSharedWorldClock();
 
     if(changed){
+        /* Simülasyon ilerlediğinde tam ekranı yeniden çiz. */
         render();
         saveGame();
     }else{
-        /* Kullanıcı sekmeye geri döndüğünde ortak saati anında göster. */
+        /* Saat için her karede ağır render() çalıştırma.
+           Bu, özellikle tablet/telefonlarda butonların dokunma
+           tepkisini kilitleyebiliyordu. Sadece saat göstergesini güncelle. */
         const world=getSharedWorldTime();
         game.day=world.day;
         game.minute=world.minute;
-        render();
+
+        const clock=document.getElementById("gameClock");
+        if(clock) clock.textContent=`Gün ${world.day} • ${formatMinutesToTime(world.minute)}`;
+
+        const sharedClock=document.getElementById("sharedWorldClock");
+        if(sharedClock) sharedClock.textContent="🌍 Ortak Dünya Saati • 6 dk/gün";
     }
 
     requestAnimationFrame(realTimeLoop);
