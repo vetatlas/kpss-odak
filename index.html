@@ -722,21 +722,23 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* Profesyonel Muhasebe Merkezi */
-main.accounting-layout{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr));gap:18px;align-items:start}
-main.accounting-layout .accounting-module{margin:0!important;min-width:0}
-main.accounting-layout .accounting-module--summary{grid-column:span 5}
-main.accounting-layout .accounting-module--report{grid-column:1/-1}
-main.accounting-layout .accounting-module--processing{grid-column:span 7}
+main.accounting-layout{display:flex!important;flex-direction:column!important;gap:18px!important;width:100%!important;min-width:0!important}
+main.accounting-layout .accounting-module{margin:0!important;min-width:0!important;width:100%!important;max-width:none!important}
+main.accounting-layout .accounting-module--summary,
+main.accounting-layout .accounting-module--report,
+main.accounting-layout .accounting-module--processing,
 main.accounting-layout .accounting-module--bank,
-main.accounting-layout .accounting-module--operations{grid-column:1/-1}
+main.accounting-layout .accounting-module--operations{width:100%!important;grid-column:auto!important}
+main.accounting-overview-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;width:100%}
+.accounting-overview-card{min-width:0;padding:16px;border:1px solid rgba(148,163,184,.09);border-radius:14px;background:rgba(15,23,42,.28)}
+.accounting-overview-card span{display:block;font-size:10px;color:#94a3b8}
+.accounting-overview-card strong{display:block;margin-top:7px;font-size:22px;font-weight:900;line-height:1.1;overflow-wrap:anywhere}
+.accounting-overview-card small{display:block;margin-top:6px;font-size:9px;color:#64748b}
 .accounting-module{border:1px solid rgba(148,163,184,.12);box-shadow:0 16px 42px rgba(0,0,0,.16)}
 .accounting-module-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
 .accounting-eyebrow{font-size:9px;letter-spacing:2px;font-weight:900;color:#64748b;margin-bottom:4px}
 .accounting-status{font-size:10px;font-weight:800;color:#86efac;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.16);padding:7px 10px;border-radius:999px;white-space:nowrap}
 .blue-status{color:#93c5fd;background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.16)}
-.accounting-module--summary>.space-y-3{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.accounting-module--summary>.space-y-3>div{background:rgba(15,23,42,.28);border:1px solid rgba(148,163,184,.09);padding:12px 14px;border-radius:14px}
-.accounting-module--summary>.space-y-3>div:last-child{grid-column:1/-1}
 .accounting-operation-grid{display:grid;grid-template-columns:1fr 1.25fr;gap:16px}
 .accounting-action-group{background:rgba(15,23,42,.22);border:1px solid rgba(148,163,184,.08);border-radius:16px;padding:14px}
 .accounting-group-title{font-size:12px;font-weight:900;color:#cbd5e1;margin-bottom:10px}
@@ -752,13 +754,17 @@ main.accounting-layout .accounting-module--operations{grid-column:1/-1}
  main.accounting-layout .accounting-module{margin-bottom:12px!important}
  .accounting-module-header{margin-bottom:14px}
  .accounting-operation-grid{grid-template-columns:1fr}
- .accounting-module--summary>.space-y-3{grid-template-columns:1fr 1fr}
  .accounting-action-card{align-items:flex-start}
  .accounting-action-card button{min-width:94px}
 }
+@media(max-width:900px){
+  main.accounting-layout{gap:14px!important}
+  .accounting-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .accounting-module{padding:16px!important}
+}
 @media(max-width:430px){
- .accounting-module--summary>.space-y-3{grid-template-columns:1fr}
- .accounting-module--summary>.space-y-3>div:last-child{grid-column:auto}
+  .accounting-overview-grid{grid-template-columns:1fr}
+  .accounting-overview-card strong{font-size:20px}
  .accounting-action-card{flex-direction:column}
  .accounting-action-card button{width:100%}
 }
@@ -1351,55 +1357,37 @@ body{padding-bottom:calc(76px + env(safe-area-inset-bottom))!important}
 </div>
 
 <section id="accounting-summary" class="glass p-5 accounting-module accounting-module--summary" data-menu-section="muhasebe">
-
-    <h2 class="font-bold mb-4">
-        💰 Finans
-    </h2>
-    <div class="text-[10px] text-slate-500 mb-4">
-        Fiyat referansı: Ulusal Süt Konseyi 2026. Çiğ süt 24,30 ₺/L;
-        son yayımlanan 2026 süt yemi 19,07 ₺/kg (Ağustos).
+    <div class="accounting-module-header">
+        <div>
+            <div class="accounting-eyebrow">GENEL BAKIŞ</div>
+            <h2 class="font-bold text-xl">📊 Finansal Özet</h2>
+            <p class="text-xs text-slate-500 mt-1">Çiftliğin finansal durumunu hızlıca kontrol et.</p>
+        </div>
+        <div class="accounting-status">● Canlı</div>
     </div>
 
-    <div class="space-y-3">
-
-        <div class="flex justify-between">
-
-            <span class="text-slate-500">
-                Süt Geliri
-            </span>
-
-            <span id="income" class="green">
-                0 ₺
-            </span>
-
+    <div class="accounting-overview-grid">
+        <div class="accounting-overview-card">
+            <span>💰 Toplam Gelir</span>
+            <strong id="income" class="green">0 ₺</strong>
+            <small>Satış ve diğer gelirler</small>
         </div>
-
-        <div class="flex justify-between">
-
-            <span class="text-slate-500">
-                Gider
-            </span>
-
-            <span id="expenses" class="red">
-                0 ₺
-            </span>
-
+        <div class="accounting-overview-card">
+            <span>📉 Toplam Gider</span>
+            <strong id="expenses" class="red">0 ₺</strong>
+            <small>Yem, sağlık, işçilik vb.</small>
         </div>
-
-        <div class="border-t border-slate-800 pt-3 flex justify-between font-bold">
-
-            <span>
-                Net
-            </span>
-
-            <span id="netFinance">
-                0 ₺
-            </span>
-
+        <div class="accounting-overview-card">
+            <span>📈 Net Sonuç</span>
+            <strong id="netFinance">0 ₺</strong>
+            <small>Gelir − gider</small>
         </div>
-
+        <div class="accounting-overview-card">
+            <span>🏦 Mevcut Kasa</span>
+            <strong id="overviewCash" class="blue">0 ₺</strong>
+            <small>Harcanabilir nakit</small>
+        </div>
     </div>
-
 </section>
 
 <section id="accounting-report" class="glass p-5 accounting-module accounting-module--report" data-menu-section="muhasebe">
@@ -6311,6 +6299,11 @@ function render(){
     ).textContent =
         game.lastMilking||
         "Henüz yapılmadı";
+
+    const overviewCash=document.getElementById("overviewCash");
+    if(overviewCash){
+        overviewCash.textContent=`${game.money.toLocaleString("tr-TR",{maximumFractionDigits:0})} ₺`;
+    }
 
     const accountingBalance=document.getElementById("accountingBalance");
     const accountingExpenses=document.getElementById("accountingExpenses");
