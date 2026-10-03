@@ -4192,57 +4192,164 @@ function accountingPayment(category,amount){
 }
 
 
+function ensureBankState(){
+    game.bank=game.bank||{};
+    game.bank.loans=Array.isArray(game.bank.loans)?game.bank.loans:[];
+    game.bank.grantApplications=Array.isArray(game.bank.grantApplications)?game.bank.grantApplications:[];
+    game.bank.loanApplications=Array.isArray(game.bank.loanApplications)?game.bank.loanApplications:[];
+    game.bank.totalBorrowed=Number(game.bank.totalBorrowed)||0;
+    game.bank.totalRepaid=Number(game.bank.totalRepaid)||0;
+    game.bank.totalGrantIncome=Number(game.bank.totalGrantIncome)||0;
+    return game.bank;
+}
+
+function getBankProfile(){
+    const cows=Array.isArray(game.cows)?game.cows:[];
+    const adults=cows.filter(c=>!c.isCalf);
+    const healthy=adults.filter(c=>Number(c.health??100)>=70).length;
+    const milk=Number(game.todayMilk)||0;
+    const income=Number(game.income)||0;
+    const expenses=Number(game.expenses)||0;
+    const debt=ensureBankState().loans.reduce((s,l)=>s+Number(l.remaining||0),0);
+    const farmValue=adults.length*25000+Number(game.money||0)+Number(game.feed||0)*19.07;
+    const monthlyNet=Math.max(0,income-expenses);
+    const healthScore=adults.length?healthy/adults.length*20:0;
+    const herdScore=Math.min(25,adults.length/20*25);
+    const cashScore=Math.min(20,Math.max(0,Number(game.money||0))/50000*20);
+    const productionScore=Math.min(20,milk/300*20);
+    const debtScore=debt<=0?15:Math.max(0,15-debt/10000);
+    const stabilityScore=Math.min(20,monthlyNet/10000*20);
+    const score=Math.round(Math.min(100,healthScore+herdScore+cashScore+productionScore+debtScore+stabilityScore));
+    return {score,adults:adults.length,healthy, milk,income,expenses,debt,farmValue,monthlyNet};
+}
+
+function evaluateBankApplication(app){
+    const p=getBankProfile();
+    const requested=Number(app.amount)||0;
+    const cfg=app.cfg||{};
+    let score=p.score;
+    const debtRatio=p.farmValue>0?p.debt/p.farmValue:1;
+    if(requested>p.farmValue*0.35) score-=15;
+    if(debtRatio>0.25) score-=15;
+    if(p.adults<5 && app.type!=="işletme") score-=8;
+    if(p.monthlyNet<requested/(Number(cfg.months)||12)) score-=10;
+    score=Math.max(0,Math.min(100,Math.round(score)));
+    const threshold=app.kind==="grant"?(app.type==="genç"?60:65):60;
+    const approved=score>=threshold;
+    return {approved,score,threshold,profile:p,reason:approved?"Geri ödeme kapasitesi ve işletme skoru yeterli.":"İşletme skoru, nakit akışı veya borç yükü banka kriterlerini karşılamadı."};
+}
+
 function bankApplyLoan(type){
-    game.bank=game.bank||{loans:[],grantApplications:[],totalBorrowed:0,totalRepaid:0,totalGrantIncome:0};
+    const bank=ensureBankState();
     const cfg={
-        işletme:{name:"İşletme Kredisi",max:50000,rate:0.12,months:12,grace:7},
-        yatırım:{name:"Yatırım Kredisi",max:150000,rate:0.08,months:24,grace:14},
-        hayvancılık:{name:"Hayvancılık Kredisi",max:100000,rate:0.06,months:18,grace:10}
+        işletme:{name:"İşletme Kredisi",max:50000,rate:0.12,months:12,grace:7,review:1},
+        yatırım:{name:"Yatırım Kredisi",max:150000,rate:0.08,months:24,grace:14,review:2},
+        hayvancılık:{name:"Hayvancılık Kredisi",max:100000,rate:0.06,months:18,grace:10,review:2}
     }[type];
     if(!cfg)return;
-    const amount=Number(prompt(cfg.name+"\nTutar (₺):",Math.min(cfg.max,25000)));
-    if(!Number.isFinite(amount)||amount<=0||amount>cfg.max){addLog("⚠ Geçersiz kredi tutarı.");return;}
-    const total=amount*(1+cfg.rate);
-    const installment=total/cfg.months;
-    game.money+=amount;
-    game.bank.loans.push({id:"KRD-"+Date.now(),name:cfg.name,principal:amount,total,remaining:total,installment,monthsLeft:cfg.months,graceDays:cfg.grace,nextPaymentDay:game.day+cfg.grace});
-    game.bank.totalBorrowed=(Number(game.bank.totalBorrowed)||0)+amount;
-    recordAccounting("Gelir",cfg.name+" Kredi Kullanımı",amount);
-    addNotification("Kredi Onaylandı",amount.toLocaleString("tr-TR")+" ₺ işletme hesabına aktarıldı.","success",true);
+    if(bank.loanApplications.some(a=>a.type===type&&a.status==="İncelemede")){addLog("⚠ Bu kredi için başvurunuz zaten banka incelemesinde.");return;}
+    const amount=Number(prompt(cfg.name+"\\nBaşvuru tutarı (₺):",Math.min(cfg.max,25000)));
+    if(!Number.isFinite(amount)||amount<=0||amount>cfg.max){addLog("⚠ Geçersiz kredi başvuru tutarı.");return;}
+    bank.loanApplications.push({
+        id:"KRD-BASV-"+Date.now(),kind:"loan",type,name:cfg.name,amount,
+        status:"İncelemede",applyDay:game.day,decisionDay:game.day+cfg.review,
+        cfg
+    });
+    addNotification("Kredi Başvurusu Alındı",cfg.name+" başvurunuz banka uzmanına iletildi. Sonuç: "+cfg.review+" gün içinde.","info",true);
     render();saveGame();
 }
+
+function bankApproveLoanApplication(app){
+    const bank=ensureBankState();
+    const cfg=app.cfg||{};
+    const total=Number(app.amount||0)*(1+Number(cfg.rate||0));
+    const installment=total/(Number(cfg.months)||1);
+    game.money+=Number(app.amount)||0;
+    bank.loans.push({
+        id:"KRD-"+Date.now(),name:app.name,principal:Number(app.amount)||0,total,
+        remaining:total,installment,monthsLeft:Number(cfg.months)||1,
+        graceDays:Number(cfg.grace)||0,nextPaymentDay:game.day+Number(cfg.grace||0),
+        applicationId:app.id,creditScore:app.score
+    });
+    bank.totalBorrowed+=Number(app.amount)||0;
+    recordAccounting("Gelir",app.name+" Kredi Kullanımı",Number(app.amount)||0);
+}
+
 function bankRepayLoan(index){
-    const loan=game.bank?.loans?.[index]; if(!loan)return;
+    const bank=ensureBankState();
+    const loan=bank.loans[index]; if(!loan)return;
     const payment=Math.min(Number(loan.installment)||0,Number(loan.remaining)||0);
     if(game.money<payment){addLog("⚠ Kredi taksiti için kasada yeterli para yok.");return;}
-    game.money-=payment; game.expenses+=payment; loan.remaining=Math.max(0,loan.remaining-payment); loan.monthsLeft=Math.max(0,(loan.monthsLeft||1)-1);
-    loan.nextPaymentDay=game.day+30; game.bank.totalRepaid=(Number(game.bank.totalRepaid)||0)+payment;
+    game.money-=payment; game.expenses+=payment;
+    loan.remaining=Math.max(0,loan.remaining-payment);
+    loan.monthsLeft=Math.max(0,(loan.monthsLeft||1)-1);
+    loan.nextPaymentDay=game.day+30;
+    bank.totalRepaid+=payment;
     recordAccounting("Gider",loan.name+" Taksit Ödemesi",payment);
-    if(loan.remaining<=0.01) game.bank.loans.splice(index,1);
+    if(loan.remaining<=0.01) bank.loans.splice(index,1);
     render();saveGame();
 }
+
 function applyFarmGrant(type){
-    game.bank=game.bank||{loans:[],grantApplications:[],totalBorrowed:0,totalRepaid:0,totalGrantIncome:0};
+    const bank=ensureBankState();
     const cfg={
-        genç:{name:"Genç Çiftçi Yatırım Hibesi",amount:30000,days:2,prob:.70},
-        hayvancılık:{name:"Hayvancılık Modernizasyon Hibesi",amount:50000,days:3,prob:.60},
-        mandıra:{name:"Süt İşleme ve Pazarlama Hibesi",amount:75000,days:4,prob:.55}
+        genç:{name:"Genç Çiftçi Yatırım Hibesi",amount:30000,days:2},
+        hayvancılık:{name:"Hayvancılık Modernizasyon Hibesi",amount:50000,days:3},
+        mandıra:{name:"Süt İşleme ve Pazarlama Hibesi",amount:75000,days:4}
     }[type];
     if(!cfg)return;
-    if(game.bank.grantApplications.some(a=>a.type===type&&a.status==="Beklemede")){addLog("⚠ Bu hibe için başvurunuz zaten değerlendirmede.");return;}
-    game.bank.grantApplications.push({type,status:"Beklemede",applyDay:game.day,payDay:game.day+cfg.days,amount:cfg.amount,name:cfg.name,prob:cfg.prob});
-    addNotification("Hibe Başvurusu","Başvurunuz değerlendirmeye alındı.","info",true); render();saveGame();
+    if(bank.grantApplications.some(a=>a.type===type&&a.status==="İncelemede")){addLog("⚠ Bu hibe için başvurunuz zaten komisyon değerlendirmesinde.");return;}
+    bank.grantApplications.push({
+        type,kind:"grant",status:"İncelemede",applyDay:game.day,decisionDay:game.day+cfg.days,
+        amount:cfg.amount,name:cfg.name
+    });
+    addNotification("Hibe Başvurusu Alındı",cfg.name+" dosyanız hibe komisyonuna gönderildi. Karar: "+cfg.days+" gün içinde.","info",true);
+    render();saveGame();
 }
+
 function processBankDay(){
-    game.bank=game.bank||{loans:[],grantApplications:[],totalBorrowed:0,totalRepaid:0,totalGrantIncome:0};
-    game.bank.grantApplications.forEach(a=>{
-        if(a.status==="Beklemede"&&game.day>=a.payDay){
-            if(Math.random()<Number(a.prob||.5)){game.money+=a.amount;game.income+=a.amount;game.bank.totalGrantIncome+=a.amount;a.status="Onaylandı";recordAccounting("Gelir",a.name,a.amount);addNotification("Hibe Onaylandı",a.amount.toLocaleString("tr-TR")+" ₺ hibe hesabınıza aktarıldı.","success",true);}
-            else {a.status="Reddedildi";addNotification("Hibe Başvurusu","Başvurunuz bu dönemde reddedildi.","warning",true);}
+    const bank=ensureBankState();
+
+    bank.loanApplications.forEach(app=>{
+        if(app.status!=="İncelemede"||game.day<app.decisionDay)return;
+        const result=evaluateBankApplication(app);
+        app.score=result.score;
+        app.status=result.approved?"Onaylandı":"Reddedildi";
+        app.decisionDay=game.day;
+        if(result.approved){
+            bankApproveLoanApplication(app);
+            addNotification("Kredi Onaylandı","Banka uzmanı başvurunuzu onayladı. "+Number(app.amount).toLocaleString("tr-TR")+" ₺ hesabınıza aktarıldı. Skor: "+result.score+"/100.","success",true);
+        }else{
+            addNotification("Kredi Reddedildi","Banka başvurunuzu reddetti. Skor: "+result.score+"/100. Gerekçe: "+result.reason,"warning",true);
         }
     });
-    game.bank.loans.forEach(loan=>{if(game.day>=loan.nextPaymentDay&&loan.remaining>0.01){loan.nextPaymentDay=game.day+30;addNotification("Kredi Taksiti",loan.name+" için "+Number(loan.installment).toLocaleString("tr-TR")+" ₺ ödeme zamanı geldi.","warning",true);}});
-    game.bank.grantApplications=game.bank.grantApplications.slice(-20);
+
+    bank.grantApplications.forEach(app=>{
+        if(app.status!=="İncelemede"||game.day<app.decisionDay)return;
+        const result=evaluateBankApplication(app);
+        app.score=result.score;
+        app.status=result.approved?"Onaylandı":"Reddedildi";
+        app.decisionDay=game.day;
+        if(result.approved){
+            game.money+=Number(app.amount)||0;
+            game.income+=Number(app.amount)||0;
+            bank.totalGrantIncome+=Number(app.amount)||0;
+            recordAccounting("Gelir",app.name,Number(app.amount)||0);
+            addNotification("Hibe Onaylandı","Hibe komisyonu başvurunuzu onayladı. "+Number(app.amount).toLocaleString("tr-TR")+" ₺ hesabınıza aktarıldı. Proje skoru: "+result.score+"/100.","success",true);
+        }else{
+            addNotification("Hibe Reddedildi","Hibe komisyonu başvurunuzu reddetti. Proje skoru: "+result.score+"/100. Gerekçe: "+result.reason,"warning",true);
+        }
+    });
+
+    bank.loans.forEach(loan=>{
+        if(game.day>=loan.nextPaymentDay&&loan.remaining>0.01){
+            loan.nextPaymentDay=game.day+30;
+            addNotification("Kredi Taksiti",loan.name+" için "+Number(loan.installment).toLocaleString("tr-TR")+" ₺ ödeme zamanı geldi.","warning",true);
+        }
+    });
+
+    bank.loanApplications=bank.loanApplications.slice(-20);
+    bank.grantApplications=bank.grantApplications.slice(-20);
 }
 function recordAccounting(type,category,amount){
 
