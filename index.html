@@ -253,6 +253,25 @@ select:focus{
     white-space:nowrap;
 }
 
+
+.dashboard-panel{overflow:hidden;position:relative}
+.dashboard-panel:before{content:"";position:absolute;inset:-120px auto auto -80px;width:260px;height:260px;background:radial-gradient(circle,rgba(57,229,140,.09),transparent 70%);pointer-events:none}
+.dashboard-card{background:linear-gradient(145deg,rgba(17,27,41,.96),rgba(9,15,23,.96));border:1px solid #203247;border-radius:14px;padding:14px;min-height:105px}
+.dashboard-card:hover{border-color:#31516b}
+.dashboard-clock{min-width:145px;text-align:right}
+.quick-status{display:flex;justify-content:space-between;gap:12px;align-items:center;background:#0b121c;border:1px solid #1b2b3c;border-radius:12px;padding:12px;font-size:12px}
+.quick-status span{color:var(--muted)}
+.quick-status b{color:var(--text);text-align:right}
+#appMenu{padding:0 12px}
+.menu-btn{font-weight:700;white-space:nowrap}
+.menu-btn .menu-sub{display:block;font-size:9px;font-weight:500;color:var(--muted);margin-top:2px}
+.section-title{display:flex;align-items:center;gap:10px}
+@media(max-width:640px){
+    .dashboard-clock{text-align:left}
+    .quick-status{flex-direction:column;align-items:flex-start}
+    .quick-status b{text-align:left}
+}
+
 </style>
 </head>
 
@@ -275,6 +294,7 @@ select:focus{
         </div>
 
         <div id="bootText"></div>
+        <button id="enterFarmButton" class="nav-btn text-green-400 mt-6 px-6 py-3 font-bold hidden">🌾 ÇİFTLİĞE GİR</button>
 
     </div>
 
@@ -331,12 +351,12 @@ select:focus{
 
 <div id="appMenu" class="sticky top-[73px] z-40 mb-5 overflow-x-auto">
     <div class="glass p-2 flex gap-2 min-w-max">
-        <button class="nav-btn menu-btn active-menu" data-menu="genel">🏠 Genel</button>
-        <button class="nav-btn menu-btn" data-menu="surusu">🐄 Sürü</button>
-        <button class="nav-btn menu-btn" data-menu="besleme">🌾 Besleme</button>
-        <button class="nav-btn menu-btn" data-menu="sagim">🥛 Sağım</button>
-        <button class="nav-btn menu-btn" data-menu="muhasebe">🧾 Muhasebe</button>
-        <button class="nav-btn menu-btn" data-menu="gunluk">📋 Günlük</button>
+        <button class="nav-btn menu-btn active-menu" data-menu="genel">🏠 Genel<span class="menu-sub">Kontrol</span></button>
+        <button class="nav-btn menu-btn" data-menu="surusu">🐄 Sürü<span class="menu-sub">Hayvanlar</span></button>
+        <button class="nav-btn menu-btn" data-menu="besleme">🌾 Besleme<span class="menu-sub">Rasyon & Yem</span></button>
+        <button class="nav-btn menu-btn" data-menu="sagim">🥛 Sağım<span class="menu-sub">2X / 3X / 4X</span></button>
+        <button class="nav-btn menu-btn" data-menu="muhasebe">🧾 Muhasebe<span class="menu-sub">Kasa</span></button>
+        <button class="nav-btn menu-btn" data-menu="gunluk">📋 Günlük<span class="menu-sub">Kayıtlar</span></button>
     </div>
 </div>
 
@@ -346,44 +366,43 @@ select:focus{
      KPI
 ===================================================== -->
 
-<section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-
-    <div class="glass kpi">
-        <div class="kpi-label">Sürü</div>
-        <div id="herdKpi" class="kpi-value">24</div>
-        <div class="text-xs text-slate-500">baş</div>
+<section class="glass p-5 mb-6 dashboard-panel" data-dashboard="true">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-5">
+        <div>
+            <div class="text-xs text-slate-500 tracking-[2px] uppercase">Çiftlik Kontrol Merkezi</div>
+            <h2 class="text-2xl md:text-3xl font-black mt-1">Bugünkü Çiftlik Durumu</h2>
+            <p class="text-sm text-slate-500 mt-1">Sürü, yem, süt, kasa ve bir sonraki sağım tek ekranda.</p>
+        </div>
+        <div class="dashboard-clock">
+            <div class="text-xs text-slate-500">Çiftlik Saati</div>
+            <div id="bigClock" class="text-2xl font-black text-blue-300">06:00</div>
+            <div id="dayText" class="text-xs text-slate-500">1. Gün</div>
+        </div>
     </div>
 
-    <div class="glass kpi">
-        <div class="kpi-label">Günlük Süt</div>
-        <div id="milkKpi" class="kpi-value green">0 L</div>
-        <div class="text-xs text-slate-500">bugün</div>
+    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+        <div class="dashboard-card"><div class="kpi-label">Sürü</div><div id="herdKpi" class="kpi-value">24</div><div class="text-xs text-slate-500">baş</div></div>
+        <div class="dashboard-card"><div class="kpi-label">Günlük Süt</div><div id="milkKpi" class="kpi-value green">0 L</div><div class="text-xs text-slate-500">bugün</div></div>
+        <div class="dashboard-card"><div class="kpi-label">Yem Stoğu</div><div id="feedKpi" class="kpi-value yellow">0 kg</div><div class="text-xs text-slate-500">stok</div></div>
+        <div class="dashboard-card"><div class="kpi-label">Kasa</div><div id="moneyKpi" class="kpi-value blue">0 ₺</div><div class="text-xs text-slate-500">nakit</div></div>
+        <div class="dashboard-card"><div class="kpi-label">Meme Doluluğu</div><div id="udderKpi" class="kpi-value">0%</div><div class="text-xs text-slate-500">ortalama</div></div>
+        <div class="dashboard-card"><div class="kpi-label">Rumen pH</div><div id="rumenKpi" class="kpi-value green">0</div><div class="text-xs text-slate-500">ortalama</div></div>
     </div>
 
-    <div class="glass kpi">
-        <div class="kpi-label">Yem Stoğu</div>
-        <div id="feedKpi" class="kpi-value yellow">0 kg</div>
-        <div class="text-xs text-slate-500">kuru madde</div>
+    <div class="grid md:grid-cols-3 gap-3 mt-4">
+        <div class="quick-status">
+            <span>🥛 Sonraki sağım</span>
+            <b id="nextMilkingText">Hesaplanıyor...</b>
+        </div>
+        <div class="quick-status">
+            <span>🌾 Yem durumu</span>
+            <b id="feedDaysText">Hesaplanıyor...</b>
+        </div>
+        <div class="quick-status">
+            <span>💰 Günlük net</span>
+            <b id="dashboardNet">0 ₺</b>
+        </div>
     </div>
-
-    <div class="glass kpi">
-        <div class="kpi-label">Kasa</div>
-        <div id="moneyKpi" class="kpi-value blue">0 ₺</div>
-        <div class="text-xs text-slate-500">nakit</div>
-    </div>
-
-    <div class="glass kpi">
-        <div class="kpi-label">Ortalama Meme</div>
-        <div id="udderKpi" class="kpi-value">0%</div>
-        <div class="text-xs text-slate-500">doluluk</div>
-    </div>
-
-    <div class="glass kpi">
-        <div class="kpi-label">Ortalama Rumen</div>
-        <div id="rumenKpi" class="kpi-value green">0</div>
-        <div class="text-xs text-slate-500">pH</div>
-    </div>
-
 </section>
 
 
@@ -3657,6 +3676,36 @@ function render(){
     ).textContent =
         averagePH.toFixed(2);
 
+    const nextMilkingElement=document.getElementById("nextMilkingText");
+    if(nextMilkingElement){
+        const hours=getAutomaticMilkingHours();
+        const now=game.minute;
+        let next=null;
+        for(const h of hours){
+            if(h*60>now){ next=h*60; break; }
+        }
+        if(next===null) next=hours[0]*60+1440;
+        const diff=next-now;
+        const hh=Math.floor(diff/60);
+        const mm=diff%60;
+        const nextClock=formatMinutesToTime(next%1440);
+        nextMilkingElement.textContent=`${nextClock} • ${hh}s ${mm}dk`;
+    }
+
+    const feedDaysElement=document.getElementById("feedDaysText");
+    if(feedDaysElement){
+        const herdDmiPreview=game.cows.reduce((sum,cow)=>sum+calculateDMI(cow),0);
+        const days=herdDmiPreview>0 ? game.feed/herdDmiPreview : 0;
+        feedDaysElement.textContent=`${days.toFixed(1)} gün stok`;
+    }
+
+    const dashboardNet=document.getElementById("dashboardNet");
+    if(dashboardNet){
+        const netNow=game.income-game.expenses;
+        dashboardNet.textContent=`${netNow.toLocaleString("tr-TR",{maximumFractionDigits:0})} ₺`;
+        dashboardNet.className=netNow>=0 ? "green" : "red";
+    }
+
 
     const herdDMI =
 
@@ -3969,84 +4018,102 @@ function startFarmAmbience(){
         if(!AudioCtx) return false;
 
         const ctx = new AudioCtx();
-
         const master = ctx.createGain();
-        master.gain.value = Number(localStorage.getItem("ciftlikSesSeviyesi") || 0.18);
+        const savedVolume = Number(localStorage.getItem("ciftlikSesSeviyesi") || 0.32);
+        master.gain.value = savedVolume;
         master.connect(ctx.destination);
 
-        /* Hafif arka plan akoru */
+        /* Huzurlu fon müziği */
         const musicGain = ctx.createGain();
-        musicGain.gain.value = 0.035;
+        musicGain.gain.value = 0.065;
         musicGain.connect(master);
 
-        const notes = [196, 246.94, 293.66, 392];
-        const musicOscillators = notes.map((freq, index)=>{
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = index % 2 === 0 ? "sine" : "triangle";
-            osc.frequency.value = freq;
-            gain.gain.value = index === 0 ? 0.8 : 0.45;
+        const notes = [146.83,196,246.94,293.66];
+        const musicOscillators = notes.map((freq,index)=>{
+            const osc=ctx.createOscillator();
+            const gain=ctx.createGain();
+            osc.type=index%2===0 ? "sine" : "triangle";
+            osc.frequency.value=freq;
+            gain.gain.value=index===0 ? 0.75 : 0.42;
             osc.connect(gain);
             gain.connect(musicGain);
             osc.start();
             return osc;
         });
 
-        /* Rüzgâr/ahır ortamı */
-        const noise = ctx.createBufferSource();
-        noise.buffer = createFarmNoiseBuffer(ctx);
-        noise.loop = true;
+        /* Ahır / rüzgâr ortamı */
+        const noise=ctx.createBufferSource();
+        noise.buffer=createFarmNoiseBuffer(ctx);
+        noise.loop=true;
 
-        const noiseFilter = ctx.createBiquadFilter();
-        noiseFilter.type = "lowpass";
-        noiseFilter.frequency.value = 850;
+        const noiseFilter=ctx.createBiquadFilter();
+        noiseFilter.type="lowpass";
+        noiseFilter.frequency.value=1100;
 
-        const noiseGain = ctx.createGain();
-        noiseGain.gain.value = 0.035;
+        const noiseGain=ctx.createGain();
+        noiseGain.gain.value=0.10;
 
         noise.connect(noiseFilter);
         noiseFilter.connect(noiseGain);
         noiseGain.connect(master);
         noise.start();
 
-        /* Çok hafif kuş cıvıltısı benzeri kısa tonlar */
-        const birdTimer = setInterval(()=>{
-            if(!farmAudio || ctx.state === "closed") return;
+        /* Hafif ahır uğultusu */
+        const barnOsc=ctx.createOscillator();
+        const barnGain=ctx.createGain();
+        barnOsc.type="sine";
+        barnOsc.frequency.value=58;
+        barnGain.gain.value=0.035;
+        barnOsc.connect(barnGain);
+        barnGain.connect(master);
+        barnOsc.start();
 
-            const now = ctx.currentTime;
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
+        const birdTimer=setInterval(()=>{
+            if(!farmAudio || ctx.state==="closed") return;
+            const now=ctx.currentTime;
+            const osc=ctx.createOscillator();
+            const gain=ctx.createGain();
+            osc.type="sine";
+            osc.frequency.setValueAtTime(1900+Math.random()*600,now);
+            osc.frequency.exponentialRampToValueAtTime(2800+Math.random()*700,now+0.15);
+            gain.gain.setValueAtTime(0.0001,now);
+            gain.gain.exponentialRampToValueAtTime(0.035,now+0.025);
+            gain.gain.exponentialRampToValueAtTime(0.0001,now+0.24);
+            osc.connect(gain); gain.connect(master);
+            osc.start(now); osc.stop(now+0.26);
+        },12000+Math.random()*7000);
 
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(1800 + Math.random()*700, now);
-            osc.frequency.exponentialRampToValueAtTime(
-                2600 + Math.random()*700,
-                now + 0.16
-            );
+        /* Gerçek çiftlik hissi için aralıklı inek sesi */
+        const cowTimer=setInterval(()=>{
+            if(!farmAudio || ctx.state==="closed") return;
+            const now=ctx.currentTime;
+            const osc=ctx.createOscillator();
+            const gain=ctx.createGain();
+            const filter=ctx.createBiquadFilter();
 
-            gain.gain.setValueAtTime(0.0001, now);
-            gain.gain.exponentialRampToValueAtTime(0.018, now + 0.025);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.20);
+            osc.type="sawtooth";
+            const base=125+Math.random()*35;
+            osc.frequency.setValueAtTime(base,now);
+            osc.frequency.exponentialRampToValueAtTime(base*0.72,now+0.85);
+            osc.frequency.exponentialRampToValueAtTime(base*0.88,now+1.35);
 
-            osc.connect(gain);
-            gain.connect(master);
-            osc.start(now);
-            osc.stop(now + 0.22);
-        }, 9000 + Math.random()*5000);
+            filter.type="lowpass";
+            filter.frequency.value=650;
+            gain.gain.setValueAtTime(0.0001,now);
+            gain.gain.exponentialRampToValueAtTime(0.10,now+0.10);
+            gain.gain.setValueAtTime(0.075,now+0.65);
+            gain.gain.exponentialRampToValueAtTime(0.0001,now+1.5);
 
-        farmAudio = {
-            ctx,
-            master,
-            musicOscillators,
-            noise,
-            birdTimer
-        };
+            osc.connect(filter); filter.connect(gain); gain.connect(master);
+            osc.start(now); osc.stop(now+1.55);
+        },24000+Math.random()*12000);
 
+        farmAudio={ctx,master,musicOscillators,noise,barnOsc,birdTimer,cowTimer};
         ctx.resume().catch(()=>{});
         updateSoundUI(true);
         return true;
     }catch(error){
-        console.warn("Çiftlik sesi başlatılamadı:", error);
+        console.warn("Çiftlik sesi başlatılamadı:",error);
         return false;
     }
 }
@@ -4056,10 +4123,12 @@ function stopFarmAmbience(){
 
     try{
         clearInterval(farmAudio.birdTimer);
+        clearInterval(farmAudio.cowTimer);
         farmAudio.musicOscillators.forEach(osc=>{
             try{ osc.stop(); }catch(e){}
         });
         try{ farmAudio.noise.stop(); }catch(e){}
+        try{ farmAudio.barnOsc.stop(); }catch(e){}
         farmAudio.ctx.close().catch(()=>{});
     }catch(error){}
 
@@ -4100,7 +4169,7 @@ function updateSoundUI(active){
 }
 
 function setupFarmSound(){
-    const volume = Number(localStorage.getItem("ciftlikSesSeviyesi") || 0.18);
+    const volume = Number(localStorage.getItem("ciftlikSesSeviyesi") || 0.32);
     const slider = document.getElementById("soundVolume");
 
     if(slider){
@@ -4147,7 +4216,7 @@ function setupAppMenu(){
 
         const title=(section.querySelector("h2")?.textContent||"").trim();
 
-        let menu="genel";
+        let menu=section.dataset.dashboard==="true" ? "genel" : "genel";
 
         if(title.includes("Sürü")) menu="surusu";
         else if(title.includes("Sağım")) menu="sagim";
@@ -4287,6 +4356,14 @@ function boot(){
 
                             setupAppMenu();
                             setupFarmSound();
+
+                            const enterFarmButton=document.getElementById("enterFarmButton");
+                            if(enterFarmButton){
+                                enterFarmButton.addEventListener("click",()=>{
+                                    startFarmAmbience();
+                                    document.getElementById("bootScreen")?.remove();
+                                },{once:true});
+                            }
 
                             render();
 
