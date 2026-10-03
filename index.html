@@ -2868,6 +2868,7 @@ function startFreshFarm(){
     };
     game.income=0;
     game.expenses=0;
+    game.veterinary={debts:[],totalDebt:0,totalPaid:0};
     game.milkingStrategy=3;
     game.milkingWorker={
         hired:false,
@@ -2972,6 +2973,12 @@ function loadGame(){
                 ...(old.milkingWorker||{})
             },
             rawMilkStock:Number(old.rawMilkStock)||0,
+            veterinary:{
+                debts:[],
+                totalDebt:0,
+                totalPaid:0,
+                ...(old.veterinary||{})
+            },
             bank:{
                 loans:[],
                 grantApplications:[],
@@ -3683,27 +3690,16 @@ function calculateMilkProduction(cow){
         );
 
 
-    const a =
-        cow.milkPotential*
-        1.8;
-
-    const b =
-        0.18;
-
-    const c =
-        0.003;
+    const b=0.18;
+    const c=0.003;
 
 
+    const safePotential=Math.max(18,Number(cow.milkPotential)||28);
+    const a=safePotential*1.8;
     let milk =
-
         a*
-        Math.pow(
-            t,
-            b
-        )*
-        Math.exp(
-            -c*t
-        );
+        Math.pow(t,b)*
+        Math.exp(-c*t);
 
 
     const bcsPenalty =
@@ -4182,9 +4178,8 @@ function biologicalTick(){
 
 
             cow.milkYield =
-                calculateMilkProduction(
-                    cow
-                );
+                calculateMilkProduction(cow);
+            if(!Number.isFinite(cow.milkYield) || cow.milkYield<0) cow.milkYield=0;
 
 
             const fillIncrease =
@@ -4342,6 +4337,7 @@ function advanceGameTime(minutes){
             game.todayMilk=0;
             expireProcessedProducts();
             processBankDay();
+            processVeterinaryDebts();
 
             const worker=game.milkingWorker||{};
             if(worker.hired){
@@ -5520,6 +5516,7 @@ function openAnimalCard(id){
     '</div>'+milkChart+
     '<div class="animal-card-history">'+(milkHistory.length?milkHistory.slice(0,8).map(item=>'<div><b>Gün '+item.day+' • '+item.time+'</b> — '+(Number(item.yield)||0).toFixed(1)+' L</div>').join(""):'')+'</div></div>'+
     '<div class="animal-card-section"><div class="animal-card-section-title">🩺 Sağlık & Veteriner</div><div class="animal-card-action-grid">'+
+    '<button type="button" class="nav-btn" onclick="callVeterinarian(\''+String(cow.id)+'\')">👨‍⚕️ Veteriner Çağır</button>'+
     '<button type="button" class="nav-btn" onclick="recordAnimalHealth(\''+String(cow.id)+'\',\'Muayene\')">🩺 Muayene</button>'+
     '<button type="button" class="nav-btn" onclick="callVeterinarian(\''+String(cow.id)+'\')">👨‍⚕️ Veteriner Çağır</button>'+
     '<button type="button" class="nav-btn" onclick="recordAnimalHealth(\''+String(cow.id)+'\',\'Aşılama\')">💉 Aşılama</button></div>'+
@@ -5673,6 +5670,64 @@ function renderVeterinaryPayables(){
     }).join(""):'<div class="text-[10px] text-slate-500">Açık veteriner faturası yok.</div>';
 }
 
+function ensureVetState(){
+    game.veterinary=game.veterinary||{debts:[],totalDebt:0,totalPaid:0};
+    game.veterinary.debts=Array.isArray(game.veterinary.debts)?game.veterinary.debts:[];
+    game.veterinary.totalDebt=Number(game.veterinary.totalDebt)||0;
+    game.veterinary.totalPaid=Number(game.veterinary.totalPaid)||0;
+}
+function getVeterinaryDiagnosis(cow){
+    const issues=[];
+    if(Number(cow.health)<75) issues.push("Genel sağlık düşüklüğü");
+    if(Number(cow.diseaseRisk)>=35) issues.push("Hastalık riski yüksek");
+    if(Number(cow.saraRisk)>=35 || Number(cow.rumenPH)<5.8) issues.push("Rumen/SARA problemi");
+    if(Number(cow.bcs)<2.7) issues.push("Vücut kondisyonu düşük");
+    if(Number(cow.udderFill)<35) issues.push("Meme doluluğu düşük; sağım zamanı dışında");
+    if(!issues.length) issues.push("Belirgin klinik sorun saptanmadı");
+    const expected=Math.max(0,Number(cow.milkPotential)||0);
+    const actual=Math.max(0,Number(cow.milkYield)||0);
+    if(expected>0 && actual<expected*0.55) issues.push("Süt verimi potansiyelin belirgin altında");
+    return issues;
+}
+function callVeterinarian(id){
+    const cow=getCowById(id); if(!cow || cow.isCalf) return;
+    ensureVetState();
+    const fee=1500;
+    const creditDays=15;
+    const dueDay=game.day+creditDays;
+    const diagnosis=getVeterinaryDiagnosis(cow);
+    const debt={id:"VET-"+Date.now(),day:game.day,dueDay,animalId:cow.id,animalName:cow.name,amount:fee,status:"Veresiye"};
+    game.veterinary.debts.unshift(debt);
+    game.veterinary.totalDebt+=fee;
+    game.expenses+=fee;
+    recordAccounting("Gider","Veteriner Hizmeti (Veresiye)",fee);
+    addAnimalHealthRecord(cow,"Veteriner Muayenesi","Sorunlar: "+diagnosis.join(", ")+" | 15 gün veresiye");
+    const severe=diagnosis.some(x=>x.includes("Süt verimi")||x.includes("Hastalık")||x.includes("SARA"));
+    if(severe){
+        cow.health=Math.min(100,(Number(cow.health)||0)+3);
+        cow.diseaseRisk=Math.max(0,(Number(cow.diseaseRisk)||0)-5);
+    }
+    addNotification("Veteriner Geldi","👨‍⚕️ "+cow.name+" muayene edildi. Ücret "+fee.toLocaleString("tr-TR")+" ₺, ödeme "+creditDays+" gün sonra. "+diagnosis.join(" • "),"warning",true);
+    addLog("👨‍⚕️ Veteriner: "+cow.name+" | "+diagnosis.join(" • ")+" | "+fee.toLocaleString("tr-TR")+" ₺ veresiye");
+    refreshAnimalCard(id);
+}
+function processVeterinaryDebts(){
+    ensureVetState();
+    for(const debt of game.veterinary.debts){
+        if(debt.status==="Veresiye" && game.day>=Number(debt.dueDay)){
+            if(game.money>=Number(debt.amount)){
+                game.money-=Number(debt.amount);
+                debt.status="Ödendi";
+                game.veterinary.totalDebt=Math.max(0,game.veterinary.totalDebt-Number(debt.amount));
+                game.veterinary.totalPaid+=Number(debt.amount);
+                addLog("💳 Veteriner veresiye borcu ödendi: "+debt.amount.toLocaleString("tr-TR")+" ₺");
+                addNotification("Veteriner Borcu Ödendi",debt.animalName+" için "+debt.amount.toLocaleString("tr-TR")+" ₺ ödeme yapıldı.","info",true);
+            }else{
+                addNotification("Veteriner Borcu","⚠ "+debt.animalName+" için "+Number(debt.amount).toLocaleString("tr-TR")+" ₺ veteriner borcu vadesi geldi ancak kasada yeterli para yok.","warning",true);
+            }
+        }
+    }
+}
 function recordAnimalHealth(id,type){
     const cow=getCowById(id);if(!cow)return;
     let note="";
