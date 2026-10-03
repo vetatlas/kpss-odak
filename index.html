@@ -1525,6 +1525,15 @@ const FEED_PRICE = 19.07;
 const MILK_PRICE = 24.30;
 
 const SAVE_VERSION = 2;
+
+const REPRODUCTION_CONFIG = {
+    estrousCycleMin:17,
+    estrousCycleMax:21,
+    gestationDays:283,
+    voluntaryWaitingDays:50,
+    heatDurationDays:2,
+    dryPeriodTargetDays:60
+};
 const STARTING_DONATION = 35000;
 const COW_PURCHASE_PRICE = 25000;
 
@@ -1745,7 +1754,8 @@ function createCow(id){
             pregnant:false,
             expectedCalvingDay:null,
             lastCalvingDay:null,
-            dryOffDay:null
+            dryOffDay:null,
+            nextHeatDay:50
         }
 
     };
@@ -2013,6 +2023,7 @@ function loadGame(){
                     expectedCalvingDay:null,
                     lastCalvingDay:null,
                     dryOffDay:null,
+                    nextHeatDay:null,
                     ...cow.reproduction
                 };
                 if(!cow.breed) cow.breed="Holstein";
@@ -2536,6 +2547,10 @@ function calculateDMI(cow){
 
 function calculateMilkProduction(cow){
 
+    if(cow.reproduction?.status==="Kuru Dönem"){
+        return 0;
+    }
+
     const t =
         Math.max(
             1,
@@ -2855,6 +2870,57 @@ function updateCowBiology(cow){
    BİYOLOJİK TICK
 ========================================================= */
 
+function getNextEstrousCycleDays(){
+    return REPRODUCTION_CONFIG.estrousCycleMin+
+        Math.floor(Math.random()*(REPRODUCTION_CONFIG.estrousCycleMax-REPRODUCTION_CONFIG.estrousCycleMin+1));
+}
+
+function processReproduction(cow){
+    const r=cow.reproduction||(cow.reproduction={status:"Laktasyonda"});
+    const state=game.notificationState?.reproduction||(game.notificationState.reproduction={});
+    const id=String(cow.id);
+    const today=game.day;
+
+    if(r.pregnant){
+        if(r.expectedCalvingDay && today>=r.expectedCalvingDay){
+            if(!state[id]) state[id]={};
+            if(!state[id].calvingDue){
+                addNotification("Doğum Zamanı",cow.name+" için tahmini doğum tarihi geldi. Doğum kaydını oluştur.","warning",true);
+                state[id].calvingDue=true;
+            }
+        }
+        return;
+    }
+
+    if(r.status==="Kuru Dönem") return;
+
+    if(r.status==="Kızgınlık" && r.heatDay && today-r.heatDay>=REPRODUCTION_CONFIG.heatDurationDays){
+        r.status="Laktasyonda";
+        r.nextHeatDay=today+getNextEstrousCycleDays();
+    }
+
+    if(r.inseminationDay) return;
+
+    if(!r.nextHeatDay){
+        const base=Math.max(today+REPRODUCTION_CONFIG.voluntaryWaitingDays,(r.lastCalvingDay||0)+REPRODUCTION_CONFIG.voluntaryWaitingDays);
+        r.nextHeatDay=base+getNextEstrousCycleDays();
+    }
+
+    if(today>=r.nextHeatDay){
+        r.status="Kızgınlık";
+        r.heatDay=today;
+        if(!state[id]) state[id]={};
+        if(!state[id].heat) {
+            addNotification("Otomatik Kızgınlık",cow.name+" için yeni kızgınlık dönemi başladı. Tohumlama planlanabilir.","warning",true);
+            state[id].heat=true;
+        }
+        addAnimalHealthRecord(cow,"Üreme","Otomatik kızgınlık tespit edildi");
+    }else{
+        if(!state[id]) state[id]={};
+        state[id].heat=false;
+    }
+}
+
 function biologicalTick(){
 
     updateRationAnalysis();
@@ -2862,6 +2928,8 @@ function biologicalTick(){
 
     game.cows.forEach(
         cow=>{
+
+            processReproduction(cow);
 
             updateCowBiology(
                 cow
@@ -2874,13 +2942,10 @@ function biologicalTick(){
                 );
 
 
-            const milkPerMinute =
-                cow.milkYield/
-                1440;
-
-
             const fillIncrease =
-                100/
+                cow.reproduction?.status==="Kuru Dönem"
+                ? 0
+                : 100/
                 (1440/game.milkingStrategy);
 
 
@@ -3025,7 +3090,9 @@ function advanceGameTime(minutes){
 
             game.cows.forEach(
                 cow=>{
-                    cow.lactationDay++;
+                    if(cow.reproduction?.status!=="Kuru Dönem"){
+                        cow.lactationDay++;
+                    }
                 }
             );
 
@@ -3129,6 +3196,11 @@ function milkHerd(automatic=false){
 
 
     game.cows.forEach(cow=>{
+
+        if(cow.reproduction?.status==="Kuru Dönem"){
+            cow.udderFill=0;
+            return;
+        }
 
         const fillRatio=Math.min(1,cow.udderFill/100);
 
@@ -3953,15 +4025,26 @@ function recordAnimalHealth(id,type){
     refreshAnimalCard(id);
 }
 function recordHeat(id){
-    const cow=getCowById(id);if(!cow)return;const r=cow.reproduction||{};
-    r.status="Kızgınlık";r.heatDay=game.day;r.inseminationDay=null;r.pregnancyCheckDay=null;r.pregnant=false;r.expectedCalvingDay=null;cow.reproduction=r;
+    const cow=getCowById(id);if(!cow)return;
+    const r=cow.reproduction||{};
+    if(r.pregnant){
+        addLog("⚠ "+cow.name+" gebe olduğu için kızgınlık kaydı oluşturulamaz.");
+        return;
+    }
+    if(r.status==="Kuru Dönem"){
+        addLog("⚠ "+cow.name+" kuru dönemde. Önce laktasyon/doğum durumunu güncelle.");
+        return;
+    }
+    r.status="Kızgınlık";r.heatDay=game.day;r.inseminationDay=null;r.pregnancyCheckDay=null;r.pregnant=false;r.expectedCalvingDay=null;r.nextHeatDay=null;
     addAnimalHealthRecord(cow,"Üreme","Kızgınlık tespit edildi");
     addNotification("Kızgınlık Tespit Edildi",cow.name+" için kızgınlık kaydı oluşturuldu. Tohumlama planlanabilir.","warning",true);refreshAnimalCard(id);
 }
 function recordInsemination(id){
     const cow=getCowById(id);if(!cow)return;const r=cow.reproduction||{};
+    if(r.pregnant){addLog("⚠ "+cow.name+" zaten gebe.");return;}
+    if(r.status==="Kuru Dönem"){addLog("⚠ "+cow.name+" kuru dönemde tohumlanamaz.");return;}
     if(r.status!=="Kızgınlık"&&!r.heatDay){addLog("⚠ "+cow.name+" için önce kızgınlık kaydı oluşturulmalı.");return;}
-    r.status="Tohumlandı";r.inseminationDay=game.day;r.pregnancyCheckDay=game.day+28;r.pregnant=false;r.expectedCalvingDay=game.day+283;cow.reproduction=r;
+    r.status="Tohumlandı";r.inseminationDay=game.day;r.pregnancyCheckDay=game.day+28;r.pregnant=false;r.expectedCalvingDay=game.day+REPRODUCTION_CONFIG.gestationDays;r.nextHeatDay=null;cow.reproduction=r;
     addAnimalHealthRecord(cow,"Üreme","Tohumlama yapıldı; gebelik kontrolü 28 gün sonra planlandı");
     addNotification("Tohumlama Kaydı",cow.name+" tohumlandı. Gebelik kontrolü yaklaşık Gün "+r.pregnancyCheckDay+".","info",true);refreshAnimalCard(id);
 }
@@ -3971,23 +4054,41 @@ function checkPregnancy(id){
     if(game.day<r.inseminationDay+28){addLog("⚠ Gebelik kontrolü için henüz erken. Önerilen gün: "+(r.inseminationDay+28)+".");return;}
     const positive=confirm(cow.name+" için gebelik testi pozitif mi?\n\nTamam = Pozitif, İptal = Negatif");
     r.pregnancyCheckDay=game.day;r.pregnant=positive;r.status=positive?"Gebe":"Tekrar tohumlama bekleniyor";
-    if(!positive){r.inseminationDay=null;r.expectedCalvingDay=null;}cow.reproduction=r;
+    if(!positive){
+        r.inseminationDay=null;
+        r.expectedCalvingDay=null;
+        r.pregnant=false;
+        r.status="Laktasyonda";
+        r.nextHeatDay=game.day+getNextEstrousCycleDays();
+    }else{
+        r.nextHeatDay=null;
+        r.status="Gebe";
+    }
+    cow.reproduction=r;
     addAnimalHealthRecord(cow,"Üreme",positive?"Gebelik kontrolü pozitif":"Gebelik kontrolü negatif");
     addNotification(positive?"Gebelik Pozitif":"Gebelik Negatif",positive?cow.name+" gebelik açısından pozitif. Tahmini doğum Gün "+r.expectedCalvingDay+".":cow.name+" gebelik açısından negatif. Yeni kızgınlık/tohumlama planlanmalı.",positive?"success":"warning",true);refreshAnimalCard(id);
 }
 function recordCalving(id){
     const cow=getCowById(id);if(!cow)return;const r=cow.reproduction||{};
     if(!r.pregnant){addLog("⚠ "+cow.name+" kayıtlı gebe değil. Doğum kaydı için önce gebelik durumunu doğrula.");return;}
-    r.status="Doğum Sonrası";r.lastCalvingDay=game.day;r.pregnant=false;r.expectedCalvingDay=null;r.inseminationDay=null;r.pregnancyCheckDay=null;r.heatDay=null;
-    cow.lactationNumber=(cow.lactationNumber||1)+1;cow.lactationDay=1;cow.reproduction=r;
+    r.status="Doğum Sonrası";r.lastCalvingDay=game.day;r.pregnant=false;r.expectedCalvingDay=null;r.inseminationDay=null;r.pregnancyCheckDay=null;r.heatDay=null;r.dryOffDay=null;r.nextHeatDay=game.day+REPRODUCTION_CONFIG.voluntaryWaitingDays;
+    cow.lactationNumber=(cow.lactationNumber||1)+1;cow.lactationDay=1;cow.udderFill=0;cow.reproduction=r;
     addAnimalHealthRecord(cow,"Üreme","Doğum kaydı oluşturuldu");
     addNotification("Doğum Kaydı",cow.name+" için doğum kaydı oluşturuldu. Yeni laktasyon başladı.","success",true);refreshAnimalCard(id);
 }
 function recordDryOff(id){
     const cow=getCowById(id);if(!cow)return;const r=cow.reproduction||{};
-    r.status="Kuru Dönem";r.dryOffDay=game.day;cow.reproduction=r;
+    if(r.status==="Kuru Dönem"){addLog("⚠ "+cow.name+" zaten kuru dönemde.");return;}
+    if(!r.pregnant){addLog("⚠ Kuruya çıkarma için hayvanın gebe olması gerekiyor.");return;}
+    const daysToCalving=(Number(r.expectedCalvingDay)||0)-game.day;
+    if(daysToCalving>REPRODUCTION_CONFIG.dryPeriodTargetDays+14){
+        addLog("⚠ "+cow.name+" için kuruya çıkarma henüz erken. Tahmini doğuma yaklaşık "+daysToCalving+" gün var.");
+        return;
+    }
+    if(daysToCalving<0){addLog("⚠ Tahmini doğum tarihi geçmiş. Önce doğum kaydını kontrol et.");return;}
+    r.status="Kuru Dönem";r.dryOffDay=game.day;cow.milkYield=0;cow.udderFill=0;cow.reproduction=r;
     addAnimalHealthRecord(cow,"Üreme","Kuruya çıkarma kaydı");
-    addNotification("Kuruya Çıkarma",cow.name+" kuru döneme alındı.","info",true);refreshAnimalCard(id);
+    addNotification("Kuruya Çıkarma",cow.name+" kuru döneme alındı. Sağım durduruldu.","info",true);refreshAnimalCard(id);
 }
 
 function closeAnimalCard(){
