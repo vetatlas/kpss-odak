@@ -4351,6 +4351,8 @@ function resumeFarmAudio(){
     if(!audio) return;
     try{
         audio.volume=Math.max(0,Math.min(1,farmAudio.masterVolume*.45));
+        audio.muted=false;
+        audio.autoplay=true;
         const p=audio.play();
         if(p && p.catch){
             p.catch(error=>{
@@ -4483,9 +4485,25 @@ function initFarmApp(){
 }
 
 function boot(){
-    /* Eski terminal/yükleme ekranı kaldırıldı: çiftlik doğrudan açılır. */
     document.getElementById("bootScreen")?.remove();
     initFarmApp();
+
+    /* Sayfa açılır açılmaz çiftlik ambiyansını başlatmayı dene. */
+    try{
+        startFarmAmbience();
+        resumeFarmAudio();
+    }catch(e){}
+
+    /* Tarayıcı autoplay'i engellerse ilk kullanıcı etkileşiminde anında tekrar dene. */
+    const unlockAudio=()=>{
+        try{
+            startFarmAmbience();
+            resumeFarmAudio();
+        }catch(e){}
+    };
+    ["pointerdown","touchstart","keydown"].forEach(type=>{
+        document.addEventListener(type,unlockAudio,{once:true,passive:true});
+    });
 }
 
 
