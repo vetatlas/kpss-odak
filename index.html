@@ -1808,6 +1808,37 @@ function applySharedGame(remoteState){
     }
 }
 
+async function loadSharedAudioSettings(){
+    if(!sharedBackend.client) return;
+    try{
+        const {data,error}=await sharedBackend.client
+            .from("farm_settings")
+            .select("sound_enabled,sound_url,sound_volume")
+            .eq("id",1)
+            .maybeSingle();
+        if(error) throw error;
+        if(data){
+            FARM_AUDIO_CONFIG.enabled=data.sound_enabled!==false;
+            FARM_AUDIO_CONFIG.url=data.sound_url||"sounds/nature.wav";
+            FARM_AUDIO_CONFIG.volume=Math.max(0,Math.min(1,Number(data.sound_volume??0.45)));
+
+            if(farmAudio){
+                if(!FARM_AUDIO_CONFIG.enabled){
+                    stopFarmAmbience();
+                }else if(farmAudio.nature?.src !== new URL(FARM_AUDIO_CONFIG.url,document.baseURI).href){
+                    stopFarmAmbience();
+                    startFarmAmbience();
+                }else{
+                    farmAudio.masterVolume=FARM_AUDIO_CONFIG.volume;
+                    resumeFarmAudio();
+                }
+            }
+        }
+    }catch(error){
+        console.warn("Ortak ses ayarları alınamadı:",error);
+    }
+}
+
 async function initSharedBackend(){
     if(sharedBackend.ready) return;
     try{
@@ -1829,6 +1860,8 @@ async function initSharedBackend(){
         if(error) throw error;
 
         sharedBackend.ready=true;
+
+        await loadSharedAudioSettings();
 
         if(data?.state && Object.keys(data.state).length){
             applySharedGame(data.state);
@@ -1877,7 +1910,7 @@ const GAME_MINUTES_PER_REAL_SECOND = 4;
 const GAME_MINUTES_PER_DAY = 1440;
 
 /* Ortak dünya başlangıcı: 04.10.2026 00:00 UTC -> Oyun 1. Gün 06:00 */
-const WORLD_CLOCK_EPOCH = Date.UTC(2026,9,4,0,0,0);
+const WORLD_CLOCK_EPOCH = Date.UTC(2026,9,3,21,0,0);
 const WORLD_CLOCK_START_MINUTE = 360;
 
 const FEED_PRICE = 19.07;
@@ -5273,9 +5306,15 @@ function createFarmNoiseBuffer(ctx){
    Lisans: CC BY 4.0 (ticari kullanım serbest, atıf gerekir)
 ========================================================= */
 
+let FARM_AUDIO_CONFIG={
+    enabled:true,
+    url:"sounds/nature.wav",
+    volume:0.45
+};
+
 const FARM_AUDIO_SOURCES={
-    /* Yerel doğa ambiyansı: GitHub reposunda sounds/nature.wav */
-    nature:"sounds/nature.wav"
+    /* Varsayılan kaynak; ortak dünya ayarları açılınca Supabase'ten güncellenir. */
+    get nature(){ return FARM_AUDIO_CONFIG.url; }
 };
 
 function createRealFarmAudio(src,volume=1,loop=false){
@@ -5323,8 +5362,10 @@ function scheduleRealFarmSound(name,min,max){
 
 function startFarmAmbience(){
     try{
-        const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.55);
-        const masterVolume=Math.max(0,Math.min(1,savedVolume));
+        const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||FARM_AUDIO_CONFIG.volume);
+        const masterVolume=FARM_AUDIO_CONFIG.enabled
+            ? Math.max(0,Math.min(1,savedVolume))
+            : 0;
         if(!farmAudio){
             const nature=createRealFarmAudio(FARM_AUDIO_SOURCES.nature,masterVolume*.45,true);
             farmAudio={enabled:true,masterVolume,nature,timers:[]};
