@@ -3307,6 +3307,43 @@ function processReproduction(cow){
     const today=game.day;
 
     if(r.pregnant){
+        const daysToCalving=(Number(r.expectedCalvingDay)||0)-today;
+
+        /*
+          Gerçekçi geçiş:
+          Gebe hayvan, tahmini doğuma 60 gün kala otomatik olarak
+          kuru döneme alınır. Böylece sağım doğumdan önce planlı şekilde durur.
+          Doğum yine kullanıcı tarafından kaydedilir; bu sayede sürü sayısı
+          ve buzağı kayıtları kontrolsüz şekilde değişmez.
+        */
+        if(
+            r.status!=="Kuru Dönem" &&
+            r.expectedCalvingDay &&
+            daysToCalving<=REPRODUCTION_CONFIG.dryPeriodTargetDays &&
+            daysToCalving>=0
+        ){
+            r.status="Kuru Dönem";
+            r.dryOffDay=today;
+            cow.milkYield=0;
+            cow.udderFill=0;
+
+            if(!state[id]) state[id]={};
+            if(!state[id].autoDryOff){
+                addAnimalHealthRecord(
+                    cow,
+                    "Üreme",
+                    "Tahmini doğuma 60 gün kala otomatik kuruya çıkarıldı"
+                );
+                addNotification(
+                    "Otomatik Kuruya Çıkarma",
+                    cow.name+" tahmini doğuma "+daysToCalving+" gün kaldığı için kuru döneme alındı.",
+                    "info",
+                    true
+                );
+                state[id].autoDryOff=true;
+            }
+        }
+
         if(r.expectedCalvingDay && today>=r.expectedCalvingDay){
             if(!state[id]) state[id]={};
             if(!state[id].calvingDue){
