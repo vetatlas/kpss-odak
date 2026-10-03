@@ -1103,11 +1103,11 @@ input,select{min-height:48px;border-radius:14px}
         ⏱️ Çiftlik Saati
     </h2>
 
-    <div id="bigClock" class="text-4xl font-black text-blue-400">
+    <div id="farmClockPanel" class="text-4xl font-black text-blue-400">
         06:00
     </div>
 
-    <div id="dayText" class="text-sm text-slate-500 mt-2">
+    <div id="farmDayPanel" class="text-sm text-slate-500 mt-2">
         1. Gün
     </div>
 
@@ -3739,16 +3739,10 @@ function render(){
         `Gün ${game.day} • ${formatGameTime()}`;
 
 
-    document.getElementById(
-        "bigClock"
-    ).textContent =
-        formatGameTime();
+    document.querySelectorAll("#bigClock, #farmClockPanel").forEach(el=>el.textContent=formatGameTime());
 
 
-    document.getElementById(
-        "dayText"
-    ).textContent =
-        `${game.day}. Gün`;
+    document.querySelectorAll("#dayText, #farmDayPanel").forEach(el=>el.textContent=`${game.day}. Gün`);
 
 
     const dayProgress =
