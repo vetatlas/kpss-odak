@@ -4226,10 +4226,10 @@ function createFarmNoiseBuffer(ctx){
 ========================================================= */
 
 const FARM_AUDIO_SOURCES={
-    /* ESC-50 içindeki gerçek saha kayıtları. Kaynak kayıtlar CC0/uygun lisanslıdır. */
-    cow:"https://raw.githubusercontent.com/karolpiczak/ESC-50/master/audio/1-163727-A.ogg",
-    birds:"https://raw.githubusercontent.com/karolpiczak/ESC-50/master/audio/2-122616-A.ogg",
-    rooster:"https://raw.githubusercontent.com/karolpiczak/ESC-50/master/audio/1-34119-A.ogg"
+    /* Sesler oyunun içine yerel olarak gömülüdür; dış sunucuya ihtiyaç duymaz. */
+    cow:"sounds/cow.wav",
+    birds:"sounds/barn.wav",
+    rooster:"sounds/rooster.wav"
 };
 
 function createRealFarmAudio(src,volume=1,loop=false){
