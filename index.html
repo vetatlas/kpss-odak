@@ -1014,6 +1014,17 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 
     </button>
 
+    <div class="mt-4 metric">
+        <div class="flex items-center justify-between gap-3">
+            <div>
+                <div class="text-xs text-slate-500">👨‍🌾 Sağım İşçisi</div>
+                <div id="milkingWorkerStatus" class="font-bold mt-1">İşe alınmadı</div>
+                <div id="milkingWorkerDetail" class="text-xs text-slate-500 mt-1">İşe alım: 2.500 ₺ • Günlük ücret: 750 ₺</div>
+            </div>
+            <button id="hireMilkingWorkerBtn" onclick="hireMilkingWorker()" class="nav-btn">İŞE AL</button>
+        </div>
+    </div>
+
 
     <div class="mt-4 grid grid-cols-2 gap-3">
 
@@ -1990,6 +2001,14 @@ let game = {
 
     milkingStrategy:3,
 
+    milkingWorker:{
+        hired:false,
+        name:"Sağım İşçisi",
+        hireCost:2500,
+        dailyWage:750,
+        hiredDay:null
+    },
+
     pendingMilkingStrategy:null,
 
     lastRealTime:Date.now(),
@@ -2210,6 +2229,13 @@ function startFreshFarm(){
     game.income=0;
     game.expenses=0;
     game.milkingStrategy=3;
+    game.milkingWorker={
+        hired:false,
+        name:"Sağım İşçisi",
+        hireCost:2500,
+        dailyWage:750,
+        hiredDay:null
+    };
     game.pendingMilkingStrategy=null;
     game.lastRealTime=Date.now();
     game.lastMilking="";
@@ -2299,7 +2325,11 @@ function loadGame(){
 
         game={
             ...game,
-            ...old
+            ...old,
+            milkingWorker:{
+                hired:false,name:"Sağım İşçisi",hireCost:2500,dailyWage:750,hiredDay:null,
+                ...(old.milkingWorker||{})
+            }
         };
 
         game.pendingMilkingStrategy =
@@ -3615,6 +3645,15 @@ function advanceGameTime(minutes){
 
             game.todayMilk=0;
 
+            const worker=game.milkingWorker||{};
+            if(worker.hired){
+                const wage=Number(worker.dailyWage)||750;
+                game.money-=wage; game.expenses+=wage;
+                game.accountingLedger=game.accountingLedger||[];
+                game.accountingLedger.unshift({day:game.day,time:"00:00",type:"Gider",category:"Sağım İşçisi Günlük Ücret",amount:wage});
+                addLog("💰 Sağım işçisi günlük ücreti ödendi: "+wage.toLocaleString("tr-TR")+" ₺");
+            }
+
             if(game.pendingMilkingStrategy){
                 game.milkingStrategy=game.pendingMilkingStrategy;
                 game.pendingMilkingStrategy=null;
@@ -3708,9 +3747,24 @@ function getMilkingSlotKey(){
 }
 
 
+function hireMilkingWorker(){
+    game.milkingWorker=game.milkingWorker||{hired:false,name:"Sağım İşçisi",hireCost:2500,dailyWage:750,hiredDay:null};
+    if(game.milkingWorker.hired) return;
+    const cost=Number(game.milkingWorker.hireCost)||2500;
+    if(game.money<cost){addLog("⚠ Sağım işçisi için "+cost.toLocaleString("tr-TR")+" ₺ gerekiyor.");return;}
+    game.money-=cost; game.expenses+=cost;
+    game.milkingWorker.hired=true; game.milkingWorker.hiredDay=game.day;
+    game.accountingLedger=game.accountingLedger||[];
+    game.accountingLedger.unshift({day:game.day,time:formatGameTime(),type:"Gider",category:"Sağım İşçisi İşe Alım",amount:cost});
+    addNotification("Sağım İşçisi İşe Alındı","Programlı saatlerde sürüyü otomatik sağacak. Günlük ücret: "+(Number(game.milkingWorker.dailyWage)||750).toLocaleString("tr-TR")+" ₺.","success",true);
+    addLog("👨‍🌾 Sağım işçisi işe alındı. Programlı sağım otomatik yapılacak.");
+    render(); saveGame();
+}
+
 function processAutomaticMilking(){
 
     if(!isMilkingTime()) return;
+    if(!(game.milkingWorker||{}).hired) return;
 
     const slot=getMilkingSlotKey();
 
@@ -5144,6 +5198,14 @@ function render(){
         "rumenKpi"
     ).textContent =
         averagePH.toFixed(2);
+
+    const worker=game.milkingWorker||{};
+    const workerStatus=document.getElementById("milkingWorkerStatus");
+    const workerDetail=document.getElementById("milkingWorkerDetail");
+    const workerBtn=document.getElementById("hireMilkingWorkerBtn");
+    if(workerStatus) workerStatus.textContent=worker.hired?"🟢 Görevde":"⚪ İşe alınmadı";
+    if(workerDetail) workerDetail.textContent=worker.hired?"Programlı saatlerde otomatik sağım yapar • Günlük ücret: "+(Number(worker.dailyWage)||750).toLocaleString("tr-TR")+" ₺":"İşe alım: "+(Number(worker.hireCost)||2500).toLocaleString("tr-TR")+" ₺ • Günlük ücret: "+(Number(worker.dailyWage)||750).toLocaleString("tr-TR")+" ₺";
+    if(workerBtn){workerBtn.textContent=worker.hired?"ÇALIŞIYOR":"İŞE AL";workerBtn.disabled=!!worker.hired;}
 
     const nextMilkingElement=document.getElementById("nextMilkingText");
     if(nextMilkingElement){
