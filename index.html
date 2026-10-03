@@ -4506,7 +4506,19 @@ function openAnimalCard(id){
     status.textContent=getAnimalCardStatus(cow);
     const r=cow.reproduction;
     const reproductionStatus=r.pregnant?"🤰 Gebe":(r.status||"Laktasyonda");
-    const fields=[
+    const calfCare=cow.calfCare||{};
+    const calfFields=cow.isCalf?[
+        ["Hayvan Dönemi","🐮 Buzağı"],
+        ["Yaş",(Number(cow.ageDays)||0)+" gün"],
+        ["Anne",game.cows.find(m=>String(m.id)===String(cow.motherId))?.name||"Kayıtlı değil"],
+        ["Kolostrum",calfCare.colostrumReceived?"Alındı":"Eksik"],
+        ["Sütle Besleme",calfCare.weaned?"Tamamlandı":(Number(calfCare.milkFedDays)||0)+" gün"],
+        ["Sütten Kesim",calfCare.weaned?"Tamamlandı":(calfCare.weaningDay?"Gün "+calfCare.weaningDay:"Planlanıyor")],
+        ["Başlangıç Yemi",(Number(calfCare.starterFeedIntake)||0).toFixed(1)+" kg"],
+        ["Canlı Ağırlık",(Number(cow.weight)||0).toFixed(0)+" kg"],
+        ["Sağlık",(Number(cow.health)||0).toFixed(1)+"%"]
+    ]:[];
+    const fields=cow.isCalf?calfFields:[
         ["Küpe No",cow.earTag||("TR-"+String(cow.id).padStart(4,"0"))],["Irk",cow.breed||"Belirtilmemiş"],["Cinsiyet",cow.sex||"Dişi"],
         ["Doğum Tarihi",formatAnimalBirthDate(cow.birthDate)],["Laktasyon No",String(cow.lactationNumber||1)],["Laktasyon Günü",String(cow.lactationDay||0)],
         ["Canlı Ağırlık",(Number(cow.weight)||0).toFixed(0)+" kg"],["BCS",(Number(cow.bcs)||0).toFixed(2)],["Günlük Süt",(Number(cow.milkYield)||0).toFixed(1)+" L"],
@@ -4548,12 +4560,19 @@ function openAnimalCard(id){
     '<button type="button" class="nav-btn" onclick="recordAnimalHealth(\''+String(cow.id)+'\',\'Tedavi\')">💊 Tedavi</button>'+
     '<button type="button" class="nav-btn" onclick="recordAnimalHealth(\''+String(cow.id)+'\',\'Aşılama\')">💉 Aşılama</button></div>'+
     '<div class="animal-card-history">'+(cow.healthHistory.length?cow.healthHistory.slice(0,5).map(item=>'<div><b>Gün '+item.day+'</b> • '+item.type+(item.note?" — "+item.note:"")+'</div>').join(""):'<div class="text-slate-500">Henüz sağlık kaydı yok.</div>')+'</div></div>'+
+    (cow.isCalf?
+    '<div class="animal-card-section"><div class="animal-card-section-title">🍼 Buzağı Bakımı</div><div class="animal-card-history">'+
+    '<div>Kolostrum: <b>'+(calfCare.colostrumReceived?"Alındı":"Eksik")+'</b></div>'+
+    '<div>Sütle besleme: <b>'+(calfCare.weaned?"Tamamlandı":(Number(calfCare.milkFedDays)||0)+" gün")+'</b></div>'+
+    '<div>Sütten kesim: <b>'+(calfCare.weaned?"Tamamlandı":(calfCare.weaningDay?"Gün "+calfCare.weaningDay:"Planlanıyor"))+'</b></div>'+
+    '<div>Başlangıç yemi: <b>'+(Number(calfCare.starterFeedIntake)||0).toFixed(1)+' kg</b></div>'+
+    '</div></div>':
     '<div class="animal-card-section"><div class="animal-card-section-title">♀️ Üreme Yönetimi</div><div class="animal-card-action-grid">'+
     '<button type="button" class="nav-btn" onclick="recordHeat(\''+String(cow.id)+'\')">🔥 Kızgınlık</button>'+
     '<button type="button" class="nav-btn" onclick="recordInsemination(\''+String(cow.id)+'\')">🧬 Tohumlama</button>'+
     '<button type="button" class="nav-btn" onclick="checkPregnancy(\''+String(cow.id)+'\')">🤰 Gebelik Kontrolü</button>'+
     '<button type="button" class="nav-btn" onclick="recordCalving(\''+String(cow.id)+'\')">🐮 Doğum</button>'+
-    '<button type="button" class="nav-btn" onclick="recordDryOff(\''+String(cow.id)+'\')">🌙 Kuruya Çıkarma</button></div></div>';
+    '<button type="button" class="nav-btn" onclick="recordDryOff(\''+String(cow.id)+'\')">🌙 Kuruya Çıkarma</button></div></div>');
     modal.classList.add("open");
     modal.setAttribute("aria-hidden","false");
 }
