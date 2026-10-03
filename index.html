@@ -723,6 +723,7 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 main.accounting-layout{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr));gap:18px;align-items:start}
 main.accounting-layout .accounting-module{margin:0!important;min-width:0}
 main.accounting-layout .accounting-module--summary{grid-column:span 5}
+main.accounting-layout .accounting-module--report{grid-column:1/-1}
 main.accounting-layout .accounting-module--processing{grid-column:span 7}
 main.accounting-layout .accounting-module--bank,
 main.accounting-layout .accounting-module--operations{grid-column:1/-1}
@@ -1792,7 +1793,6 @@ main.accounting-layout .accounting-module--operations{grid-column:1/-1}
     <div class="accounting-module-header">
         <div><div class="accounting-eyebrow">TARIM FİNANSMANI</div><h2 class="font-bold text-xl">🏦 Çiftlik Bankası & Destekler</h2><p class="text-xs text-slate-500 mt-1">Kredi, hibe, borçluluk ve banka değerlendirmelerini yönet.</p></div>
         <div class="accounting-status blue-status">● Finans</div>
-    </div><p class="text-xs text-slate-500 mt-1">Kredi, taksit ve hibe başvuruları</p></div><span class="text-xs text-blue-300">Tarım Finansmanı</span></div>
     <div class="grid md:grid-cols-3 gap-3 mb-4">
         <div class="metric"><div class="text-xs text-slate-500">Toplam Borç</div><div id="bankDebt" class="font-bold text-red-300">0 ₺</div></div>
         <div class="metric"><div class="text-xs text-slate-500">Aktif Krediler</div><div id="bankLoanCount" class="font-bold">0</div></div>
@@ -1826,14 +1826,6 @@ main.accounting-layout .accounting-module--operations{grid-column:1/-1}
             <p class="text-xs text-slate-500 mt-1">Yem alımı, işletme ödemeleri ve işlem geçmişi.</p>
         </div>
         <div class="accounting-status">● İşletme</div>
-    </div>
-            <p class="text-xs text-slate-500 mt-1">
-                Yem alımı ve işletme ödemeleri
-            </p>
-        </div>
-        <span class="text-xs text-slate-500">
-            Kasa kontrolü
-        </span>
     </div>
 
     <div class="grid grid-cols-2 gap-3 mb-4">
