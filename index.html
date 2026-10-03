@@ -716,6 +716,8 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
     }
 }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -1722,6 +1724,140 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 <script>
 
 /* =========================================================
+   ORTAK DÜNYA VERİTABANI — SUPABASE
+   Tüm kullanıcılar aynı çiftlik durumunu paylaşır.
+========================================================= */
+const SUPABASE_URL = "https://xzkizeuaruuyagxgtwry.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_tlTTHhoiUD5yXxbePgHScA_iA9I_6Nb";
+let sharedBackend = { client:null, ready:false, syncing:false, applyingRemote:false, channel:null };
+
+function sharedGameSnapshot(){
+    try{
+        return JSON.parse(JSON.stringify(game));
+    }catch(error){
+        console.warn("Ortak dünya verisi hazırlanamadı:",error);
+        return {};
+    }
+}
+
+async function pushGameToSharedWorld(){
+    if(!sharedBackend.ready || sharedBackend.syncing || sharedBackend.applyingRemote) return;
+    sharedBackend.syncing=true;
+    try{
+        const {data:current,error:readError}=await sharedBackend.client
+            .from("farm_world")
+            .select("version")
+            .eq("id",1)
+            .maybeSingle();
+        if(readError) throw readError;
+        const nextVersion=Number(current?.version||0)+1;
+        const snapshot=sharedGameSnapshot();
+        const {data:updated,error}=await sharedBackend.client
+            .from("farm_world")
+            .update({
+                state:snapshot,
+                day:Number(game.day)||1,
+                money:Number(game.money)||0,
+                feed:Number(game.feed)||0,
+                milk:Number(game.milkTank)||0,
+                version:nextVersion,
+                updated_at:new Date().toISOString()
+            })
+            .eq("id",1)
+            .eq("version",Number(current?.version||0))
+            .select("version")
+            .maybeSingle();
+        if(error) throw error;
+        if(!updated){
+            const {data:latest,error:latestError}=await sharedBackend.client
+                .from("farm_world")
+                .select("state,version")
+                .eq("id",1)
+                .single();
+            if(!latestError && latest?.state && Object.keys(latest.state).length){
+                applySharedGame(latest.state);
+            }
+        }
+    }catch(error){
+        console.warn("Ortak dünya kaydı başarısız:",error);
+    }finally{
+        sharedBackend.syncing=false;
+    }
+}
+
+let sharedSaveTimer=null;
+function queueSharedBackendSave(){
+    if(!sharedBackend.ready) return;
+    clearTimeout(sharedSaveTimer);
+    sharedSaveTimer=setTimeout(()=>pushGameToSharedWorld(),180);
+}
+
+function applySharedGame(remoteState){
+    if(!remoteState || typeof remoteState!=="object" || !Object.keys(remoteState).length) return false;
+    try{
+        sharedBackend.applyingRemote=true;
+        game=remoteState;
+        try{ localStorage.setItem("ciftlikSimulasyonu",JSON.stringify(game)); }catch(e){}
+        render();
+        return true;
+    }catch(error){
+        console.warn("Ortak dünya verisi uygulanamadı:",error);
+        return false;
+    }finally{
+        sharedBackend.applyingRemote=false;
+    }
+}
+
+async function initSharedBackend(){
+    if(sharedBackend.ready) return;
+    try{
+        if(!window.supabase || !window.supabase.createClient){
+            console.warn("Supabase istemcisi yüklenmedi.");
+            return;
+        }
+        sharedBackend.client=window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
+        );
+
+        const {data,error}=await sharedBackend.client
+            .from("farm_world")
+            .select("state,version")
+            .eq("id",1)
+            .maybeSingle();
+
+        if(error) throw error;
+
+        sharedBackend.ready=true;
+
+        if(data?.state && Object.keys(data.state).length){
+            applySharedGame(data.state);
+        }else{
+            await pushGameToSharedWorld();
+        }
+
+        sharedBackend.channel=sharedBackend.client
+            .channel("ciftlik-ortak-dunya")
+            .on(
+                "postgres_changes",
+                {event:"UPDATE",schema:"public",table:"farm_world",filter:"id=eq.1"},
+                payload=>{
+                    const incoming=payload?.new?.state;
+                    if(incoming && Object.keys(incoming).length){
+                        applySharedGame(incoming);
+                    }
+                }
+            )
+            .subscribe();
+
+        console.log("🌍 Ortak dünya bağlantısı aktif.");
+    }catch(error){
+        sharedBackend.ready=false;
+        console.warn("🌍 Ortak dünya bağlantısı kurulamadı:",error);
+    }
+}
+
+/* =========================================================
    ÇİFTLİK SİMÜLASYONU
    CORE ENGINE v1.2
 ========================================================= */
@@ -2052,6 +2188,8 @@ function startFreshFarm(){
 ========================================================= */
 
 function saveGame(){
+    queueSharedBackendSave();
+
 
     game.lastRealTime =
         Date.now();
@@ -5332,6 +5470,7 @@ function initFarmApp(){
         setupAnimalCardModal();
         setupFarmSound();
         render();
+        initSharedBackend();
         processAutomaticMilking();
         realTimeLoop();
         addLog("Çiftlik Simülasyonu başlatıldı.");
