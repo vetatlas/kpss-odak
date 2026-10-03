@@ -1384,8 +1384,7 @@ select:focus{
 </main>
 
 <div class="sound-control">
-    <button id="soundToggle" class="sound-btn">🔊 Sesi Başlat</button>
-    <span id="soundLabel" class="sound-label">🔇 Ses kapalı</span>
+    <span id="soundLabel" class="sound-label">🔊 Çiftlik sesleri açık</span>
     <input id="soundVolume" class="sound-volume" type="range" min="0" max="100" value="42" aria-label="Çiftlik ses seviyesi">
 </div>
 
@@ -4365,17 +4364,26 @@ function updateSoundUI(active){
 
 /* Gerçek kayıtlar kullanıcı butonuyla başlatılır; mobil tarayıcı politikalarına uygundur. */
 function setupFarmSound(){
-    const volume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.42);
     const slider=document.getElementById("soundVolume");
+    const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.30);
+    const volume=Math.max(0,Math.min(1,savedVolume));
+    if(slider) slider.value=Math.round(volume*100);
+    if(slider) slider.addEventListener("input",e=>setFarmVolume(Number(e.target.value)/100));
 
-    if(slider){
-        slider.value=Math.round(volume*100);
-        slider.addEventListener("input",e=>setFarmVolume(e.target.value));
-    }
-
-    document.getElementById("soundToggle")?.addEventListener("click",()=>{
-        if(farmAudio) stopFarmAmbience();
-        else startFarmAmbience();
+    /* Kullanıcıdan buton istemeden otomatik başlat. Mobil tarayıcı autoplay'i engellerse
+       ilk dokunma/tıklama/klavye etkileşiminde sessizce tekrar dener. */
+    startFarmAmbience();
+    const resume=()=>{
+        if(!farmAudio || !farmAudio.enabled){
+            startFarmAmbience();
+        }else{
+            try{
+                if(farmAudio.birds) farmAudio.birds.play().catch(()=>{});
+            }catch(e){}
+        }
+    };
+    ["pointerdown","touchstart","keydown"].forEach(eventName=>{
+        document.addEventListener(eventName,resume,{once:true,passive:true});
     });
 }
 
