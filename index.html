@@ -3946,7 +3946,7 @@ function milkHerd(automatic=false){
     game.accountingLedger=game.accountingLedger||[];
     addNotification(
         automatic ? "Otomatik Sağım Tamamlandı" : "Sağım Tamamlandı",
-        `${milk.toFixed(1)} L süt elde edildi ve ${income.toFixed(0).toLocaleString("tr-TR")} ₺ gelir oluştu.`,
+        `${milk.toFixed(1)} L süt elde edildi ve süt tankına alındı.`,
         "success",
         true
     );
