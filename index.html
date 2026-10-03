@@ -1785,7 +1785,7 @@ function startFreshFarm(){
     game.lastAutomaticMilkingHour=-1;
     game.accountingLedger=[];
     game.messages=[];
-    game.notificationState={lowFeed:false,criticalFeed:false,health:{},sara:{},udder:{},milkDrop:{}};
+    game.notificationState={lowFeed:false,criticalFeed:false,health:{},sara:{},udder:{},milkDrop:{},reproduction:{}};
     game.onboardingStep=1;
     game.cows=[];
     updateRationAnalysis();
@@ -4170,8 +4170,9 @@ function setupNotifications(){
 
 function checkSmartNotifications(){
     if(!game.cows?.length) return;
-    game.notificationState=game.notificationState||{lowFeed:false,criticalFeed:false,health:{},sara:{},udder:{},milkDrop:{}};
+    game.notificationState=game.notificationState||{lowFeed:false,criticalFeed:false,health:{},sara:{},udder:{},milkDrop:{},reproduction:{}};
     game.notificationState.milkDrop=game.notificationState.milkDrop||{};
+    game.notificationState.reproduction=game.notificationState.reproduction||{};
     const s=game.notificationState, feed=Number(game.feed||0);
 
     if(feed<200){
@@ -4224,12 +4225,48 @@ function checkSmartNotifications(){
             s.milkDrop[id]=false;
         }
 
+        const reproduction=cow.reproduction||{};
+        const reproductionState=s.reproduction[id]||{pregCheck:false,calving:false};
+        const pregnancyDay=Number(reproduction.pregnancyCheckDay)||0;
+        const calvingDay=Number(reproduction.expectedCalvingDay)||0;
+
+        if(reproduction.inseminationDay && !reproduction.pregnant && pregnancyDay>0){
+            const daysUntilCheck=pregnancyDay-game.day;
+            if(daysUntilCheck<=0){
+                if(!reproductionState.pregCheck){
+                    addNotification("Gebelik Kontrolü Gecikti",cow.name+" için gebelik kontrolü yapılması gereken tarih geçti. Hayvanı kontrol et.","warning",true);
+                }
+                reproductionState.pregCheck=true;
+            }else if(daysUntilCheck<=3 && !reproductionState.pregCheck){
+                addNotification("Gebelik Kontrolü Yaklaşıyor",cow.name+" için gebelik kontrolüne yaklaşık "+daysUntilCheck+" gün kaldı.","info",true);
+                reproductionState.pregCheck=true;
+            }
+        }else if(!reproduction.inseminationDay){
+            reproductionState.pregCheck=false;
+        }
+
+        if(reproduction.pregnant && calvingDay>0){
+            const daysUntilCalving=calvingDay-game.day;
+            if(daysUntilCalving<=14 && daysUntilCalving>=0){
+                if(!reproductionState.calving){
+                    addNotification("Doğum Yaklaşıyor",cow.name+" için tahmini doğuma "+daysUntilCalving+" gün kaldı. Doğum alanı ve bakım planını hazırla.","warning",true);
+                }
+                reproductionState.calving=true;
+            }else if(daysUntilCalving>14){
+                reproductionState.calving=false;
+            }
+        }else{
+            reproductionState.calving=false;
+        }
+
+        s.reproduction[id]=reproductionState;
         s.health[id]=h;
     });
     Object.keys(s.health).forEach(id=>{if(!activeIds.has(id))delete s.health[id];});
     Object.keys(s.sara).forEach(id=>{if(!activeIds.has(id))delete s.sara[id];});
     Object.keys(s.udder).forEach(id=>{if(!activeIds.has(id))delete s.udder[id];});
     Object.keys(s.milkDrop).forEach(id=>{if(!activeIds.has(id))delete s.milkDrop[id];});
+    Object.keys(s.reproduction).forEach(id=>{if(!activeIds.has(id))delete s.reproduction[id];});
 }
 
 function renderMilkPerformance(){
