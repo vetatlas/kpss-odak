@@ -772,6 +772,286 @@ main.accounting-layout .accounting-module--operations{grid-column:1/-1}
 @media(max-width:900px){.accounting-command-bar{flex-direction:column;align-items:stretch}.accounting-report-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.accounting-report-bottom{grid-template-columns:1fr 1fr}.accounting-report-panel:last-child{grid-column:1/-1}}
 @media(max-width:560px){.accounting-report-grid{grid-template-columns:1fr 1fr}.accounting-report-bottom{grid-template-columns:1fr}.accounting-report-panel:last-child{grid-column:auto}.accounting-subnav{display:grid;grid-template-columns:repeat(2,1fr)}.accounting-subnav-btn{width:100%}}
 </style>
+<style id="accounting-center-final">
+/* =========================================================
+   MUHASEBE MERKEZİ — SON GÖRSEL DÜZEN
+   Fonksiyonlara dokunmadan tüm finans ekranını tek hiyerarşide toplar.
+========================================================= */
+main.accounting-layout{
+  display:grid!important;
+  grid-template-columns:repeat(12,minmax(0,1fr))!important;
+  grid-template-rows:auto auto auto auto auto!important;
+  gap:16px!important;
+  align-items:stretch!important;
+}
+main.accounting-layout>.accounting-command-bar{
+  grid-column:1/-1!important;
+  grid-row:1!important;
+  margin:0!important;
+}
+main.accounting-layout>#accounting-summary{
+  grid-column:1 / span 5!important;
+  grid-row:2!important;
+}
+main.accounting-layout>#accounting-processing{
+  grid-column:6 / -1!important;
+  grid-row:2!important;
+}
+main.accounting-layout>#accounting-report{
+  grid-column:1/-1!important;
+  grid-row:3!important;
+}
+main.accounting-layout>#accounting-bank{
+  grid-column:1/-1!important;
+  grid-row:4!important;
+}
+main.accounting-layout>#accounting-operations{
+  grid-column:1/-1!important;
+  grid-row:5!important;
+}
+
+.accounting-command-bar{
+  position:relative!important;
+  overflow:hidden!important;
+  min-height:104px!important;
+  padding:20px 22px!important;
+  border:1px solid rgba(96,165,250,.16)!important;
+  border-radius:20px!important;
+  background:
+    radial-gradient(circle at 0% 50%,rgba(34,197,94,.10),transparent 32%),
+    linear-gradient(135deg,rgba(15,23,42,.98),rgba(8,15,25,.96))!important;
+  box-shadow:0 18px 45px rgba(0,0,0,.20)!important;
+}
+.accounting-command-bar:after{
+  content:"";
+  position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,#22c55e,#38bdf8);
+}
+.accounting-command-title{font-size:24px!important;line-height:1.1!important}
+.accounting-command-sub{color:#71869a!important}
+.accounting-subnav{position:relative;z-index:1}
+
+main.accounting-layout .accounting-module{
+  position:relative!important;
+  overflow:hidden!important;
+  margin:0!important;
+  padding:20px!important;
+  border:1px solid rgba(148,163,184,.11)!important;
+  border-radius:20px!important;
+  background:linear-gradient(145deg,rgba(17,27,41,.96),rgba(8,14,22,.96))!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.16)!important;
+}
+main.accounting-layout .accounting-module:before{
+  content:"";
+  position:absolute;right:-80px;top:-90px;width:190px;height:190px;
+  border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.07),transparent 68%);
+  pointer-events:none;
+}
+.accounting-module-header{position:relative;z-index:1;margin-bottom:16px!important}
+.accounting-eyebrow{color:#64748b!important;font-size:9px!important;letter-spacing:2.2px!important}
+.accounting-status{padding:7px 10px!important;border-radius:999px!important}
+
+#accounting-summary{
+  display:block!important;
+  border-color:rgba(34,197,94,.16)!important;
+}
+#accounting-summary>h2{
+  position:relative;
+  margin-bottom:4px!important;
+  font-size:18px!important;
+}
+#accounting-summary>.text-\[10px\]{
+  margin-bottom:14px!important;
+  color:#64748b!important;
+  line-height:1.5!important;
+}
+#accounting-summary>.space-y-3{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+#accounting-summary>.space-y-3>div{
+  min-height:78px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  padding:12px!important;
+  border:1px solid rgba(148,163,184,.08)!important;
+  border-radius:14px!important;
+  background:rgba(2,6,23,.28)!important;
+}
+#accounting-summary>.space-y-3>div:last-child{
+  grid-column:auto!important;
+  border-color:rgba(34,197,94,.15)!important;
+  background:rgba(34,197,94,.045)!important;
+}
+#accounting-summary>.space-y-3>div span:last-child{
+  font-size:17px!important;
+  font-weight:900!important;
+}
+
+#accounting-report{
+  border-color:rgba(59,130,246,.13)!important;
+}
+.accounting-report-grid{gap:9px!important}
+.accounting-report-card{
+  min-height:92px!important;
+  padding:13px!important;
+  background:rgba(2,6,23,.30)!important;
+  border-color:rgba(148,163,184,.08)!important;
+}
+.accounting-report-card strong{font-size:19px!important}
+.accounting-report-card:nth-child(3){border-color:rgba(34,197,94,.18)!important}
+.accounting-report-card:nth-child(6){border-color:rgba(239,68,68,.14)!important}
+.accounting-report-bottom{gap:10px!important}
+.accounting-report-panel{
+  background:rgba(2,6,23,.24)!important;
+  border-color:rgba(148,163,184,.08)!important;
+}
+.accounting-panel-title{font-size:10px!important;letter-spacing:.3px}
+
+#accounting-processing{
+  border-color:rgba(56,189,248,.14)!important;
+}
+#accounting-processing>.flex{
+  position:relative;
+  z-index:1;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(148,163,184,.08);
+}
+#accounting-processing>.flex h2{font-size:17px!important}
+#accounting-processing .metric{
+  min-height:72px;
+  border:1px solid rgba(148,163,184,.07);
+  background:rgba(2,6,23,.28);
+}
+#accounting-processing .grid.md\:grid-cols-2{
+  position:relative;z-index:1;
+  gap:8px!important;
+}
+#accounting-processing .grid.md\:grid-cols-2 .nav-btn{
+  min-height:52px;
+  border-color:rgba(148,163,184,.10);
+  background:rgba(15,23,42,.45);
+}
+#accounting-processing .grid.md\:grid-cols-2 .nav-btn:hover{
+  border-color:rgba(56,189,248,.30);
+  background:rgba(56,189,248,.07);
+}
+
+#accounting-bank{
+  border-color:rgba(167,139,250,.14)!important;
+}
+#accounting-bank>.grid.md\:grid-cols-3{
+  position:relative;z-index:1;
+}
+#accounting-bank>.grid.md\:grid-cols-3 .metric{
+  min-height:72px;
+  border:1px solid rgba(148,163,184,.07);
+  background:rgba(2,6,23,.26);
+}
+#accounting-bank>.metric{
+  position:relative;z-index:1;
+  border-color:rgba(167,139,250,.10);
+  background:rgba(167,139,250,.035);
+}
+#accounting-bank button{
+  min-height:54px;
+  background:rgba(15,23,42,.48);
+  border-color:rgba(148,163,184,.10);
+}
+#accounting-bank button:hover{
+  border-color:rgba(167,139,250,.32);
+  background:rgba(167,139,250,.07);
+}
+
+#accounting-operations{
+  border-color:rgba(245,158,11,.13)!important;
+}
+#accounting-operations>.grid.grid-cols-2{
+  position:relative;z-index:1;
+}
+#accounting-operations>.grid.grid-cols-2 .metric{
+  min-height:76px;
+  border:1px solid rgba(148,163,184,.07);
+  background:rgba(2,6,23,.26);
+}
+.accounting-operation-grid{
+  position:relative;z-index:1;
+  grid-template-columns:1fr 1.35fr!important;
+  gap:12px!important;
+}
+.accounting-action-group{
+  padding:13px!important;
+  border-radius:15px!important;
+  background:rgba(2,6,23,.22)!important;
+  border-color:rgba(148,163,184,.08)!important;
+}
+.accounting-group-title{
+  padding-bottom:9px;
+  border-bottom:1px solid rgba(148,163,184,.07);
+}
+.accounting-action-card{padding:11px 0!important}
+.accounting-action-card button{min-height:42px!important}
+#accountingLog{
+  position:relative;z-index:1;
+  min-height:52px;
+  border-color:rgba(148,163,184,.08)!important;
+  background:rgba(2,6,23,.28)!important;
+}
+
+@media(max-width:900px){
+  main.accounting-layout{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    grid-template-rows:auto!important;
+  }
+  main.accounting-layout>.accounting-command-bar,
+  main.accounting-layout>#accounting-report,
+  main.accounting-layout>#accounting-bank,
+  main.accounting-layout>#accounting-operations{
+    grid-column:1/-1!important;
+    grid-row:auto!important;
+  }
+  main.accounting-layout>#accounting-summary,
+  main.accounting-layout>#accounting-processing{
+    grid-column:auto!important;
+    grid-row:auto!important;
+  }
+}
+@media(max-width:640px){
+  main.accounting-layout{
+    display:block!important;
+  }
+  main.accounting-layout .accounting-module{
+    margin-bottom:12px!important;
+    padding:16px!important;
+  }
+  .accounting-command-bar{
+    padding:17px!important;
+    min-height:0!important;
+  }
+  .accounting-command-title{font-size:20px!important}
+  .accounting-subnav{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    width:100%;
+  }
+  .accounting-subnav-btn{width:100%!important}
+  #accounting-summary>.space-y-3{grid-template-columns:1fr!important}
+  #accounting-summary>.space-y-3>div:last-child{grid-column:auto!important}
+  .accounting-report-grid{grid-template-columns:1fr 1fr!important}
+  .accounting-report-bottom{grid-template-columns:1fr!important}
+  .accounting-report-panel:last-child{grid-column:auto!important}
+  .accounting-operation-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:430px){
+  .accounting-report-grid{grid-template-columns:1fr!important}
+  .accounting-subnav{grid-template-columns:1fr 1fr!important}
+  #accounting-processing .grid.md\:grid-cols-2{grid-template-columns:1fr!important}
+}
+</style>
 </head>
 
 <body>
@@ -1799,6 +2079,7 @@ main.accounting-layout .accounting-module--operations{grid-column:1/-1}
     <div class="accounting-module-header">
         <div><div class="accounting-eyebrow">TARIM FİNANSMANI</div><h2 class="font-bold text-xl">🏦 Çiftlik Bankası & Destekler</h2><p class="text-xs text-slate-500 mt-1">Kredi, hibe, borçluluk ve banka değerlendirmelerini yönet.</p></div>
         <div class="accounting-status blue-status">● Finans</div>
+    </div>
     <div class="grid md:grid-cols-3 gap-3 mb-4">
         <div class="metric"><div class="text-xs text-slate-500">Toplam Borç</div><div id="bankDebt" class="font-bold text-red-300">0 ₺</div></div>
         <div class="metric"><div class="text-xs text-slate-500">Aktif Krediler</div><div id="bankLoanCount" class="font-bold">0</div></div>
