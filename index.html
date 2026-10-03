@@ -718,6 +718,48 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* Profesyonel Muhasebe Merkezi */
+main.accounting-layout{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr));gap:18px;align-items:start}
+main.accounting-layout .accounting-module{margin:0!important;min-width:0}
+main.accounting-layout .accounting-module--summary{grid-column:span 5}
+main.accounting-layout .accounting-module--processing{grid-column:span 7}
+main.accounting-layout .accounting-module--bank,
+main.accounting-layout .accounting-module--operations{grid-column:1/-1}
+.accounting-module{border:1px solid rgba(148,163,184,.12);box-shadow:0 16px 42px rgba(0,0,0,.16)}
+.accounting-module-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.accounting-eyebrow{font-size:9px;letter-spacing:2px;font-weight:900;color:#64748b;margin-bottom:4px}
+.accounting-status{font-size:10px;font-weight:800;color:#86efac;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.16);padding:7px 10px;border-radius:999px;white-space:nowrap}
+.blue-status{color:#93c5fd;background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.16)}
+.accounting-module--summary>.space-y-3{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.accounting-module--summary>.space-y-3>div{background:rgba(15,23,42,.28);border:1px solid rgba(148,163,184,.09);padding:12px 14px;border-radius:14px}
+.accounting-module--summary>.space-y-3>div:last-child{grid-column:1/-1}
+.accounting-operation-grid{display:grid;grid-template-columns:1fr 1.25fr;gap:16px}
+.accounting-action-group{background:rgba(15,23,42,.22);border:1px solid rgba(148,163,184,.08);border-radius:16px;padding:14px}
+.accounting-group-title{font-size:12px;font-weight:900;color:#cbd5e1;margin-bottom:10px}
+.accounting-action-card{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid rgba(148,163,184,.07)}
+.accounting-action-card:first-of-type{border-top:0}
+.accounting-action-card div{min-width:0}
+.accounting-action-card b{display:block;font-size:12px}
+.accounting-action-card span{display:block;font-size:10px;color:#64748b;margin-top:2px}
+.accounting-action-card button{min-width:108px}
+#accountingLog{background:rgba(2,6,23,.2);border:1px solid rgba(148,163,184,.08);border-radius:14px;padding:10px}
+@media(max-width:767px){
+ main.accounting-layout{display:block!important}
+ main.accounting-layout .accounting-module{margin-bottom:12px!important}
+ .accounting-module-header{margin-bottom:14px}
+ .accounting-operation-grid{grid-template-columns:1fr}
+ .accounting-module--summary>.space-y-3{grid-template-columns:1fr 1fr}
+ .accounting-action-card{align-items:flex-start}
+ .accounting-action-card button{min-width:94px}
+}
+@media(max-width:430px){
+ .accounting-module--summary>.space-y-3{grid-template-columns:1fr}
+ .accounting-module--summary>.space-y-3>div:last-child{grid-column:auto}
+ .accounting-action-card{flex-direction:column}
+ .accounting-action-card button{width:100%}
+}
+</style>
 </head>
 
 <body>
@@ -1605,7 +1647,7 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 
 <!-- FİNANS -->
 
-<section class="glass p-5" data-menu-section="muhasebe">
+<section class="glass p-5 accounting-module accounting-module--processing" data-menu-section="muhasebe">
     <div class="flex justify-between items-center mb-4">
         <div><h2 class="font-bold">🏭 Süt İşleme Tesisi</h2><p class="text-xs text-slate-500 mt-1">Çiğ sütü katma değerli ürüne dönüştür.</p></div>
         <span id="rawMilkStock" class="text-xs font-bold text-blue-300">0 L</span>
@@ -1683,8 +1725,11 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 
 <!-- MUHASEBE -->
 
-<section class="glass p-5" data-menu-section="muhasebe">
-    <div class="flex justify-between items-center mb-4"><div><h2 class="font-bold">🏦 Çiftlik Bankası & Destekler</h2><p class="text-xs text-slate-500 mt-1">Kredi, taksit ve hibe başvuruları</p></div><span class="text-xs text-blue-300">Tarım Finansmanı</span></div>
+<section class="glass p-5 accounting-module accounting-module--bank" data-menu-section="muhasebe">
+    <div class="accounting-module-header">
+        <div><div class="accounting-eyebrow">TARIM FİNANSMANI</div><h2 class="font-bold text-xl">🏦 Çiftlik Bankası & Destekler</h2><p class="text-xs text-slate-500 mt-1">Kredi, hibe, borçluluk ve banka değerlendirmelerini yönet.</p></div>
+        <div class="accounting-status blue-status">● Finans</div>
+    </div><p class="text-xs text-slate-500 mt-1">Kredi, taksit ve hibe başvuruları</p></div><span class="text-xs text-blue-300">Tarım Finansmanı</span></div>
     <div class="grid md:grid-cols-3 gap-3 mb-4">
         <div class="metric"><div class="text-xs text-slate-500">Toplam Borç</div><div id="bankDebt" class="font-bold text-red-300">0 ₺</div></div>
         <div class="metric"><div class="text-xs text-slate-500">Aktif Krediler</div><div id="bankLoanCount" class="font-bold">0</div></div>
@@ -1709,13 +1754,16 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
     <div id="grantApplicationsList" class="mt-3 space-y-2"></div>
 </section>
 
-<section class="glass p-5" data-menu-section="muhasebe">
+<section class="glass p-5 accounting-module accounting-module--operations" data-menu-section="muhasebe">
 
-    <div class="flex justify-between items-center mb-4">
+    <div class="accounting-module-header">
         <div>
-            <h2 class="font-bold">
-                🧾 Muhasebe Birimi
-            </h2>
+            <div class="accounting-eyebrow">İŞLETME MUHASEBESİ</div>
+            <h2 class="font-bold text-xl">🧾 Günlük İşlemler</h2>
+            <p class="text-xs text-slate-500 mt-1">Yem alımı, işletme ödemeleri ve işlem geçmişi.</p>
+        </div>
+        <div class="accounting-status">● İşletme</div>
+    </div>
             <p class="text-xs text-slate-500 mt-1">
                 Yem alımı ve işletme ödemeleri
             </p>
@@ -1736,31 +1784,24 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
         </div>
     </div>
 
-    <div class="space-y-2">
-        <button onclick="accountingBuyFeed(500)"
-                class="w-full nav-btn text-yellow-400">
-            🌾 500 kg Yem Al — <span id="feedBuy500Price">0 ₺</span>
-        </button>
-
-        <button onclick="accountingBuyFeed(1000)"
-                class="w-full nav-btn text-yellow-400">
-            🌾 1.000 kg Yem Al — <span id="feedBuy1000Price">0 ₺</span>
-        </button>
-
-        <button onclick="accountingPayment('Veterinerlik',2500)"
-                class="w-full nav-btn text-red-300">
-            🩺 Veterinerlik Ödemesi — 2.500 ₺
-        </button>
-
-        <button onclick="accountingPayment('Elektrik ve Su',1500)"
-                class="w-full nav-btn text-red-300">
-            💡 Elektrik / Su — 1.500 ₺
-        </button>
-
-        <button onclick="accountingPayment('İşçilik',3000)"
-                class="w-full nav-btn text-red-300">
-            👨‍🌾 İşçilik — 3.000 ₺
-        </button>
+    <div class="accounting-operation-grid">
+        <div class="accounting-action-group">
+            <div class="accounting-group-title">🌾 Yem Alımı</div>
+            <div class="accounting-action-card">
+                <div><b>500 kg Yem</b><span>Standart işletme alımı</span></div>
+                <button onclick="accountingBuyFeed(500)" class="nav-btn text-yellow-400">Al — <span id="feedBuy500Price">0 ₺</span></button>
+            </div>
+            <div class="accounting-action-card">
+                <div><b>1.000 kg Yem</b><span>Toplu alım paketi</span></div>
+                <button onclick="accountingBuyFeed(1000)" class="nav-btn text-yellow-400">Al — <span id="feedBuy1000Price">0 ₺</span></button>
+            </div>
+        </div>
+        <div class="accounting-action-group">
+            <div class="accounting-group-title">💳 İşletme Ödemeleri</div>
+            <div class="accounting-action-card"><div><b>🩺 Veterinerlik</b><span>Sağlık ve bakım</span></div><button onclick="accountingPayment('Veterinerlik',2500)" class="nav-btn text-red-300">2.500 ₺</button></div>
+            <div class="accounting-action-card"><div><b>💡 Elektrik / Su</b><span>Çiftlik altyapısı</span></div><button onclick="accountingPayment('Elektrik ve Su',1500)" class="nav-btn text-red-300">1.500 ₺</button></div>
+            <div class="accounting-action-card"><div><b>👨‍🌾 İşçilik</b><span>Personel gideri</span></div><button onclick="accountingPayment('İşçilik',3000)" class="nav-btn text-red-300">3.000 ₺</button></div>
+        </div>
     </div>
 
     <div id="accountingLog"
@@ -6161,6 +6202,7 @@ function setupAppMenu(){
     const activate=(key)=>{
         buttons.forEach(b=>b.classList.toggle("active-menu",b.dataset.menu===key));
         sections.forEach(s=>s.classList.toggle("hidden",s.dataset.menuSection!==key));
+        document.querySelector("main")?.classList.toggle("accounting-layout",key==="muhasebe");
         window.scrollTo({top:0,behavior:"smooth"});
     };
     buttons.forEach(b=>b.addEventListener("click",()=>activate(b.dataset.menu)));
