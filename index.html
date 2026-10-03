@@ -5643,7 +5643,7 @@ function payVeterinaryInvoice(invoiceId){
     const invoice=game.veterinary.invoices.find(item=>item.id===invoiceId);
     if(!invoice || invoice.status!=="Açık") return;
     const amount=Number(invoice.amount)||0;
-    if(Number(game.money)||0<amount){
+    if((Number(game.money)||0)<amount){
         addLog("⚠ Veteriner borcunu ödemek için yeterli nakit yok.");
         addNotification("Ödeme Yapılamadı","Veteriner faturası için "+amount.toLocaleString("tr-TR")+" ₺ nakit gerekiyor.","warning",true);
         return;
