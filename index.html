@@ -4314,23 +4314,24 @@ function scheduleRealFarmSound(name,min,max){
 }
 
 function startFarmAmbience(){
-    if(farmAudio && farmAudio.enabled){
-        updateSoundUI(true);
-        resumeFarmAudio();
-        return true;
-    }
     try{
-        const savedVolume=0.55;
+        const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.55);
         const masterVolume=Math.max(0,Math.min(1,savedVolume));
-        const nature=createRealFarmAudio(FARM_AUDIO_SOURCES.nature,.45,true);
-        farmAudio={enabled:true,masterVolume,nature,timers:[]};
-        try{ nature.load(); }catch(e){}
-        nature.addEventListener("error",()=>console.warn("Doğa ambiyansı yüklenemedi:",nature.src),{once:true});
+        if(!farmAudio){
+            const nature=createRealFarmAudio(FARM_AUDIO_SOURCES.nature,masterVolume*.45,true);
+            farmAudio={enabled:true,masterVolume,nature,timers:[]};
+            nature.addEventListener("error",()=>console.warn("Doğa ambiyansı yüklenemedi:",nature.src));
+            nature.addEventListener("canplay",()=>console.log("Çiftlik ambiyansı hazır."));
+        }else{
+            farmAudio.enabled=true;
+            farmAudio.masterVolume=masterVolume;
+        }
         updateSoundUI(true);
         resumeFarmAudio();
         return true;
     }catch(error){
         console.warn("Doğa ambiyansı başlatılamadı:",error);
+        updateSoundUI(false);
         return false;
     }
 }
@@ -4394,15 +4395,25 @@ function setupFarmSound(){
     if(slider) slider.value=Math.round(volume*100);
     if(slider) slider.addEventListener("input",e=>setFarmVolume(Number(e.target.value)/100));
 
-    startFarmAmbience();
+    const toggle=document.getElementById("soundToggle");
+    if(toggle){
+        toggle.addEventListener("click",()=>{
+            if(farmAudio && farmAudio.enabled){
+                stopFarmAmbience();
+            }else{
+                startFarmAmbience();
+            }
+        });
+    }
 
-    /* Mobil tarayıcıların autoplay kuralı nedeniyle ilk gerçek kullanıcı
-       etkileşiminde sesleri kesin olarak yeniden başlat. */
+    updateSoundUI(false);
+
+    /* İlk kullanıcı etkileşiminde autoplay engelini aş. */
     const resumeOnce=()=>{
         startFarmAmbience();
         resumeFarmAudio();
     };
-    ["pointerdown","touchstart","click","keydown"].forEach(eventName=>{
+    ["pointerdown","touchstart","keydown"].forEach(eventName=>{
         document.addEventListener(eventName,resumeOnce,{once:true,passive:true});
     });
 }
