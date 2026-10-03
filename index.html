@@ -5326,10 +5326,6 @@ function render(){
     if(workerBtn){workerBtn.textContent=worker.hired?"ÇALIŞIYOR":"İŞE AL";workerBtn.disabled=!!worker.hired;}
 
     const products=game.processedProducts||{pasteurizedMilk:0,yogurt:0,cheese:0};
-    const raw=Number(game.rawMilkStock)||0;
-    [["rawMilkStock",raw.toFixed(1)+" L"],["rawMilkKpi",raw.toFixed(1)+" L"],["pasteurizedMilkStock",(Number(products.pasteurizedMilk)||0).toFixed(1)+" L"],["yogurtStock",(Number(products.yogurt)||0).toFixed(1)+" kg"],["cheeseStock",(Number(products.cheese)||0).toFixed(1)+" kg"]].forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value;});
-
-    const products=game.processedProducts||{pasteurizedMilk:0,yogurt:0,cheese:0};
     const cold=game.coldStorage||{pasteurizedMilk:0,yogurt:0,cheese:0};
     const queue=Array.isArray(game.processingQueue)?game.processingQueue:[];
     const tank=Number(game.rawMilkStock)||0;
