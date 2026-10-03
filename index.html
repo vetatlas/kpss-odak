@@ -502,6 +502,62 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
    border-radius:18px 18px 0 0!important;
  }
 }
+
+
+/* =========================================================
+   TABLET KOMPAKT ARAYÜZ
+   ========================================================= */
+@media (min-width:700px) and (max-width:1200px){
+    .container{max-width:100%;padding:10px 14px 86px}
+    .card,.panel,.dashboard-card{padding:12px}
+    .card h2,.card h3,.panel h2,.panel h3{margin:0 0 7px;font-size:.95rem}
+    .animal-card,.cow-card{padding:10px}
+    .animal-card-actions,.cow-actions,.animal-actions{
+        gap:5px!important;
+    }
+    .animal-card-actions button,.cow-actions button,.animal-actions button,
+    .animal-card button{
+        min-height:34px!important;
+        padding:6px 8px!important;
+        font-size:.76rem!important;
+        line-height:1.15;
+    }
+    .animal-card-grid,.animal-info-grid,.cow-info-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr))!important;
+        gap:5px!important;
+    }
+    .animal-card-grid>div,.animal-info-grid>div,.cow-info-grid>div{
+        padding:6px!important;
+        min-width:0;
+    }
+    .animal-card-grid small,.animal-info-grid small,.cow-info-grid small{
+        font-size:.65rem!important;
+    }
+    .animal-card-grid strong,.animal-info-grid strong,.cow-info-grid strong{
+        font-size:.78rem!important;
+    }
+    .modal-content,.animal-card-modal,.animal-modal{
+        width:min(94vw,900px)!important;
+        max-height:88vh;
+    }
+    .modal-content{padding:12px!important}
+    .modal-content h2{font-size:1.05rem!important}
+    .modal-content h3{font-size:.88rem!important;margin:8px 0 5px}
+    .modal-content p{font-size:.76rem}
+    .modal-content .btn,.modal-content button{
+        min-height:32px!important;
+        padding:5px 8px!important;
+        font-size:.74rem!important;
+    }
+    .modal-content .grid,.modal-content .form-grid{
+        gap:6px!important;
+    }
+    .animal-card-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+@media (max-width:699px){
+    .animal-card-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 </style>
 </head>
 
