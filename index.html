@@ -4414,16 +4414,26 @@ function setupAppMenu(){
 let farmAppInitialized=false;
 
 function initFarmApp(){
-    if(farmAppInitialized) return;
-    farmAppInitialized=true;
+    if(farmAppInitialized) return true;
 
-    document.getElementById("app")?.classList.remove("hidden-screen");
-    setupAppMenu();
-    setupFarmSound();
-    render();
-    processAutomaticMilking();
-    realTimeLoop();
-    addLog("Çiftlik Simülasyonu başlatıldı.");
+    /* Giriş ekranının ana uygulamayı kilitlemesine izin verme. */
+    try{
+        document.getElementById("app")?.classList.remove("hidden-screen");
+        setupAppMenu();
+        setupFarmSound();
+        render();
+        processAutomaticMilking();
+        realTimeLoop();
+        addLog("Çiftlik Simülasyonu başlatıldı.");
+        farmAppInitialized=true;
+        return true;
+    }catch(error){
+        console.error("Çiftlik başlatma hatası:",error);
+        /* Kritik olmayan bir modül hata verse bile uygulamaya girilebilir. */
+        document.getElementById("app")?.classList.remove("hidden-screen");
+        farmAppInitialized=true;
+        return false;
+    }
 }
 
 function boot(){
@@ -4466,19 +4476,38 @@ function boot(){
         }
     },500);
 
-    enter?.addEventListener("click",()=>{
+    const enterFarm=()=>{
         const boot=document.getElementById("bootScreen");
+
+        /* Önce uygulamayı aç; ses yalnızca kullanıcı tıklarsa başlasın. */
+        initFarmApp();
+
         boot?.animate(
             [
                 {opacity:1,transform:"scale(1)"},
                 {opacity:0,transform:"scale(1.025)"}
             ],
-            {duration:650,easing:"ease-in",fill:"forwards"}
+            {duration:450,easing:"ease-in",fill:"forwards"}
         );
-        initFarmApp();
+
+        setTimeout(()=>boot?.remove(),430);
+    };
+
+    enter?.addEventListener("click",()=>{
+        enterFarm();
         startFarmAmbience();
-        setTimeout(()=>boot?.remove(),620);
     },{once:true});
+
+    /*
+      ACİL GÜVENLİK GEÇİŞİ:
+      Boot ekranı herhangi bir nedenle takılırsa 1.5 saniye sonra
+      uygulama otomatik açılır. Böylece kullanıcı giriş ekranında kalmaz.
+    */
+    setTimeout(()=>{
+        if(!farmAppInitialized){
+            enterFarm();
+        }
+    },1500);
 }
 
 
@@ -4488,9 +4517,25 @@ function boot(){
    BAŞLAT
 ========================================================= */
 
-loadGame();
-
+/*
+  Başlangıç sırası özellikle güvenli tutuldu:
+  1) Boot hemen çalışır.
+  2) Kayıt yüklenir.
+  3) Boot takılsa bile güvenlik geçişi uygulamayı açar.
+*/
 boot();
+
+try{
+    loadGame();
+}catch(error){
+    console.error("Kayıt yükleme hatası:",error);
+    try{
+        createInitialHerd();
+        updateRationAnalysis();
+    }catch(e){
+        console.error("İlk çiftlik oluşturulamadı:",e);
+    }
+}
 
 </script>
 
