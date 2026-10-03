@@ -1729,7 +1729,7 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 ========================================================= */
 const SUPABASE_URL = "https://xzkizeuaruuyagxgtwry.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_tlTTHhoiUD5yXxbePgHScA_iA9I_6Nb";
-let sharedBackend = { client:null, ready:false, syncing:false, applyingRemote:false, channel:null };
+let sharedBackend = { client:null, ready:false, syncing:false, applyingRemote:false, channel:null, version:0 };
 
 function sharedGameSnapshot(){
     try{
@@ -1768,14 +1768,16 @@ async function pushGameToSharedWorld(){
             .select("version")
             .maybeSingle();
         if(error) throw error;
-        if(!updated){
+        if(updated){
+            sharedBackend.version=nextVersion;
+        }else{
             const {data:latest,error:latestError}=await sharedBackend.client
                 .from("farm_world")
                 .select("state,version")
                 .eq("id",1)
                 .single();
             if(!latestError && latest?.state && Object.keys(latest.state).length){
-                applySharedGame(latest.state);
+                applySharedGame(latest.state,Number(latest.version||0));
             }
         }
     }catch(error){
@@ -1792,10 +1794,13 @@ function queueSharedBackendSave(){
     sharedSaveTimer=setTimeout(()=>pushGameToSharedWorld(),180);
 }
 
-function applySharedGame(remoteState){
+function applySharedGame(remoteState,remoteVersion=0){
     if(!remoteState || typeof remoteState!=="object" || !Object.keys(remoteState).length) return false;
+    const incomingVersion=Number(remoteVersion||0);
+    if(sharedBackend.ready && incomingVersion>0 && incomingVersion<Number(sharedBackend.version||0)) return false;
     try{
         sharedBackend.applyingRemote=true;
+        if(incomingVersion>0) sharedBackend.version=incomingVersion;
         game=remoteState;
         try{ localStorage.setItem("ciftlikSimulasyonu",JSON.stringify(game)); }catch(e){}
         render();
@@ -1863,8 +1868,9 @@ async function initSharedBackend(){
 
         await loadSharedAudioSettings();
 
+        sharedBackend.version=Number(data?.version||0);
         if(data?.state && Object.keys(data.state).length){
-            applySharedGame(data.state);
+            applySharedGame(data.state,sharedBackend.version);
         }else{
             await pushGameToSharedWorld();
         }
@@ -1899,8 +1905,9 @@ async function initSharedBackend(){
                 {event:"UPDATE",schema:"public",table:"farm_world",filter:"id=eq.1"},
                 payload=>{
                     const incoming=payload?.new?.state;
+                    const incomingVersion=Number(payload?.new?.version||0);
                     if(incoming && Object.keys(incoming).length){
-                        applySharedGame(incoming);
+                        applySharedGame(incoming,incomingVersion);
                     }
                 }
             )
@@ -4549,31 +4556,13 @@ function updateFarmAtmosphere(){
    ANA RENDER
 ========================================================= */
 
-function animateDashboardNumber(id,target,formatter,duration=650){
+function animateDashboardNumber(id,target,formatter){
     const el=document.getElementById(id);
     if(!el) return;
     const value=Number(target)||0;
-    if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches){
-        el.textContent=formatter(value);
-        return;
-    }
-    const token=(Number(el.dataset.animToken||0)+1);
-    el.dataset.animToken=token;
-    const start=Number(el.dataset.numericValue||0);
-    const begin=performance.now();
-    const ease=t=>1-Math.pow(1-t,3);
-
-    const frame=now=>{
-        if(Number(el.dataset.animToken)!==token) return;
-        const p=Math.min(1,(now-begin)/duration);
-        const current=start+(value-start)*ease(p);
-        el.textContent=formatter(current);
-        if(p<1) requestAnimationFrame(frame);
-        else el.dataset.numericValue=String(value);
-    };
-    requestAnimationFrame(frame);
+    el.dataset.numericValue=String(value);
+    el.textContent=formatter(value);
 }
-
 function addNotification(title,text,type="info",showToast=true){
     if(!game.messages) game.messages=[];
     const notification={
