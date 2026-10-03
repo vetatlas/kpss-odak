@@ -3318,6 +3318,21 @@ function addLog(message){
     );
 
 
+    /* Kullanıcıya yönelik uyarılar artık sağ altta kısa bildirim olarak da görünür. */
+    if(
+        typeof message==="string" &&
+        message.trim().startsWith("⚠")
+    ){
+        const cleanMessage=message.replace(/^⚠\s*/,"").trim();
+        addNotification(
+            "Uyarı",
+            cleanMessage,
+            "warning",
+            true
+        );
+    }
+
+
     renderLogs();
 
 }
