@@ -4296,7 +4296,7 @@ function playRealFarmSound(name,delay=0){
 
     try{
         audio.currentTime=0;
-        audio.volume=Math.max(0,Math.min(1,farmAudio.masterVolume*(name==="birds"?.32:1)));
+        audio.volume=Math.max(0,Math.min(1,farmAudio.masterVolume*(name==="birds"?.20:name==="cow"?.38:.28)));
         audio.load();
         const promise=audio.play();
         if(promise && promise.catch) promise.catch(()=>{});
@@ -4322,11 +4322,11 @@ function startFarmAmbience(){
         return true;
     }
     try{
-        const savedVolume=0.90;
+        const savedVolume=0.55;
         const masterVolume=Math.max(0,Math.min(1,savedVolume));
         const birds=createRealFarmAudio(FARM_AUDIO_SOURCES.birds,.32,true);
-        const cow=createRealFarmAudio(FARM_AUDIO_SOURCES.cow,1,false);
-        const rooster=createRealFarmAudio(FARM_AUDIO_SOURCES.rooster,1,false);
+        const cow=createRealFarmAudio(FARM_AUDIO_SOURCES.cow,.38,false);
+        const rooster=createRealFarmAudio(FARM_AUDIO_SOURCES.rooster,.28,false);
         farmAudio={enabled:true,masterVolume,birds,cow,rooster,timers:[]};
         [birds,cow,rooster].forEach(audio=>{
             try{ audio.load(); }catch(e){}
@@ -4334,8 +4334,8 @@ function startFarmAmbience(){
         });
         updateSoundUI(true);
         resumeFarmAudio();
-        scheduleRealFarmSound("cow",12000,24000);
-        scheduleRealFarmSound("rooster",90000,180000);
+        scheduleRealFarmSound("cow",30000,60000);
+        scheduleRealFarmSound("rooster",180000,360000);
         return true;
     }catch(error){
         console.warn("Gerçek çiftlik sesleri başlatılamadı:",error);
@@ -4382,9 +4382,9 @@ function setFarmVolume(value){
 
     if(farmAudio){
         farmAudio.masterVolume=volume;
-        if(farmAudio.birds) farmAudio.birds.volume=volume*.32;
-        if(farmAudio.cow) farmAudio.cow.volume=volume;
-        if(farmAudio.rooster) farmAudio.rooster.volume=volume;
+        if(farmAudio.birds) farmAudio.birds.volume=volume*.20;
+        if(farmAudio.cow) farmAudio.cow.volume=volume*.38;
+        if(farmAudio.rooster) farmAudio.rooster.volume=volume*.28;
     }
 
     const label=document.getElementById("soundLabel");
@@ -4407,7 +4407,7 @@ function updateSoundUI(active){
 /* Gerçek kayıtlar kullanıcı butonuyla başlatılır; mobil tarayıcı politikalarına uygundur. */
 function setupFarmSound(){
     const slider=document.getElementById("soundVolume");
-    const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.30);
+    const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.55);
     const volume=Math.max(0,Math.min(1,savedVolume));
     if(slider) slider.value=Math.round(volume*100);
     if(slider) slider.addEventListener("input",e=>setFarmVolume(Number(e.target.value)/100));
