@@ -1616,6 +1616,7 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
         <div class="metric"><div class="text-xs text-slate-500">Yoğurt</div><div id="yogurtStock" class="font-bold">0 kg</div></div>
         <div class="metric"><div class="text-xs text-slate-500">Peynir</div><div id="cheeseStock" class="font-bold">0 kg</div></div>
     </div>
+    <div id="processingQueueText" class="metric text-xs text-slate-500 mb-3">Hazır</div>
     <div class="grid md:grid-cols-2 gap-2">
         <button onclick="processMilk('pasteurizedMilk')" class="nav-btn">🥛 Pastörize Et</button>
         <button onclick="processMilk('yogurt')" class="nav-btn">🥣 Yoğurt Üret</button>
@@ -2252,6 +2253,9 @@ function startFreshFarm(){
     game.totalMilk=0;
     game.todayMilk=0;
     game.rawMilkStock=0;
+    game.rawMilkTankCapacity=2000;
+    game.processingQueue=[];
+    game.coldStorage={pasteurizedMilk:0,yogurt:0,cheese:0};
     game.processedProducts={pasteurizedMilk:0,yogurt:0,cheese:0};
     game.income=0;
     game.expenses=0;
@@ -2358,6 +2362,9 @@ function loadGame(){
                 ...(old.milkingWorker||{})
             },
             rawMilkStock:Number(old.rawMilkStock)||0,
+            rawMilkTankCapacity:Number(old.rawMilkTankCapacity)||2000,
+            processingQueue:Array.isArray(old.processingQueue)?old.processingQueue:[],
+            coldStorage:{pasteurizedMilk:0,yogurt:0,cheese:0,...(old.coldStorage||{})},
             processedProducts:{pasteurizedMilk:0,yogurt:0,cheese:0,...(old.processedProducts||{})}
         };
 
@@ -3653,6 +3660,35 @@ function calculateOfflineProgress(){
    ZAMAN
 ========================================================= */
 
+function processMilkFactory(minutes){
+    game.processingQueue=Array.isArray(game.processingQueue)?game.processingQueue:[];
+    game.coldStorage=game.coldStorage||{pasteurizedMilk:0,yogurt:0,cheese:0};
+    for(const job of game.processingQueue) job.remainingMinutes=Math.max(0,(Number(job.remainingMinutes)||0)-minutes);
+    const done=game.processingQueue.filter(j=>j.remainingMinutes<=0);
+    game.processingQueue=game.processingQueue.filter(j=>j.remainingMinutes>0);
+    done.forEach(job=>{
+        game.coldStorage[job.product]=(Number(game.coldStorage[job.product])||0)+Number(job.output||0);
+        game.processedProducts[job.product]=(Number(game.processedProducts[job.product])||0)+Number(job.output||0);
+        addNotification("Üretim Tamamlandı",job.output.toFixed(1)+" birim ürün soğuk depoya alındı.","success",true);
+    });
+}
+
+function expireProcessedProducts(){
+    game.coldStorage=game.coldStorage||{pasteurizedMilk:0,yogurt:0,cheese:0};
+    game.coldStorage._age=game.coldStorage._age||{pasteurizedMilk:0,yogurt:0,cheese:0};
+    const shelf={pasteurizedMilk:5,yogurt:10,cheese:30};
+    Object.keys(shelf).forEach(product=>{
+        if((Number(game.coldStorage[product])||0)>0){
+            game.coldStorage._age[product]=(Number(game.coldStorage._age[product])||0)+1;
+            if(game.coldStorage._age[product]>=shelf[product]){
+                const lost=game.coldStorage[product];
+                game.coldStorage[product]=0; game.processedProducts[product]=0; game.coldStorage._age[product]=0;
+                addNotification("Ürün Bozuldu",lost.toFixed(1)+" birim ürün raf ömrünü doldurdu ve imha edildi.","warning",true);
+            }
+        }
+    });
+}
+
 function advanceGameTime(minutes){
 
     for(
@@ -3662,7 +3698,7 @@ function advanceGameTime(minutes){
     ){
 
         game.minute++;
-
+        processMilkFactory(1);
 
         if(
             game.minute>=1440
@@ -3673,6 +3709,7 @@ function advanceGameTime(minutes){
             game.day++;
 
             game.todayMilk=0;
+            expireProcessedProducts();
 
             const worker=game.milkingWorker||{};
             if(worker.hired){
@@ -3891,7 +3928,17 @@ function milkHerd(automatic=false){
     game.totalMilk+=milk;
     game.todayMilk+=milk;
 
-    game.rawMilkStock=(Number(game.rawMilkStock)||0)+milk;
+    const tankCapacity=Number(game.rawMilkTankCapacity)||2000;
+    const available=Math.max(0,tankCapacity-(Number(game.rawMilkStock)||0));
+    const accepted=Math.min(milk,available);
+    const overflow=Math.max(0,milk-accepted);
+    game.rawMilkStock=(Number(game.rawMilkStock)||0)+accepted;
+    if(overflow>0){
+        const overflowIncome=overflow*MILK_PRICE;
+        game.money+=overflowIncome; game.income+=overflowIncome;
+        recordAccounting("Gelir","Tank Kapasitesi Aşımı - Çiğ Süt Satışı",overflowIncome);
+        addLog("⚠ Tank dolu: "+overflow.toFixed(1)+" L süt otomatik satıldı.");
+    }
 
     game.lastMilking=formatGameTime();
     game.lastMilkingSlot=slot;
@@ -3932,38 +3979,46 @@ function sellRawMilk(){
 function processMilk(product){
     const stock=Math.max(0,Number(game.rawMilkStock)||0);
     game.processedProducts=game.processedProducts||{pasteurizedMilk:0,yogurt:0,cheese:0};
+    game.processingQueue=Array.isArray(game.processingQueue)?game.processingQueue:[];
     const cfg={
-        pasteurizedMilk:{name:"Pastörize Süt",need:1,output:0.98,price:32,cost:2.2},
-        yogurt:{name:"Yoğurt",need:1,output:1.02,price:55,cost:5.5},
-        cheese:{name:"Peynir",need:10,output:1,price:240,cost:18}
+        pasteurizedMilk:{name:"Pastörize Süt",need:1,output:0.98,price:32,cost:2.2,hours:2,shelf:5},
+        yogurt:{name:"Yoğurt",need:1,output:1.02,price:55,cost:5.5,hours:6,shelf:10},
+        cheese:{name:"Peynir",need:10,output:1,price:240,cost:18,hours:24,shelf:30}
     }[product];
     if(!cfg)return;
     if(stock<cfg.need){addLog("⚠ "+cfg.name+" için en az "+cfg.need+" L çiğ süt gerekiyor.");return;}
-    const batches=Math.floor(stock/cfg.need),used=batches*cfg.need,output=batches*cfg.output,processingCost=used*cfg.cost;
+    const batches=Math.floor(stock/cfg.need);
+    const used=batches*cfg.need;
+    const output=batches*cfg.output;
+    const processingCost=used*cfg.cost;
     if(game.money<processingCost){addLog("⚠ İşleme maliyeti için "+processingCost.toFixed(0)+" ₺ gerekiyor.");return;}
     game.rawMilkStock-=used;
-    game.processedProducts[product]+=output;
     game.money-=processingCost; game.expenses+=processingCost;
+    game.processingQueue.push({
+        product,output,remainingMinutes:cfg.hours*60,
+        shelfDays:cfg.shelf,
+        createdDay:game.day
+    });
     recordAccounting("Gider",cfg.name+" İşleme",processingCost);
-    addNotification("Süt İşleme Tamamlandı",used.toFixed(1)+" L süt → "+output.toFixed(1)+" "+cfg.name+".","success",true);
-    addLog("🏭 "+cfg.name+": "+used.toFixed(1)+" L süt işlendi, "+output.toFixed(1)+" ürün üretildi.");
+    addNotification("Üretim Başlatıldı",cfg.name+" üretimi "+cfg.hours+" saat içinde tamamlanacak.","success",true);
+    addLog("🏭 "+cfg.name+" üretimi başladı: "+used.toFixed(1)+" L süt işlendi.");
     render(); saveGame();
 }
 
 function sellProcessedMilk(product){
-    game.processedProducts=game.processedProducts||{pasteurizedMilk:0,yogurt:0,cheese:0};
+    game.coldStorage=game.coldStorage||{pasteurizedMilk:0,yogurt:0,cheese:0};
     const cfg={pasteurizedMilk:{name:"Pastörize Süt",price:32},yogurt:{name:"Yoğurt",price:55},cheese:{name:"Peynir",price:240}}[product];
     if(!cfg)return;
-    const qty=Math.max(0,Number(game.processedProducts[product])||0);
-    if(qty<0.01){addLog("⚠ Satılacak "+cfg.name.toLowerCase()+" bulunmuyor.");return;}
+    const qty=Math.max(0,Number(game.coldStorage[product])||0);
+    if(qty<0.01){addLog("⚠ Soğuk depoda satılacak "+cfg.name.toLowerCase()+" bulunmuyor.");return;}
     const income=qty*cfg.price;
+    game.coldStorage[product]=0;
     game.processedProducts[product]=0;
     game.money+=income; game.income+=income;
     recordAccounting("Gelir",cfg.name+" Satışı",income);
     addNotification(cfg.name+" Satıldı",qty.toFixed(1)+" birim ürün "+income.toFixed(0)+" ₺ gelir getirdi.","success",true);
     render(); saveGame();
 }
-
 /* =========================================================
    SAĞIM STRATEJİSİ
 ========================================================= */
@@ -5274,6 +5329,14 @@ function render(){
     const raw=Number(game.rawMilkStock)||0;
     [["rawMilkStock",raw.toFixed(1)+" L"],["rawMilkKpi",raw.toFixed(1)+" L"],["pasteurizedMilkStock",(Number(products.pasteurizedMilk)||0).toFixed(1)+" L"],["yogurtStock",(Number(products.yogurt)||0).toFixed(1)+" kg"],["cheeseStock",(Number(products.cheese)||0).toFixed(1)+" kg"]].forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value;});
 
+    const products=game.processedProducts||{pasteurizedMilk:0,yogurt:0,cheese:0};
+    const cold=game.coldStorage||{pasteurizedMilk:0,yogurt:0,cheese:0};
+    const queue=Array.isArray(game.processingQueue)?game.processingQueue:[];
+    const tank=Number(game.rawMilkStock)||0;
+    const cap=Number(game.rawMilkTankCapacity)||2000;
+    [["rawMilkStock",tank.toFixed(1)+" / "+cap.toFixed(0)+" L"],["rawMilkKpi",tank.toFixed(1)+" L"],["pasteurizedMilkStock",(Number(cold.pasteurizedMilk)||0).toFixed(1)+" L"],["yogurtStock",(Number(cold.yogurt)||0).toFixed(1)+" kg"],["cheeseStock",(Number(cold.cheese)||0).toFixed(1)+" kg"]].forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value;});
+    const factory=document.getElementById("processingQueueText");
+    if(factory) factory.textContent=queue.length?queue.map(j=>({pasteurizedMilk:"Pastörize",yogurt:"Yoğurt",cheese:"Peynir"}[j.product]||j.product)+" • "+Math.ceil((Number(j.remainingMinutes)||0)/60)+" sa").join(" | "):"Hazır";
     const nextMilkingElement=document.getElementById("nextMilkingText");
     if(nextMilkingElement){
         try{
