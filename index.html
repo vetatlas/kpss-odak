@@ -370,7 +370,14 @@ select:focus{
 .boot{display:none!important;}
 #systemMessageBox{animation:messageIn .45s ease-out both;}
 @keyframes messageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-</style>
+<style>
+.app-bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:grid;grid-template-columns:repeat(6,1fr);gap:3px;padding:7px 6px calc(7px + env(safe-area-inset-bottom));background:rgba(7,11,18,.97);backdrop-filter:blur(18px);border-top:1px solid rgba(148,163,184,.16);box-shadow:0 -10px 30px rgba(0,0,0,.35)}
+.app-bottom-nav .nav-btn{min-width:0;min-height:52px;border:0;border-radius:13px;background:transparent;color:#94a3b8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:4px 1px;font-size:19px;line-height:1;touch-action:manipulation}
+.app-bottom-nav .nav-btn span{font-size:9px;font-weight:800;line-height:1}
+.app-bottom-nav .nav-btn.active-menu{background:rgba(34,197,94,.16);color:#86efac}
+body{padding-bottom:84px}
+@media(min-width:768px){.app-bottom-nav{left:50%;right:auto;transform:translateX(-50%);width:min(720px,calc(100% - 24px));border:1px solid rgba(148,163,184,.16);border-bottom:0;border-radius:18px 18px 0 0}}
+</style></style>
 </head>
 
 <body>
@@ -467,15 +474,14 @@ select:focus{
 </header>
 
 
-<div id="appMenu" class="sticky top-[73px] z-40 mb-5 overflow-x-auto">
-    <div class="glass p-2 flex gap-2 min-w-max">
-        <button class="nav-btn menu-btn active-menu" data-menu="genel">🏠 Genel<span class="menu-sub">Kontrol</span></button>
-        <button class="nav-btn menu-btn" data-menu="surusu">🐄 Sürü<span class="menu-sub">Hayvanlar</span></button>
-        <button class="nav-btn menu-btn" data-menu="besleme">🌾 Besleme<span class="menu-sub">Rasyon & Yem</span></button>
-        <button class="nav-btn menu-btn" data-menu="sagim">🥛 Sağım<span class="menu-sub">2X / 3X / 4X</span></button>
-        <button class="nav-btn menu-btn" data-menu="muhasebe">🧾 Muhasebe<span class="menu-sub">Kasa</span></button>
-        <button class="nav-btn menu-btn" data-menu="gunluk">📋 Günlük<span class="menu-sub">Kayıtlar</span></button>
-    </div>
+<nav id="appMenu" class="app-bottom-nav" aria-label="Çiftlik menüsü">
+<button class="nav-btn menu-btn active-menu" data-menu="genel">🏠<span>Genel</span></button>
+<button class="nav-btn menu-btn" data-menu="surusu">🐄<span>Sürü</span></button>
+<button class="nav-btn menu-btn" data-menu="besleme">🌾<span>Besleme</span></button>
+<button class="nav-btn menu-btn" data-menu="sagim">🥛<span>Sağım</span></button>
+<button class="nav-btn menu-btn" data-menu="muhasebe">🧾<span>Muhasebe</span></button>
+<button class="nav-btn menu-btn" data-menu="gunluk">📋<span>Günlük</span></button>
+</nav>
 </div>
 
 <main class="max-w-7xl mx-auto px-4 py-6">
@@ -1383,10 +1389,7 @@ select:focus{
 
 </main>
 
-<div class="sound-control">
-    <span id="soundLabel" class="sound-label">🔊 Çiftlik sesleri açık</span>
-    <input id="soundVolume" class="sound-volume" type="range" min="0" max="100" value="42" aria-label="Çiftlik ses seviyesi">
-</div>
+
 
 </div>
 
@@ -4279,7 +4282,7 @@ function startFarmAmbience(){
         return true;
     }
     try{
-        const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.30);
+        const savedVolume=0.90;
         const masterVolume=Math.max(0,Math.min(1,savedVolume));
         const birds=createRealFarmAudio(FARM_AUDIO_SOURCES.birds,.32,true);
         const cow=createRealFarmAudio(FARM_AUDIO_SOURCES.cow,1,false);
@@ -4390,60 +4393,15 @@ function setupFarmSound(){
 ========================================================= */
 
 function setupAppMenu(){
-
-    const sections=document.querySelectorAll("main section");
-
-    sections.forEach(section=>{
-
-        const title=(section.querySelector("h2")?.textContent||"").trim();
-
-        let menu=section.dataset.dashboard==="true" ? "genel" : "genel";
-
-        if(title.includes("Sürü")) menu="surusu";
-        else if(title.includes("Sağım")) menu="sagim";
-        else if(title.includes("Rasyon") || title.includes("Yem") || title.includes("Besleme")) menu="besleme";
-        else if(title.includes("Finans") || title.includes("Muhasebe")) menu="muhasebe";
-        else if(title.includes("Sistem Günlüğü")) menu="gunluk";
-        else if(title.includes("Çiftlik Saati")) menu="genel";
-
-        section.dataset.menuSection=menu;
-
-    });
-
-    document.querySelectorAll(".menu-btn").forEach(button=>{
-
-        button.addEventListener("click",()=>{
-
-            const target=button.dataset.menu;
-
-            document.querySelectorAll(".menu-btn").forEach(btn=>{
-                btn.classList.toggle("active-menu",btn===button);
-            });
-
-            sections.forEach(section=>{
-                section.style.display =
-                    section.dataset.menuSection===target
-                    ? ""
-                    : "none";
-            });
-
-            window.scrollTo({
-                top:0,
-                behavior:"smooth"
-            });
-
-        });
-
-    });
-
-    // İlk ekran: Genel
-    sections.forEach(section=>{
-        section.style.display =
-            section.dataset.menuSection==="genel"
-            ? ""
-            : "none";
-    });
-
+    const buttons=[...document.querySelectorAll("#appMenu .menu-btn")];
+    const sections=[...document.querySelectorAll("[data-menu-section]")];
+    const activate=(key)=>{
+        buttons.forEach(b=>b.classList.toggle("active-menu",b.dataset.menu===key));
+        sections.forEach(s=>s.classList.toggle("hidden",s.dataset.menuSection!==key));
+        window.scrollTo({top:0,behavior:"smooth"});
+    };
+    buttons.forEach(b=>b.addEventListener("click",()=>activate(b.dataset.menu)));
+    activate("genel");
 }
 
 
