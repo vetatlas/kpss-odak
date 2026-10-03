@@ -1704,6 +1704,7 @@ function startFreshFarm(){
     game.lastAutomaticMilkingHour=-1;
     game.accountingLedger=[];
     game.messages=[];
+    game.notificationState={lowFeed:false,criticalFeed:false,health:{},sara:{},udder:{}};
     game.onboardingStep=1;
     game.cows=[];
     updateRationAnalysis();
@@ -2847,6 +2848,8 @@ function biologicalTick(){
         feedPerMinute*
         FEED_PRICE;
 
+    checkSmartNotifications();
+
 }
 
 
@@ -3079,6 +3082,13 @@ function milkHerd(automatic=false){
     });
     game.accountingLedger=game.accountingLedger.slice(0,30);
 
+    addNotification(
+        automatic ? "Otomatik Sağım Tamamlandı" : "Sağım Tamamlandı",
+        `${milk.toFixed(1)} L süt elde edildi ve ${income.toFixed(0).toLocaleString("tr-TR")} ₺ gelir oluştu.`,
+        "success",
+        true
+    );
+
     addLog(
         `${automatic ? "Otomatik" : "Manuel"} sağım tamamlandı: ${milk.toFixed(1)} L | Gelir: ${income.toFixed(0)} ₺`
     );
@@ -3171,6 +3181,10 @@ function accountingBuyFeed(amount){
     game.feed+=amount;
 
     recordAccounting("Gider","Yem Alımı",cost);
+    game.notificationState=game.notificationState||{};
+    game.notificationState.lowFeed=false;
+    game.notificationState.criticalFeed=false;
+    addNotification("Yem Alındı",`${amount.toLocaleString("tr-TR")} kg yem depoya eklendi. Maliyet: ${cost.toLocaleString("tr-TR")} ₺.`,"success",true);
 
     addLog(
         `${amount.toLocaleString("tr-TR")} kg yem alındı. Maliyet: ${cost.toLocaleString("tr-TR")} ₺`
@@ -3859,6 +3873,48 @@ function setupNotifications(){
     });
 
     renderNotifications();
+}
+
+function checkSmartNotifications(){
+    if(!game.cows?.length) return;
+    game.notificationState=game.notificationState||{lowFeed:false,criticalFeed:false,health:{},sara:{},udder:{}};
+    const s=game.notificationState, feed=Number(game.feed||0);
+
+    if(feed<200){
+        if(!s.criticalFeed) addNotification("Yem Stoğu Kritik",`Yem stoğu ${Math.round(feed).toLocaleString("tr-TR")} kg seviyesine düştü. Yeni yem alımı gerekiyor.`,"danger",true);
+        s.criticalFeed=true; s.lowFeed=true;
+    }else if(feed<500){
+        if(!s.lowFeed) addNotification("Yem Stoğu Azalıyor",`Yem stoğu ${Math.round(feed).toLocaleString("tr-TR")} kg. Yem alımını planlaman iyi olur.`,"warning",true);
+        s.lowFeed=true; s.criticalFeed=false;
+    }else{s.lowFeed=false;s.criticalFeed=false;}
+
+    const activeIds=new Set();
+    game.cows.forEach(cow=>{
+        const id=String(cow.id); activeIds.add(id);
+        const health=Number(cow.health??100), risk=Number(cow.diseaseRisk??0), sara=Number(cow.saraRisk??0), udder=Number(cow.udderFill??0);
+        const h=s.health[id]||{low:false,critical:false,disease:false};
+        if(health<60){
+            if(!h.critical) addNotification("Hayvan Sağlığı Kritik",`İnek ${id} sağlık seviyesi ${health.toFixed(0)}%. Yakından kontrol edilmeli.`,"danger",true);
+            h.critical=true;h.low=true;
+        }else if(health<80){
+            if(!h.low) addNotification("Hayvan Sağlığı Uyarısı",`İnek ${id} sağlık seviyesi ${health.toFixed(0)}%. Hayvanı takip et.`,"warning",true);
+            h.low=true;h.critical=false;
+        }else{h.low=false;h.critical=false;}
+        if(risk>=70){
+            if(!h.disease) addNotification("Hastalık Riski Yüksek",`İnek ${id} için hastalık riski ${risk.toFixed(0)}%. Kontrol önerilir.`,"danger",true);
+            h.disease=true;
+        }else h.disease=false;
+        if(sara>=50 && !s.sara[id]){
+            addNotification("SARA Riski",`İnek ${id} için rumen asidozu (SARA) riski yükseldi: ${sara.toFixed(0)}%.`,"warning",true);s.sara[id]=true;
+        }else if(sara<35)s.sara[id]=false;
+        if(udder>=100 && !s.udder[id]){
+            addNotification("Sağım Uyarısı",`İnek ${id} meme doluluğu yüksek. Planlı sağımı kontrol et.`,"warning",true);s.udder[id]=true;
+        }else if(udder<80)s.udder[id]=false;
+        s.health[id]=h;
+    });
+    Object.keys(s.health).forEach(id=>{if(!activeIds.has(id))delete s.health[id];});
+    Object.keys(s.sara).forEach(id=>{if(!activeIds.has(id))delete s.sara[id];});
+    Object.keys(s.udder).forEach(id=>{if(!activeIds.has(id))delete s.udder[id];});
 }
 
 function render(){
