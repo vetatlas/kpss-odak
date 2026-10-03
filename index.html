@@ -1869,6 +1869,29 @@ async function initSharedBackend(){
             await pushGameToSharedWorld();
         }
 
+        sharedBackend.client
+            .channel("ciftlik-ses-ayarlari")
+            .on(
+                "postgres_changes",
+                {event:"UPDATE",schema:"public",table:"farm_settings",filter:"id=eq.1"},
+                payload=>{
+                    const data=payload?.new;
+                    if(!data) return;
+                    FARM_AUDIO_CONFIG.enabled=data.sound_enabled!==false;
+                    FARM_AUDIO_CONFIG.url=data.sound_url||"sounds/nature.wav";
+                    FARM_AUDIO_CONFIG.volume=Math.max(0,Math.min(1,Number(data.sound_volume??0.45)));
+                    if(!FARM_AUDIO_CONFIG.enabled){
+                        stopFarmAmbience();
+                    }else if(!farmAudio){
+                        startFarmAmbience();
+                    }else{
+                        farmAudio.masterVolume=FARM_AUDIO_CONFIG.volume;
+                        resumeFarmAudio();
+                    }
+                }
+            )
+            .subscribe();
+
         sharedBackend.channel=sharedBackend.client
             .channel("ciftlik-ortak-dunya")
             .on(
