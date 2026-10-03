@@ -375,7 +375,12 @@ select:focus{
 .animal-card-field-value{margin-top:4px;font-size:13px;font-weight:800}
 .animal-card-actions{padding:0 16px 16px;display:flex;gap:10px}
 .animal-card-actions button{flex:1}
-@media(max-width:420px){.animal-card-grid{grid-template-columns:1fr}.animal-card-actions{flex-direction:column}}
+ .animal-card-section{grid-column:1/-1;background:#0b121c;border:1px solid #203247;border-radius:15px;padding:13px}
+.animal-card-section-title{font-size:12px;font-weight:900;margin-bottom:10px}
+.animal-card-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.animal-card-action-grid .nav-btn{font-size:11px;padding:9px 7px}
+.animal-card-history{margin-top:10px;max-height:130px;overflow:auto;border-top:1px solid #1b2b3c;padding-top:8px;font-size:10px;color:#9eb1c1;line-height:1.6}
+@media(max-width:420px){.animal-card-grid{grid-template-columns:1fr}.animal-card-actions{flex-direction:column}.animal-card-section{grid-column:auto}.animal-card-action-grid{grid-template-columns:1fr}}
 @keyframes notificationToastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes notificationToastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(10px)}}
 @media(max-width:640px){
@@ -1700,7 +1705,18 @@ function createCow(id){
         birthDate:"",
         lactationNumber:1,
         sex:"Dişi",
-        purchaseDate:""
+        purchaseDate:"",
+        healthHistory:[],
+        reproduction:{
+            status:"Laktasyonda",
+            heatDay:null,
+            inseminationDay:null,
+            pregnancyCheckDay:null,
+            pregnant:false,
+            expectedCalvingDay:null,
+            lastCalvingDay:null,
+            dryOffDay:null
+        }
 
     };
 
@@ -1952,6 +1968,25 @@ function loadGame(){
 
                 if(cow.diseaseRisk===undefined)
                     cow.diseaseRisk=0;
+                if(!Array.isArray(cow.healthHistory))
+                    cow.healthHistory=[];
+                if(!cow.reproduction)
+                    cow.reproduction={status:"Laktasyonda"};
+                cow.reproduction={
+                    status:"Laktasyonda",
+                    heatDay:null,
+                    inseminationDay:null,
+                    pregnancyCheckDay:null,
+                    pregnant:false,
+                    expectedCalvingDay:null,
+                    lastCalvingDay:null,
+                    dryOffDay:null,
+                    ...cow.reproduction
+                };
+                if(!cow.breed) cow.breed="Holstein";
+                if(!cow.earTag) cow.earTag="TR-"+String(cow.id).padStart(4,"0");
+                if(!cow.sex) cow.sex="Dişi";
+                if(cow.lactationNumber===undefined) cow.lactationNumber=1;
 
             }
         );
@@ -3786,41 +3821,108 @@ function formatAnimalBirthDate(value){
 function openAnimalCard(id){
     const cow=game.cows.find(item=>String(item.id)===String(id));
     if(!cow) return;
+    cow.healthHistory=Array.isArray(cow.healthHistory)?cow.healthHistory:[];
+    cow.reproduction={status:"Laktasyonda",heatDay:null,inseminationDay:null,pregnancyCheckDay:null,pregnant:false,expectedCalvingDay:null,lastCalvingDay:null,dryOffDay:null,...(cow.reproduction||{})};
     const modal=document.getElementById("animalCardModal");
     const title=document.getElementById("animalCardTitle");
     const status=document.getElementById("animalCardStatus");
     const grid=document.getElementById("animalCardGrid");
     if(!modal||!title||!status||!grid) return;
-
     title.textContent="🐄 "+(cow.name||("İnek "+cow.id));
     status.textContent=getAnimalCardStatus(cow);
-
+    const r=cow.reproduction;
+    const reproductionStatus=r.pregnant?"🤰 Gebe":(r.status||"Laktasyonda");
     const fields=[
-        ["Küpe No",cow.earTag||("TR-"+String(cow.id).padStart(4,"0"))],
-        ["Irk",cow.breed||"Belirtilmemiş"],
-        ["Cinsiyet",cow.sex||"Dişi"],
-        ["Doğum Tarihi",formatAnimalBirthDate(cow.birthDate)],
-        ["Laktasyon No",String(cow.lactationNumber||1)],
-        ["Laktasyon Günü",String(cow.lactationDay||0)],
-        ["Canlı Ağırlık",(Number(cow.weight)||0).toFixed(0)+" kg"],
-        ["BCS",(Number(cow.bcs)||0).toFixed(2)],
-        ["Günlük Süt",(Number(cow.milkYield)||0).toFixed(1)+" L"],
-        ["Sağlık",(Number(cow.health)||0).toFixed(1)+"%"],
-        ["Rumen pH",(Number(cow.rumenPH)||0).toFixed(2)],
-        ["SARA Riski",(Number(cow.saraRisk)||0).toFixed(0)+"%"],
-        ["Hastalık Riski",(Number(cow.diseaseRisk)||0).toFixed(0)+"%"],
-        ["Meme Doluluğu",(Number(cow.udderFill)||0).toFixed(1)+"%"],
-        ["Enerji Dengesi",(Number(cow.energyBalance)||0).toFixed(2)],
-        ["Alım Tarihi",formatAnimalBirthDate(cow.purchaseDate)]
+        ["Küpe No",cow.earTag||("TR-"+String(cow.id).padStart(4,"0"))],["Irk",cow.breed||"Belirtilmemiş"],["Cinsiyet",cow.sex||"Dişi"],
+        ["Doğum Tarihi",formatAnimalBirthDate(cow.birthDate)],["Laktasyon No",String(cow.lactationNumber||1)],["Laktasyon Günü",String(cow.lactationDay||0)],
+        ["Canlı Ağırlık",(Number(cow.weight)||0).toFixed(0)+" kg"],["BCS",(Number(cow.bcs)||0).toFixed(2)],["Günlük Süt",(Number(cow.milkYield)||0).toFixed(1)+" L"],
+        ["Sağlık",(Number(cow.health)||0).toFixed(1)+"%"],["Rumen pH",(Number(cow.rumenPH)||0).toFixed(2)],["SARA Riski",(Number(cow.saraRisk)||0).toFixed(0)+"%"],
+        ["Hastalık Riski",(Number(cow.diseaseRisk)||0).toFixed(0)+"%"],["Meme Doluluğu",(Number(cow.udderFill)||0).toFixed(1)+"%"],
+        ["Enerji Dengesi",(Number(cow.energyBalance)||0).toFixed(2)],["Üreme Durumu",reproductionStatus],
+        ["Son Kızgınlık",r.heatDay?"Gün "+r.heatDay:"Kayıt yok"],["Tohumlama",r.inseminationDay?"Gün "+r.inseminationDay:"Kayıt yok"],
+        ["Gebelik Kontrolü",r.pregnancyCheckDay?"Gün "+r.pregnancyCheckDay:"Yapılmadı"],["Tahmini Doğum",r.expectedCalvingDay?"Gün "+r.expectedCalvingDay:"Belirlenmedi"],
+        ["Son Doğum",r.lastCalvingDay?"Gün "+r.lastCalvingDay:"Kayıt yok"],["Alım Tarihi",formatAnimalBirthDate(cow.purchaseDate)]
     ];
-
-    grid.innerHTML=fields.map(([label,value])=>`<div class="animal-card-field">
-        <div class="animal-card-field-label">${label}</div>
-        <div class="animal-card-field-value">${value}</div>
-    </div>`).join("");
-
+    grid.innerHTML=fields.map(([label,value])=>'<div class="animal-card-field"><div class="animal-card-field-label">'+label+'</div><div class="animal-card-field-value">'+value+'</div></div>').join("")+
+    '<div class="animal-card-section"><div class="animal-card-section-title">🩺 Sağlık & Veteriner</div><div class="animal-card-action-grid">'+
+    '<button type="button" class="nav-btn" onclick="recordAnimalHealth(\''+String(cow.id)+'\',\'Muayene\')">🩺 Muayene</button>'+
+    '<button type="button" class="nav-btn" onclick="recordAnimalHealth(\''+String(cow.id)+'\',\'Tedavi\')">💊 Tedavi</button>'+
+    '<button type="button" class="nav-btn" onclick="recordAnimalHealth(\''+String(cow.id)+'\',\'Aşılama\')">💉 Aşılama</button></div>'+
+    '<div class="animal-card-history">'+(cow.healthHistory.length?cow.healthHistory.slice(0,5).map(item=>'<div><b>Gün '+item.day+'</b> • '+item.type+(item.note?" — "+item.note:"")+'</div>').join(""):'<div class="text-slate-500">Henüz sağlık kaydı yok.</div>')+'</div></div>'+
+    '<div class="animal-card-section"><div class="animal-card-section-title">♀️ Üreme Yönetimi</div><div class="animal-card-action-grid">'+
+    '<button type="button" class="nav-btn" onclick="recordHeat(\''+String(cow.id)+'\')">🔥 Kızgınlık</button>'+
+    '<button type="button" class="nav-btn" onclick="recordInsemination(\''+String(cow.id)+'\')">🧬 Tohumlama</button>'+
+    '<button type="button" class="nav-btn" onclick="checkPregnancy(\''+String(cow.id)+'\')">🤰 Gebelik Kontrolü</button>'+
+    '<button type="button" class="nav-btn" onclick="recordCalving(\''+String(cow.id)+'\')">🐮 Doğum</button>'+
+    '<button type="button" class="nav-btn" onclick="recordDryOff(\''+String(cow.id)+'\')">🌙 Kuruya Çıkarma</button></div></div>';
     modal.classList.add("open");
     modal.setAttribute("aria-hidden","false");
+}
+
+function refreshAnimalCard(id){openAnimalCard(id);render();saveGame();}
+function getCowById(id){return game.cows.find(item=>String(item.id)===String(id));}
+function addAnimalHealthRecord(cow,type,note=""){
+    cow.healthHistory=Array.isArray(cow.healthHistory)?cow.healthHistory:[];
+    cow.healthHistory.unshift({day:game.day,time:formatGameTime(),type,note});
+    cow.healthHistory=cow.healthHistory.slice(0,30);
+}
+function recordAnimalHealth(id,type){
+    const cow=getCowById(id);if(!cow)return;
+    let note="";
+    if(type==="Muayene"){
+        note=prompt("Muayene notu (opsiyonel):","Genel klinik muayene");if(note===null)return;
+        addAnimalHealthRecord(cow,"Muayene",note);
+        addNotification("Veteriner Kaydı",cow.name+": muayene kaydı oluşturuldu.","info",true);
+    }else if(type==="Tedavi"){
+        note=prompt("Tanı / uygulanan tedavi:","");if(!note)return;
+        const cost=Number(prompt("Tedavi maliyeti (₺):","750"));
+        if(Number.isFinite(cost)&&cost>0){if(game.money<cost){addLog("⚠ Tedavi için yeterli nakit yok.");return;}game.money-=cost;game.expenses+=cost;recordAccounting("Gider","Veterinerlik - Tedavi",cost);}
+        cow.health=Math.min(100,cow.health+8);addAnimalHealthRecord(cow,"Tedavi",note);
+        addNotification("Tedavi Kaydı",cow.name+": "+note+" kaydedildi. Sağlık "+cow.health.toFixed(0)+"%.","success",true);
+    }else{
+        note=prompt("Aşı adı / uygulama notu:","");if(!note)return;
+        const cost=300;if(game.money<cost){addLog("⚠ Aşılama için yeterli nakit yok.");return;}
+        game.money-=cost;game.expenses+=cost;recordAccounting("Gider","Veterinerlik - Aşılama",cost);
+        addAnimalHealthRecord(cow,"Aşılama",note);addNotification("Aşılama Kaydı",cow.name+": "+note+" aşısı kaydedildi.","success",true);
+    }
+    refreshAnimalCard(id);
+}
+function recordHeat(id){
+    const cow=getCowById(id);if(!cow)return;const r=cow.reproduction||{};
+    r.status="Kızgınlık";r.heatDay=game.day;r.inseminationDay=null;r.pregnancyCheckDay=null;r.pregnant=false;r.expectedCalvingDay=null;cow.reproduction=r;
+    addAnimalHealthRecord(cow,"Üreme","Kızgınlık tespit edildi");
+    addNotification("Kızgınlık Tespit Edildi",cow.name+" için kızgınlık kaydı oluşturuldu. Tohumlama planlanabilir.","warning",true);refreshAnimalCard(id);
+}
+function recordInsemination(id){
+    const cow=getCowById(id);if(!cow)return;const r=cow.reproduction||{};
+    if(r.status!=="Kızgınlık"&&!r.heatDay){addLog("⚠ "+cow.name+" için önce kızgınlık kaydı oluşturulmalı.");return;}
+    r.status="Tohumlandı";r.inseminationDay=game.day;r.pregnancyCheckDay=game.day+28;r.pregnant=false;r.expectedCalvingDay=game.day+283;cow.reproduction=r;
+    addAnimalHealthRecord(cow,"Üreme","Tohumlama yapıldı; gebelik kontrolü 28 gün sonra planlandı");
+    addNotification("Tohumlama Kaydı",cow.name+" tohumlandı. Gebelik kontrolü yaklaşık Gün "+r.pregnancyCheckDay+".","info",true);refreshAnimalCard(id);
+}
+function checkPregnancy(id){
+    const cow=getCowById(id);if(!cow)return;const r=cow.reproduction||{};
+    if(!r.inseminationDay){addLog("⚠ "+cow.name+" için kayıtlı tohumlama bulunmuyor.");return;}
+    if(game.day<r.inseminationDay+28){addLog("⚠ Gebelik kontrolü için henüz erken. Önerilen gün: "+(r.inseminationDay+28)+".");return;}
+    const positive=confirm(cow.name+" için gebelik testi pozitif mi?\n\nTamam = Pozitif, İptal = Negatif");
+    r.pregnancyCheckDay=game.day;r.pregnant=positive;r.status=positive?"Gebe":"Tekrar tohumlama bekleniyor";
+    if(!positive){r.inseminationDay=null;r.expectedCalvingDay=null;}cow.reproduction=r;
+    addAnimalHealthRecord(cow,"Üreme",positive?"Gebelik kontrolü pozitif":"Gebelik kontrolü negatif");
+    addNotification(positive?"Gebelik Pozitif":"Gebelik Negatif",positive?cow.name+" gebelik açısından pozitif. Tahmini doğum Gün "+r.expectedCalvingDay+".":cow.name+" gebelik açısından negatif. Yeni kızgınlık/tohumlama planlanmalı.",positive?"success":"warning",true);refreshAnimalCard(id);
+}
+function recordCalving(id){
+    const cow=getCowById(id);if(!cow)return;const r=cow.reproduction||{};
+    if(!r.pregnant){addLog("⚠ "+cow.name+" kayıtlı gebe değil. Doğum kaydı için önce gebelik durumunu doğrula.");return;}
+    r.status="Doğum Sonrası";r.lastCalvingDay=game.day;r.pregnant=false;r.expectedCalvingDay=null;r.inseminationDay=null;r.pregnancyCheckDay=null;r.heatDay=null;
+    cow.lactationNumber=(cow.lactationNumber||1)+1;cow.lactationDay=1;cow.reproduction=r;
+    addAnimalHealthRecord(cow,"Üreme","Doğum kaydı oluşturuldu");
+    addNotification("Doğum Kaydı",cow.name+" için doğum kaydı oluşturuldu. Yeni laktasyon başladı.","success",true);refreshAnimalCard(id);
+}
+function recordDryOff(id){
+    const cow=getCowById(id);if(!cow)return;const r=cow.reproduction||{};
+    r.status="Kuru Dönem";r.dryOffDay=game.day;cow.reproduction=r;
+    addAnimalHealthRecord(cow,"Üreme","Kuruya çıkarma kaydı");
+    addNotification("Kuruya Çıkarma",cow.name+" kuru döneme alındı.","info",true);refreshAnimalCard(id);
 }
 
 function closeAnimalCard(){
