@@ -1700,7 +1700,12 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
         <button onclick="applyFarmGrant('hayvancılık')" class="nav-btn text-green-300">🐄 Hayvancılık Hibesi</button>
         <button onclick="applyFarmGrant('mandıra')" class="nav-btn text-green-300">🥛 Mandıra Hibesi</button>
     </div>
-    <div id="bankLoansList" class="mt-4 space-y-2"></div>
+    <div class="metric mt-4">
+        <div class="font-bold mb-1">👨‍💼 Banka Değerlendirme Merkezi</div>
+        <div class="text-xs text-slate-500">Başvurular artık doğrudan hesaba geçmez. Banka uzmanı ve hibe komisyonu işletmenin finansal durumunu puanlayarak karar verir.</div>
+    </div>
+    <div id="bankApplicationsList" class="mt-3 space-y-2"></div>
+    <div id="bankLoansList" class="mt-3 space-y-2"></div>
     <div id="grantApplicationsList" class="mt-3 space-y-2"></div>
 </section>
 
@@ -5549,8 +5554,20 @@ function render(){
     const bd=document.getElementById("bankDebt");if(bd)bd.textContent=debt.toLocaleString("tr-TR",{maximumFractionDigits:0})+" ₺";
     const bl=document.getElementById("bankLoanCount");if(bl)bl.textContent=loans.length;
     const bg=document.getElementById("bankGrantTotal");if(bg)bg.textContent=(Number(bank.totalGrantIncome)||0).toLocaleString("tr-TR")+" ₺";
+    const pendingLoans=Array.isArray(bank.loanApplications)?bank.loanApplications:[];
+    const pendingGrants=Array.isArray(bank.grantApplications)?bank.grantApplications:[];
+    const alist=document.getElementById("bankApplicationsList");
+    if(alist){
+        const all=[...pendingLoans,...pendingGrants].slice(-8).reverse();
+        alist.innerHTML=all.length?all.map(a=>{
+            const isLoan=a.kind==="loan";
+            const status=a.status==="İncelemede"?"🟡 İncelemede":a.status==="Onaylandı"?"🟢 Onaylandı":"🔴 Reddedildi";
+            const detail=a.score!=null?" • Skor: "+a.score+"/100":" • Karar: "+Math.max(0,(Number(a.decisionDay)||0)-(Number(game.day)||0))+" gün";
+            return '<div class="metric text-xs"><b>'+(isLoan?"💳 ":"🎁 ")+a.name+'</b> • '+Number(a.amount).toLocaleString("tr-TR")+' ₺ • '+status+detail+'</div>';
+        }).join(""):'<div class="text-xs text-slate-500">Bekleyen banka başvurusu yok.</div>';
+    }
     const blist=document.getElementById("bankLoansList");if(blist)blist.innerHTML=loans.length?loans.map((l,i)=>'<div class="metric text-xs"><b>'+l.name+'</b> • Kalan: '+Number(l.remaining).toLocaleString("tr-TR",{maximumFractionDigits:0})+' ₺ • Taksit: '+Number(l.installment).toLocaleString("tr-TR",{maximumFractionDigits:0})+' ₺ <button onclick="bankRepayLoan('+i+')" class="nav-btn ml-2">Taksiti Öde</button></div>').join(""):'<div class="text-xs text-slate-500">Aktif kredi yok.</div>';
-    const glist=document.getElementById("grantApplicationsList");if(glist)glist.innerHTML=(bank.grantApplications||[]).slice(-5).reverse().map(a=>'<div class="metric text-xs">🎁 '+a.name+' • '+a.status+' • '+Number(a.amount).toLocaleString("tr-TR")+' ₺</div>').join("");
+    const glist=document.getElementById("grantApplicationsList");if(glist)glist.innerHTML=pendingGrants.slice(-5).reverse().map(a=>'<div class="metric text-xs">🎁 '+a.name+' • '+a.status+(a.score!=null?" • Skor: "+a.score+"/100":"")+' • '+Number(a.amount).toLocaleString("tr-TR")+' ₺</div>').join("");
     const factory=document.getElementById("processingQueueText");
     if(factory) factory.textContent=queue.length?queue.map(j=>({pasteurizedMilk:"Pastörize",yogurt:"Yoğurt",cheese:"Peynir"}[j.product]||j.product)+" • "+Math.ceil((Number(j.remainingMinutes)||0)/60)+" sa").join(" | "):"Hazır";
     const nextMilkingElement=document.getElementById("nextMilkingText");
