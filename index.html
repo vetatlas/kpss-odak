@@ -322,7 +322,12 @@ select:focus{
 .menu-btn{font-weight:700;white-space:nowrap}
 .menu-btn .menu-sub{display:block;font-size:9px;font-weight:500;color:var(--muted);margin-top:2px}
 .section-title{display:flex;align-items:center;gap:10px}
+.time-speed-btn{min-height:30px!important;padding:5px 7px!important;font-size:10px!important;border-radius:8px!important}
+#timePauseBtn{min-height:30px!important;padding:5px 7px!important;font-size:12px!important;border-radius:8px!important}
 @media(max-width:640px){
+    #timeSpeedControl{gap:2px!important}
+    .time-speed-btn{min-height:28px!important;padding:4px 6px!important;font-size:9px!important}
+    #timePauseBtn{min-height:28px!important;padding:4px 6px!important}
     .dashboard-clock{text-align:left}
     .quick-status{flex-direction:column;align-items:flex-start}
     .quick-status b{text-align:left}
@@ -763,13 +768,17 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 
             <div id="weatherChip" class="weather-chip">🌤️ Açık • 18°C</div>
 
-            <div id="gameClock" class="font-mono text-blue-400">
-                Gün 1 • 06:00
+            <div class="flex items-center gap-2">
+                <div id="gameClock" class="font-mono text-blue-400">Gün 1 • 06:00</div>
+                <div id="timeSpeedControl" class="flex items-center gap-1">
+                    <button type="button" id="timePauseBtn" onclick="toggleTimePause()" class="nav-btn text-xs" title="Zamanı durdur">⏸</button>
+                    <button type="button" onclick="setGameSpeed(1)" class="nav-btn time-speed-btn text-xs" data-speed="1">1X</button>
+                    <button type="button" onclick="setGameSpeed(2)" class="nav-btn time-speed-btn text-xs" data-speed="2">2X</button>
+                    <button type="button" onclick="setGameSpeed(5)" class="nav-btn time-speed-btn text-xs" data-speed="5">5X</button>
+                    <button type="button" onclick="setGameSpeed(10)" class="nav-btn time-speed-btn text-xs" data-speed="10">10X</button>
+                </div>
             </div>
-
-            <button onclick="resetGame()" class="nav-btn text-red-400">
-                Sıfırla
-            </button>
+            <button onclick="resetGame()" class="nav-btn text-red-400">Sıfırla</button>
 
         </div>
 
@@ -1732,6 +1741,12 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 ========================================================= */
 
 const REAL_SECONDS_PER_GAME_MINUTE = 1.25;
+
+/* Oyun zamanı hız kontrolü: 1X = gerçek zaman, 5X = çiftlik günü yaklaşık 6 dakikada. */
+const TIME_SPEED_OPTIONS = [1,2,5,10];
+let gameSpeedMultiplier = Number(localStorage.getItem("ciftlikOyunHizi") || 5);
+if(!TIME_SPEED_OPTIONS.includes(gameSpeedMultiplier)) gameSpeedMultiplier=5;
+let timePaused = false;
 
 const FEED_PRICE = 19.07;
 
@@ -3243,9 +3258,7 @@ function calculateOfflineProgress(){
 
     const elapsed=Math.max(0,now-(game.lastRealTime||now));
 
-    const gameMinutes=Math.floor(
-        elapsed/(REAL_SECONDS_PER_GAME_MINUTE*1000)
-    );
+    const gameMinutes = Math.floor(elapsed / (REAL_SECONDS_PER_GAME_MINUTE * 1000 / gameSpeedMultiplier));
 
     if(gameMinutes<1){
         game.lastRealTime=now;
@@ -4640,6 +4653,16 @@ function render(){
     ).textContent =
         `Gün ${game.day} • ${formatGameTime()}`;
 
+    document.querySelectorAll(".time-speed-btn").forEach(button=>{
+        button.classList.toggle("active-strategy", !timePaused && Number(button.dataset.speed)===gameSpeedMultiplier);
+    });
+    const timePauseBtn=document.getElementById("timePauseBtn");
+    if(timePauseBtn){
+        timePauseBtn.textContent=timePaused ? "▶" : "⏸";
+        timePauseBtn.title=timePaused ? "Zamanı başlat" : "Zamanı durdur";
+        timePauseBtn.classList.toggle("active-strategy",timePaused);
+    }
+
 
     document.querySelectorAll("#bigClock, #farmClockPanel").forEach(el=>el.textContent=formatGameTime());
 
@@ -5026,6 +5049,21 @@ function resetGame(){
 let lastTick=
     Date.now();
 
+function setGameSpeed(speed){
+    speed=Number(speed);
+    if(!TIME_SPEED_OPTIONS.includes(speed)) return;
+    gameSpeedMultiplier=speed;
+    timePaused=false;
+    localStorage.setItem("ciftlikOyunHizi",String(speed));
+    lastTick=Date.now();
+    render();
+}
+
+function toggleTimePause(){
+    timePaused=!timePaused;
+    lastTick=Date.now();
+    render();
+}
 
 function realTimeLoop(){
 
@@ -5047,9 +5085,7 @@ function realTimeLoop(){
         );
 
 
-    if(
-        gameMinutes>0
-    ){
+    if(!timePaused && gameMinutes>0){
 
         const safeMinutes=
             Math.min(
