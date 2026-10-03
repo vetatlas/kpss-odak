@@ -275,43 +275,6 @@ select:focus{
     border-radius:10px;
 }
 
-/* ÇİFTLİK SES SİSTEMİ */
-.sound-control{
-    position:fixed;
-    right:16px;
-    bottom:16px;
-    z-index:80;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background:rgba(13,20,31,.94);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:8px;
-    box-shadow:0 10px 30px rgba(0,0,0,.35);
-    backdrop-filter:blur(12px);
-}
-.sound-btn{
-    border:1px solid #31516b;
-    background:#111b29;
-    color:#eaf3f8;
-    border-radius:10px;
-    padding:8px 12px;
-    font-size:12px;
-    font-weight:700;
-}
-.sound-btn:hover{background:#172536}
-.sound-volume{
-    width:82px;
-    accent-color:var(--green);
-}
-.sound-label{
-    font-size:10px;
-    color:var(--muted);
-    white-space:nowrap;
-}
-
-
 .farm-atmosphere{
     position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.55;
     transition:background 1.2s ease,opacity 1.2s ease;
@@ -474,12 +437,6 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 <!-- =====================================================
      APP
 ===================================================== -->
-
-<div class="sound-control" id="farmSoundControl" aria-label="Çiftlik ses kontrolü">
-    <button id="soundToggle" type="button" class="sound-btn">🔊 Sesi Başlat</button>
-    <input id="soundVolume" class="sound-volume" type="range" min="0" max="100" value="55" aria-label="Ses seviyesi">
-    <span id="soundLabel" class="sound-label">🔇 Ses kapalı</span>
-</div>
 
 <div id="app">
 
@@ -4288,6 +4245,11 @@ function createRealFarmAudio(src,volume=1,loop=false){
     audio.volume=volume;
     audio.loop=loop;
     audio.setAttribute("playsinline","");
+    audio.setAttribute("webkit-playsinline","");
+    audio.setAttribute("autoplay","");
+    audio.autoplay=true;
+    audio.muted=false;
+    audio.setAttribute("aria-hidden","true");
     return audio;
 }
 
@@ -4335,12 +4297,10 @@ function startFarmAmbience(){
             farmAudio.enabled=true;
             farmAudio.masterVolume=masterVolume;
         }
-        updateSoundUI(true);
         resumeFarmAudio();
         return true;
     }catch(error){
         console.warn("Doğa ambiyansı başlatılamadı:",error);
-        updateSoundUI(false);
         return false;
     }
 }
@@ -4357,7 +4317,6 @@ function resumeFarmAudio(){
         if(p && p.catch){
             p.catch(error=>{
                 console.warn("Çiftlik sesi oynatılamadı:",error?.name||error);
-                updateSoundUI(false,"⚠️ Sese dokunarak başlat");
             });
         }
     }catch(e){}
@@ -4373,7 +4332,6 @@ function stopFarmAmbience(){
         }
     }catch(error){}
     farmAudio=null;
-    updateSoundUI(false);
 }
 
 
@@ -4393,49 +4351,6 @@ function setFarmVolume(value){
             :`🔊 Çiftlik ambiyansı %${Math.round(volume*100)}`;
     }
 }
-
-function updateSoundUI(active,message=null){
-    const button=document.getElementById("soundToggle");
-    const label=document.getElementById("soundLabel");
-    if(!button||!label) return;
-
-    button.textContent=active?"🔇 Sesi Kapat":"🔊 Sesi Başlat";
-    label.textContent=message || (active?"🌿 Doğa ambiyansı":"🔇 Ses kapalı");
-    button.classList.toggle("active-sound",!!active);
-}
-
-/* Gerçek kayıtlar kullanıcı butonuyla başlatılır; mobil tarayıcı politikalarına uygundur. */
-function setupFarmSound(){
-    const slider=document.getElementById("soundVolume");
-    const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.55);
-    const volume=Math.max(0,Math.min(1,savedVolume));
-    if(slider) slider.value=Math.round(volume*100);
-    if(slider) slider.addEventListener("input",e=>setFarmVolume(Number(e.target.value)/100));
-
-    const toggle=document.getElementById("soundToggle");
-    if(toggle){
-        toggle.addEventListener("click",()=>{
-            if(farmAudio && farmAudio.enabled){
-                stopFarmAmbience();
-            }else{
-                startFarmAmbience();
-            }
-        });
-    }
-
-    updateSoundUI(false);
-
-    /* İlk gerçek kullanıcı etkileşiminde sesi başlat. */
-    const resumeOnce=()=>{
-        if(!farmAudio || !farmAudio.enabled) startFarmAmbience();
-        resumeFarmAudio();
-    };
-    document.addEventListener("pointerdown",resumeOnce,{once:true});
-    document.addEventListener("keydown",resumeOnce,{once:true});
-}
-
-
-
 
 /* =========================================================
    ANA MENÜ
@@ -4488,22 +4403,13 @@ function boot(){
     document.getElementById("bootScreen")?.remove();
     initFarmApp();
 
-    /* Sayfa açılır açılmaz çiftlik ambiyansını başlatmayı dene. */
+    /* Sayfa açılır açılmaz ses çalmayı dene.
+       Mobil tarayıcı engellerse setupFarmSound ilk etkileşimde
+       kullanıcıya buton göstermeden otomatik olarak tekrar dener. */
     try{
         startFarmAmbience();
         resumeFarmAudio();
     }catch(e){}
-
-    /* Tarayıcı autoplay'i engellerse ilk kullanıcı etkileşiminde anında tekrar dene. */
-    const unlockAudio=()=>{
-        try{
-            startFarmAmbience();
-            resumeFarmAudio();
-        }catch(e){}
-    };
-    ["pointerdown","touchstart","keydown"].forEach(type=>{
-        document.addEventListener(type,unlockAudio,{once:true,passive:true});
-    });
 }
 
 
