@@ -4227,9 +4227,10 @@ function createFarmNoiseBuffer(ctx){
 ========================================================= */
 
 const FARM_AUDIO_SOURCES={
-    cow:"https://www.orangefreesounds.com/wp-content/uploads/2014/08/Cow-moo.mp3",
-    birds:"https://www.orangefreesounds.com/wp-content/uploads/2016/05/Chirping-birds.mp3",
-    rooster:"https://www.orangefreesounds.com/wp-content/uploads/2015/02/Rooster-sound-mp3.mp3"
+    /* ESC-50 içindeki gerçek saha kayıtları. Kaynak kayıtlar CC0/uygun lisanslıdır. */
+    cow:"https://raw.githubusercontent.com/karolpiczak/ESC-50/master/audio/1-163727-A.ogg",
+    birds:"https://raw.githubusercontent.com/karolpiczak/ESC-50/master/audio/2-108763-A.ogg",
+    rooster:"https://raw.githubusercontent.com/karolpiczak/ESC-50/master/audio/1-34119-A.ogg"
 };
 
 function createRealFarmAudio(src,volume=1,loop=false){
@@ -4237,7 +4238,7 @@ function createRealFarmAudio(src,volume=1,loop=false){
     audio.preload="auto";
     audio.volume=volume;
     audio.loop=loop;
-    audio.crossOrigin="anonymous";
+    /* raw.githubusercontent.com sesleri için crossOrigin zorunlu değil. */
     return audio;
 }
 
@@ -4254,6 +4255,7 @@ function playRealFarmSound(name,delay=0){
     try{
         audio.currentTime=0;
         audio.volume=Math.max(0,Math.min(1,farmAudio.masterVolume*(name==="birds"?.32:1)));
+        audio.load();
         const promise=audio.play();
         if(promise && promise.catch) promise.catch(()=>{});
     }catch(error){}
@@ -4361,6 +4363,7 @@ function updateSoundUI(active){
     label.textContent=active?"🔊 Ahır + hayvan sesleri":"🔇 Ses kapalı";
 }
 
+/* Gerçek kayıtlar kullanıcı butonuyla başlatılır; mobil tarayıcı politikalarına uygundur. */
 function setupFarmSound(){
     const volume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.42);
     const slider=document.getElementById("soundVolume");
