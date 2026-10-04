@@ -1423,6 +1423,84 @@ body{padding-bottom:calc(76px + env(safe-area-inset-bottom))!important}
   .dashboard-card{padding:16px!important}
 }
 </style>
+<style id="accounting-layout-hard-reset">
+/* MUHASEBE — SON YERLEŞİM KİLİDİ
+   Tüm önceki muhasebe grid kurallarını güvenli biçimde ezer. */
+main.accounting-layout{
+  display:grid!important;
+  grid-template-columns:minmax(0,5fr) minmax(0,7fr)!important;
+  grid-auto-flow:row!important;
+  gap:14px!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  align-items:stretch!important;
+}
+main.accounting-layout > .accounting-command-bar{
+  grid-column:1 / -1!important;
+  grid-row:auto!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+}
+main.accounting-layout > #accounting-summary{
+  grid-column:1!important;
+  grid-row:auto!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+}
+main.accounting-layout > #accounting-processing{
+  grid-column:2!important;
+  grid-row:auto!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+}
+main.accounting-layout > #accounting-report,
+main.accounting-layout > #accounting-bank,
+main.accounting-layout > #accounting-operations{
+  grid-column:1 / -1!important;
+  grid-row:auto!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  justify-self:stretch!important;
+  box-sizing:border-box!important;
+}
+main.accounting-layout > #accounting-summary *,
+main.accounting-layout > #accounting-processing *,
+main.accounting-layout > #accounting-report *,
+main.accounting-layout > #accounting-bank *,
+main.accounting-layout > #accounting-operations *{
+  box-sizing:border-box!important;
+  min-width:0;
+}
+@media (max-width:767px){
+  main.accounting-layout{
+    display:block!important;
+    width:100%!important;
+  }
+  main.accounting-layout > .accounting-command-bar,
+  main.accounting-layout > #accounting-summary,
+  main.accounting-layout > #accounting-processing,
+  main.accounting-layout > #accounting-report,
+  main.accounting-layout > #accounting-bank,
+  main.accounting-layout > #accounting-operations{
+    display:block!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0 0 12px 0!important;
+  }
+}
+@media (min-width:768px) and (max-width:1400px) and (orientation:landscape){
+  main.accounting-layout{
+    grid-template-columns:minmax(0,5fr) minmax(0,7fr)!important;
+    gap:10px!important;
+  }
+}
+</style>
 </head>
 
 <body>
