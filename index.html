@@ -447,6 +447,160 @@ input,select{min-height:48px;border-radius:14px}
 .mobile-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .mobile-action-grid>button{width:100%;min-height:56px;border-radius:14px}
 </style>
+<style id="accounting-premium-screens">
+/* =========================================================
+   MUHASEBE — PREMIUM AYRI EKRANLAR
+   ========================================================= */
+main.accounting-layout{
+  min-height:calc(100vh - 110px)!important;
+}
+main.accounting-layout > .accounting-module{
+  border:1px solid rgba(255,255,255,.08)!important;
+  border-radius:24px!important;
+  background:
+    radial-gradient(circle at 100% 0,rgba(56,189,248,.07),transparent 32%),
+    linear-gradient(145deg,rgba(15,23,42,.94),rgba(8,13,24,.97))!important;
+  box-shadow:0 18px 50px rgba(0,0,0,.28)!important;
+  padding:clamp(18px,2.5vw,30px)!important;
+  overflow:hidden!important;
+  position:relative!important;
+}
+main.accounting-layout > .accounting-module::before{
+  content:"";position:absolute;inset:0 0 auto;height:3px;
+  background:linear-gradient(90deg,transparent,var(--module-accent,#38bdf8),transparent);
+  opacity:.9;
+}
+main.accounting-layout > #accounting-summary{--module-accent:#22c55e}
+main.accounting-layout > #accounting-report{--module-accent:#60a5fa}
+main.accounting-layout > #accounting-bank{--module-accent:#a78bfa}
+main.accounting-layout > #accounting-operations{--module-accent:#f59e0b}
+main.accounting-layout > #accounting-processing{--module-accent:#38bdf8}
+
+main.accounting-layout > .accounting-module .accounting-module-header{
+  margin-bottom:22px!important;
+  padding-bottom:18px!important;
+  border-bottom:1px solid rgba(255,255,255,.07)!important;
+}
+main.accounting-layout > .accounting-module h2{
+  letter-spacing:-.02em!important;
+  font-size:clamp(21px,2vw,28px)!important;
+}
+main.accounting-layout > .accounting-module .accounting-eyebrow{
+  color:var(--module-accent)!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:.16em!important;
+  margin-bottom:6px!important;
+}
+main.accounting-layout > .accounting-module .metric,
+main.accounting-layout > .accounting-module .accounting-overview-card,
+main.accounting-layout > .accounting-module .accounting-report-card,
+main.accounting-layout > .accounting-module .accounting-report-panel,
+main.accounting-layout > .accounting-module .accounting-action-group{
+  border:1px solid rgba(255,255,255,.07)!important;
+  background:rgba(255,255,255,.025)!important;
+  border-radius:16px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+}
+main.accounting-layout > #accounting-summary .accounting-overview-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:14px!important;
+}
+main.accounting-layout > #accounting-summary .accounting-overview-card{
+  min-height:145px!important;
+  padding:20px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:space-between!important;
+}
+main.accounting-layout > #accounting-summary .accounting-overview-card strong{
+  font-size:clamp(25px,3vw,38px)!important;
+  letter-spacing:-.04em!important;
+}
+
+main.accounting-layout > #accounting-report .accounting-report-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:14px!important;
+}
+main.accounting-layout > #accounting-report .accounting-report-card{
+  min-height:125px!important;padding:18px!important;
+}
+main.accounting-layout > #accounting-report .accounting-report-card strong{
+  font-size:26px!important;display:block!important;margin-top:12px!important;
+}
+main.accounting-layout > #accounting-report .accounting-report-bottom{
+  display:grid!important;grid-template-columns:1.2fr 1fr 1.2fr!important;
+  gap:14px!important;margin-top:14px!important;
+}
+main.accounting-layout > #accounting-report .accounting-report-panel{
+  padding:18px!important;min-height:170px!important;
+}
+
+main.accounting-layout > #accounting-bank .grid{
+  gap:14px!important;
+}
+main.accounting-layout > #accounting-bank .metric{
+  padding:18px!important;
+}
+main.accounting-layout > #accounting-bank .metric [id^="bank"]{
+  font-size:25px!important;
+}
+main.accounting-layout > #accounting-bank button.nav-btn{
+  min-height:76px!important;
+  border-radius:15px!important;
+  font-weight:800!important;
+}
+main.accounting-layout > #accounting-bank #bankApplicationsList,
+main.accounting-layout > #accounting-bank #bankLoansList,
+main.accounting-layout > #accounting-bank #grantApplicationsList{
+  padding:2px!important;
+}
+
+main.accounting-layout > #accounting-operations .accounting-operation-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:14px!important;
+}
+main.accounting-layout > #accounting-operations .accounting-action-group{
+  padding:18px!important;
+}
+main.accounting-layout > #accounting-operations .accounting-action-card{
+  min-height:64px!important;
+  border-color:rgba(255,255,255,.06)!important;
+  border-radius:13px!important;
+}
+main.accounting-layout > #accounting-operations #veterinaryPayablesPanel{
+  padding:18px!important;
+}
+
+main.accounting-layout > #accounting-processing .metric{
+  min-height:110px!important;padding:18px!important;
+}
+main.accounting-layout > #accounting-processing .grid{
+  gap:14px!important;
+}
+main.accounting-layout > #accounting-processing button.nav-btn{
+  min-height:72px!important;border-radius:15px!important;font-weight:800!important;
+}
+
+@media(max-width:900px){
+  main.accounting-layout > #accounting-summary .accounting-overview-grid,
+  main.accounting-layout > #accounting-report .accounting-report-grid,
+  main.accounting-layout > #accounting-report .accounting-report-bottom,
+  main.accounting-layout > #accounting-operations .accounting-operation-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:600px){
+  main.accounting-layout > .accounting-module{border-radius:18px!important;padding:16px!important}
+  main.accounting-layout > #accounting-summary .accounting-overview-grid,
+  main.accounting-layout > #accounting-report .accounting-report-grid,
+  main.accounting-layout > #accounting-report .accounting-report-bottom,
+  main.accounting-layout > #accounting-operations .accounting-operation-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+</style>
 <style id="accounting-separate-panels">
 /* Muhasebe alt menüleri: her bölüm kendi panelinde tek başına açılır. */
 .accounting-command-bar{
