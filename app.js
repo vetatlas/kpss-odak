@@ -4,7 +4,7 @@
 ========================================================= */
 const SUPABASE_URL = "https://xzkizeuaruuyagxgtwry.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_tlTTHhoiUD5yXxbePgHScA_iA9I_6Nb";
-let sharedBackend = { client:null, ready:false, syncing:false, applyingRemote:false, channel:null, version:0 };
+let sharedBackend = { client:null, ready:false, syncing:false, applyingRemote:false, channel:null, version:0, farmId:null, userId:null };
 
 function sharedGameSnapshot(){
     try{
@@ -20,15 +20,15 @@ async function pushGameToSharedWorld(){
     sharedBackend.syncing=true;
     try{
         const {data:current,error:readError}=await sharedBackend.client
-            .from("farm_world")
+            .from("farm_saves")
             .select("version")
-            .eq("id",1)
+            .eq("farm_id",sharedBackend.farmId)
             .maybeSingle();
         if(readError) throw readError;
         const nextVersion=Number(current?.version||0)+1;
         const snapshot=sharedGameSnapshot();
         const {data:updated,error}=await sharedBackend.client
-            .from("farm_world")
+            .from("farm_saves")
             .update({
                 state:snapshot,
                 day:Number(game.day)||1,
@@ -38,7 +38,7 @@ async function pushGameToSharedWorld(){
                 version:nextVersion,
                 updated_at:new Date().toISOString()
             })
-            .eq("id",1)
+            .eq("farm_id",sharedBackend.farmId)
             .eq("version",Number(current?.version||0))
             .select("version")
             .maybeSingle();
@@ -46,10 +46,13 @@ async function pushGameToSharedWorld(){
         if(updated){
             sharedBackend.version=nextVersion;
         }else{
+            const {data:created,error:createError}=await sharedBackend.client.from("farm_saves").insert({farm_id:sharedBackend.farmId,state:snapshot,day:Number(game.day)||1,money:Number(game.money)||0,feed:Number(game.feed)||0,milk:Number(game.totalMilk)||0,version:nextVersion}).select("version").maybeSingle();
+            if(!createError && created){ sharedBackend.version=Number(created.version||nextVersion); return; }
+            if(createError && createError.code!=="23505") throw createError;
             const {data:latest,error:latestError}=await sharedBackend.client
-                .from("farm_world")
+                .from("farm_saves")
                 .select("state,version")
-                .eq("id",1)
+                .eq("farm_id",sharedBackend.farmId)
                 .single();
             if(!latestError && latest?.state && Object.keys(latest.state).length){
                 applySharedGame(latest.state,Number(latest.version||0));
@@ -131,12 +134,24 @@ async function initSharedBackend(){
             SUPABASE_PUBLISHABLE_KEY
         );
 
+        const {data:sessionData,error:sessionError}=await sharedBackend.client.auth.getSession();
+        if(sessionError) throw sessionError;
+        const session=sessionData?.session;
+        if(!session?.user?.id){
+            console.info("Misafir modunda kişisel bulut kaydı devre dışı.");
+            return;
+        }
+        const {data:farm,error:farmError}=await sharedBackend.client
+            .from("farms").select("id,name").eq("owner_id",session.user.id).maybeSingle();
+        if(farmError) throw farmError;
+        if(!farm?.id){
+            console.warn("Kullanıcı için çiftlik bulunamadı; yerel kayıt kullanılacak.");
+            return;
+        }
+        sharedBackend.userId=session.user.id;
+        sharedBackend.farmId=farm.id;
         const {data,error}=await sharedBackend.client
-            .from("farm_world")
-            .select("state,version")
-            .eq("id",1)
-            .maybeSingle();
-
+            .from("farm_saves").select("state,version").eq("farm_id",farm.id).maybeSingle();
         if(error) throw error;
 
         sharedBackend.ready=true;
@@ -174,10 +189,10 @@ async function initSharedBackend(){
             .subscribe();
 
         sharedBackend.channel=sharedBackend.client
-            .channel("ciftlik-ortak-dunya")
+            .channel("ciftlik-kisisel-dunya-${sharedBackend.farmId}")
             .on(
                 "postgres_changes",
-                {event:"UPDATE",schema:"public",table:"farm_world",filter:"id=eq.1"},
+                {event:"UPDATE",schema:"public",table:"farm_saves",filter:"farm_id=eq.${sharedBackend.farmId}"},
                 payload=>{
                     const incoming=payload?.new?.state;
                     const incomingVersion=Number(payload?.new?.version||0);
