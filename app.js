@@ -4816,44 +4816,85 @@ function initFarmApp(){
     }
 }
 
-function finishIntro(){
+function showOnboarding(session,authClient){
+    const intro=document.getElementById("introScreen");
+    const screen=document.getElementById("onboardingScreen");
+    if(!screen) return finishIntro();
+    intro?.classList.add("intro-hide");
+    screen.classList.remove("hidden");
+    screen.classList.add("onboarding-show");
+    window.__farmAuth={session,authClient};
+    const username=document.getElementById("onboardingUsername");
+    const display=document.getElementById("onboardingDisplayName");
+    const farm=document.getElementById("onboardingFarmName");
+    const message=document.getElementById("onboardingMessage");
+    if(display && !display.value) display.value=session?.user?.user_metadata?.full_name || session?.user?.user_metadata?.name || "";
+    if(farm && !farm.value) farm.value=(display?.value ? display.value+" Çiftliği" : "Yeni Çiftliğim");
+    setTimeout(()=>username?.focus(),180);
+    const bar=document.getElementById("onboardingProgressBar");if(bar)bar.style.width="100%";
+    const guest=document.getElementById("onboardingGuestButton");
+    guest?.addEventListener("click",()=>{screen.classList.add("hidden");finishIntro(true)}, {once:true});
+    const form=document.getElementById("onboardingForm");
+    form?.addEventListener("submit",async e=>{
+        e.preventDefault();
+        const u=String(username?.value||"").trim().toLowerCase();
+        const d=String(display?.value||"").trim().slice(0,40);
+        const f=String(farm?.value||"").trim().slice(0,50);
+        const bad=["amk","aq","orospu","sik","siker","siktir","yarrak","piç","pic","ibne","göt","got","fuck","shit","bitch","asshole"];
+        const valid=/^[a-z][a-z0-9_]{2,19}$/.test(u);
+        const clean=u.replace(/_/g,"");
+        if(!valid){message.textContent="Kullanıcı adı 3–20 karakter olmalı; sadece a-z, 0-9 ve _ kullanılabilir ve harfle başlamalı.";message.className="onboarding-message error";return}
+        if(bad.some(w=>u.includes(w))){message.textContent="Bu kullanıcı adı kullanılamaz. Lütfen başka bir ad seç.";message.className="onboarding-message error";return}
+        if(!f){message.textContent="Çiftlik adını gir.";message.className="onboarding-message error";return}
+        const button=document.getElementById("onboardingCreateButton");button.disabled=true;button.textContent="⏳ Çiftlik oluşturuluyor...";message.textContent="Bilgilerin güvenli şekilde kaydediliyor.";message.className="onboarding-message loading";
+        try{
+            const user=session?.user;if(!user) throw new Error("Oturum bulunamadı.");
+            const {data:existing,error:readError}=await authClient.from("profiles").select("id,username,display_name").eq("id",user.id).maybeSingle();
+            if(readError) throw readError;
+            if(existing){
+                const {error:updateError}=await authClient.from("profiles").update({username:u,display_name:d||existing.display_name||user.email?.split("@")[0]||"Çiftlik Yöneticisi",avatar_url:user.user_metadata?.avatar_url||user.user_metadata?.picture||null}).eq("id",user.id);
+                if(updateError && updateError.code!=="23505") throw updateError;
+            }else{
+                const {error:insertError}=await authClient.from("profiles").insert({id:user.id,username:u,display_name:d||user.email?.split("@")[0]||"Çiftlik Yöneticisi",avatar_url:user.user_metadata?.avatar_url||user.user_metadata?.picture||null});
+                if(insertError) throw insertError;
+            }
+            const {data:farmRow,error:farmError}=await authClient.from("farms").select("id,name").eq("owner_id",user.id).maybeSingle();
+            if(farmError) throw farmError;
+            if(farmRow){
+                const {error:updateFarmError}=await authClient.from("farms").update({name:f}).eq("owner_id",user.id);if(updateFarmError)throw updateFarmError;
+            }else{
+                const {error:createFarmError}=await authClient.from("farms").insert({owner_id:user.id,name:f});if(createFarmError)throw createFarmError;
+            }
+            message.textContent="✓ Profilin hazır. Çiftliğe giriş yapılıyor...";message.className="onboarding-message success";
+            setTimeout(()=>{screen.classList.add("hidden");finishIntro(true)},350);
+        }catch(error){
+            console.error("Onboarding kayıt hatası:",error);
+            message.textContent=error?.code==="23505" ? "Bu kullanıcı adı zaten kullanılıyor. Başka bir kullanıcı adı seç." : "Kayıt sırasında bir sorun oluştu. Lütfen tekrar dene.";
+            message.className="onboarding-message error";button.disabled=false;button.textContent="🌱 Çiftliği Oluştur ve Başla";
+        }
+    },{once:true});
+}
+
+function finishIntro(fromOnboarding=false){
     const screen=document.getElementById("introScreen");
-    if(!screen) return boot();
-    screen.classList.add("intro-hide");
-    setTimeout(()=>screen.remove(),750);
+    if(screen){screen.classList.add("intro-hide");setTimeout(()=>screen.remove(),750)}
+    document.getElementById("onboardingScreen")?.classList.add("hidden");
     initFarmApp();
     try{startFarmAmbience();resumeFarmAudio()}catch(e){}
 }
 
 async function setupIntroLogin(){
-    const google=document.getElementById("googleLoginButton");
-    const guest=document.getElementById("guestLoginButton");
-    const status=document.getElementById("introAuthStatus");
-    const loading=document.getElementById("introLoading");
-    const setStatus=(msg)=>{if(status)status.textContent=msg};
-    const begin=()=>{google?.classList.add("hidden");guest?.classList.add("hidden");loading?.classList.remove("hidden")};
+    const google=document.getElementById("googleLoginButton");const guest=document.getElementById("guestLoginButton");const status=document.getElementById("introAuthStatus");const loading=document.getElementById("introLoading");
+    const setStatus=m=>{if(status)status.textContent=m}; const begin=()=>{google?.classList.add("hidden");guest?.classList.add("hidden");loading?.classList.remove("hidden")};
     if(!window.supabase?.createClient){setStatus("Giriş servisi hazır değil. Misafir olarak devam edebilirsin.");return}
     const authClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
     try{
         const {data}=await authClient.auth.getSession();
-        if(data?.session){
-            setStatus("Oturum bulundu. Çiftliğin seni bekliyor.");
-            if(google)google.querySelector("b").textContent="Çiftliğe devam et";
-        }
+        if(data?.session){setStatus("Oturum bulundu. Profilin kontrol ediliyor...");if(google)google.querySelector("b").textContent="Çiftliğe devam et";showOnboarding(data.session,authClient)}
     }catch(e){console.warn("Oturum kontrolü:",e)}
     google?.addEventListener("click",async()=>{
-        try{
-            const {data}=await authClient.auth.getSession();
-            if(data?.session){begin();finishIntro();return}
-            begin();setStatus("Google giriş sayfası açılıyor...");
-            const {error}=await authClient.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin+window.location.pathname}});
-            if(error)throw error;
-        }catch(error){
-            google?.classList.remove("hidden");guest?.classList.remove("hidden");loading?.classList.add("hidden");
-            setStatus("Google girişi başlatılamadı. Misafir olarak devam edebilirsin.");console.error(error);
-        }
-    });
-    guest?.addEventListener("click",()=>{begin();setStatus("Misafir çiftlik hazırlanıyor...");setTimeout(finishIntro,350)});
+        try{const {data}=await authClient.auth.getSession();if(data?.session){begin();showOnboarding(data.session,authClient);return}begin();setStatus("Google giriş sayfası açılıyor...");const {error}=await authClient.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin+window.location.pathname}});if(error)throw error}catch(error){google?.classList.remove("hidden");guest?.classList.remove("hidden");loading?.classList.add("hidden");setStatus("Google girişi başlatılamadı. Misafir olarak devam edebilirsin.");console.error(error)}});
+    guest?.addEventListener("click",()=>{begin();setStatus("Misafir çiftlik hazırlanıyor...");setTimeout(()=>finishIntro(true),350)});
 }
 
 function boot(){
