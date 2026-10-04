@@ -3870,32 +3870,18 @@ function renderAccountingCenter(){
     if(recent) recent.innerHTML=ledger.slice(0,6).map(x=>'<div><span>'+(x.category||"İşlem")+'</span><b class="'+(x.type==="Gelir"?"green":"red")+'">'+(x.type==="Gelir"?"+":"−")+money(x.amount)+'</b></div>').join("")||'<div>Henüz muhasebe hareketi yok.</div>';
 }
 function setupAccountingCenter(){
-    const buttons=[...document.querySelectorAll("[data-accounting-jump]")];
-    const panels=["accounting-summary","accounting-report","accounting-bank","accounting-operations","accounting-processing"]
-        .map(id=>document.getElementById(id)).filter(Boolean);
-
-    const openAccountingPanel=(id)=>{
-        panels.forEach(panel=>{
-            const active=panel.id===id;
-            panel.hidden=!active;
-            panel.classList.toggle("hidden",!active);
-            panel.setAttribute("aria-hidden",active ? "false" : "true");
-        });
-        buttons.forEach(btn=>{
-            const active=btn.dataset.accountingJump===id;
-            btn.classList.toggle("active",active);
-            btn.setAttribute("aria-selected",active ? "true" : "false");
-        });
-        window.scrollTo({top:0,behavior:"smooth"});
+    /* Muhasebe alt menüleri kaldırıldı; finans bölümleri ana yan menüden açılır. */
+    window.openAccountingPanel=function(id){
+        const keyMap={
+            "accounting-summary":"muhasebe",
+            "accounting-report":"raporlar",
+            "accounting-bank":"banka",
+            "accounting-operations":"islemler",
+            "accounting-processing":"sut-isleme"
+        };
+        const btn=document.querySelector(`#appMenu .menu-btn[data-menu="${keyMap[id]||"muhasebe"}"]`);
+        if(btn) btn.click();
     };
-
-    buttons.forEach(btn=>btn.addEventListener("click",()=>{
-        openAccountingPanel(btn.dataset.accountingJump);
-    }));
-
-    /* Muhasebe açıldığında varsayılan ekran: Finans Özeti */
-    openAccountingPanel("accounting-summary");
-    window.openAccountingPanel=openAccountingPanel;
 }
 
 
@@ -4666,21 +4652,6 @@ function setupAppMenu(){
           Muhasebe dışındaki ekranlarda herhangi bir finans özetinin
           görünür kalmasını garanti altına al.
         */
-        if(key!=="muhasebe"){
-            document.querySelectorAll(
-                ".accounting-command-bar,"+
-                "#accounting-summary,"+
-                "#accounting-report,"+
-                "#accounting-bank,"+
-                "#accounting-operations,"+
-                "#accounting-processing"
-            ).forEach(el=>{
-                el.hidden=true;
-                el.classList.add("hidden");
-                el.setAttribute("aria-hidden","true");
-            });
-        }
-
         window.scrollTo({top:0,behavior:"smooth"});
     };
 
