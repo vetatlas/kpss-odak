@@ -5011,10 +5011,6 @@ async function setupIntroLogin(){
     const oauthError=hashParams.get("error_description");
     const hasOAuthReturn=Boolean(accessToken || refreshToken || oauthError) || new URL(window.location.href).searchParams.has("code");
 
-        window.location.hash.includes("access_token=") ||
-        window.location.hash.includes("error_description=") ||
-        new URL(window.location.href).searchParams.has("code");
-
     if(hasOAuthReturn){
         begin();
         if(oauthError){
@@ -5022,10 +5018,15 @@ async function setupIntroLogin(){
         }else if(accessToken && refreshToken){
             setStatus("Google dönüşü alındı. Oturum doğrulanıyor...");
             try{
-                const {data,error}=await authClient.auth.setSession({
+                const setSessionPromise=authClient.auth.setSession({
                     access_token:accessToken,
                     refresh_token:refreshToken
                 });
+                const timeoutPromise=new Promise((_,reject)=>setTimeout(
+                    ()=>reject(new Error("Supabase setSession 8 saniyede yanıt vermedi (timeout).")),
+                    8000
+                ));
+                const {data,error}=await Promise.race([setSessionPromise,timeoutPromise]);
                 if(error) throw error;
                 if(!data?.session) throw new Error("Supabase setSession session döndürmedi.");
                 try{ window.history.replaceState({},document.title,window.location.origin+window.location.pathname); }catch(e){}
