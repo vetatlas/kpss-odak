@@ -5045,6 +5045,39 @@ async function setupIntroLogin(){
         return;
     }
 
+    /*
+      Giriş butonlarını getSession() beklemeden bağla.
+      Supabase ağ gecikmesi giriş ekranındaki butonları kilitlememeli.
+    */
+    google?.addEventListener("click",async()=>{
+        try{
+            begin();
+            setStatus("Google giriş sayfası açılıyor...");
+            const {error}=await authClient.auth.signInWithOAuth({
+                provider:"google",
+                options:{
+                    redirectTo:window.location.origin+window.location.pathname,
+                    queryParams:{access_type:"offline",prompt:"select_account"}
+                }
+            });
+            if(error) throw error;
+        }catch(error){
+            console.error("Google giriş hatası:",error);
+            authHandled=false;
+            google?.classList.remove("hidden");
+            guest?.classList.remove("hidden");
+            loading?.classList.add("hidden");
+            setStatus("Google girişi başlatılamadı: "+(error?.message||"bilinmeyen hata"));
+        }
+    });
+
+    guest?.addEventListener("click",()=>{
+        begin();
+        setStatus("Misafir çiftlik kurulumu hazırlanıyor...");
+        const fakeSession={user:{id:null,user_metadata:{name:"Misafir Çiftlik Yöneticisi"}}};
+        showOnboarding(fakeSession,authClient);
+    });
+
     /* Normal açılışta mevcut oturumu kontrol et. */
     try{
         const {data,error}=await authClient.auth.getSession();
@@ -5061,51 +5094,6 @@ async function setupIntroLogin(){
         guest?.classList.remove("hidden");
         loading?.classList.add("hidden");
     }
-
-    google?.addEventListener("click",async()=>{
-        try{
-            const {data}=await authClient.auth.getSession();
-            if(data?.session){
-                await openForSession(data.session);
-                return;
-            }
-
-            begin();
-            setStatus("Google giriş sayfası açılıyor...");
-
-            const {error}=await authClient.auth.signInWithOAuth({
-                provider:"google",
-                options:{
-                    redirectTo:window.location.origin+window.location.pathname,
-                    queryParams:{
-                        access_type:"offline",
-                        prompt:"select_account"
-                    }
-                }
-            });
-
-            if(error) throw error;
-        }catch(error){
-            console.error("Google giriş hatası:",error);
-            authHandled=false;
-            google?.classList.remove("hidden");
-            guest?.classList.remove("hidden");
-            loading?.classList.add("hidden");
-            setStatus("Google girişi başlatılamadı. Lütfen tekrar dene.");
-        }
-    });
-
-    guest?.addEventListener("click",()=>{
-        begin();
-        setStatus("Misafir çiftlik kurulumu hazırlanıyor...");
-        const fakeSession={
-            user:{
-                id:null,
-                user_metadata:{name:"Misafir Çiftlik Yöneticisi"}
-            }
-        };
-        showOnboarding(fakeSession,authClient);
-    });
 }
 function boot(){
     setupIntroLogin();
