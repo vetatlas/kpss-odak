@@ -68,45 +68,66 @@
   <div class="intro-grid" aria-hidden="true"></div>
   <div class="intro-glow intro-glow-a" aria-hidden="true"></div>
   <div class="intro-glow intro-glow-b" aria-hidden="true"></div>
-  <div class="intro-scanline" aria-hidden="true"></div>
+  <div class="intro-noise" aria-hidden="true"></div>
 
-  <div class="intro-content">
-    <div class="intro-topline">
-      <span class="intro-live-dot"></span>
-      <span>AGRITECH CONTROL CENTER</span>
-      <span class="intro-version">SIMULATION • v1.0</span>
-    </div>
+  <main class="intro-layout">
+    <section class="intro-copy">
+      <div class="intro-topline">
+        <span class="intro-live-dot"></span>
+        <span>AGRITECH CONTROL CENTER</span>
+        <span class="intro-version">SIMULATION / 01</span>
+      </div>
 
-    <div class="intro-brand-mark"><span>🐄</span></div>
-    <div class="intro-kicker">ZOOTECHNICS • VETERINARY • FARM MANAGEMENT</div>
-    <h1>Çiftlik<br><span>Simülasyonu</span></h1>
-    <p class="intro-lead">Bilimsel hayvancılık verileriyle çalışan<br>gerçekçi bir çiftlik yönetim deneyimi.</p>
+      <div class="intro-brand">
+        <div class="intro-brand-mark"><span>🐄</span></div>
+        <div><b>ÇİFTLİK SİMÜLASYONU</b><small>SCIENTIFIC FARM MANAGEMENT</small></div>
+      </div>
 
-    <div class="intro-feature-grid">
-      <div><b>🐄 SÜRÜ</b><span>Hayvan yönetimi</span></div>
-      <div><b>🥛 ÜRETİM</b><span>Süt ve verim takibi</span></div>
-      <div><b>🩺 SAĞLIK</b><span>Veteriner kontrolü</span></div>
-      <div><b>📈 EKONOMİ</b><span>Gelir ve maliyet</span></div>
-    </div>
+      <div class="intro-kicker">ZOOTECHNICS • VETERINARY • PRODUCTION</div>
+      <h1>Çiftliğin.<br><span>Senin kararların.</span></h1>
+      <p class="intro-lead">Bilimsel hayvancılık verileriyle sürünü yönet,<br>üretimi takip et ve çiftliğini adım adım büyüt.</p>
 
-    <div class="intro-action">
-      <button id="guestLoginButton" class="intro-start-button" type="button">
-        <span class="intro-start-icon">▶</span>
-        <span><b>ÇİFTLİĞİ KUR</b><small>Simülasyona başla</small></span>
-        <i>→</i>
-      </button>
-      <div id="introAuthStatus" class="intro-auth-status">Hazır olduğunda çiftliğini kur ve yönetim merkezine geç.</div>
-      <div id="introLoading" class="intro-loading hidden"><span></span> Sistem hazırlanıyor...</div>
-    </div>
-  </div>
+      <div class="intro-feature-grid">
+        <div><b>01 / SÜRÜ</b><span>Hayvan yönetimi</span></div>
+        <div><b>02 / ÜRETİM</b><span>Süt ve verim takibi</span></div>
+        <div><b>03 / SAĞLIK</b><span>Veteriner kontrolü</span></div>
+        <div><b>04 / EKONOMİ</b><span>Gelir ve maliyet</span></div>
+      </div>
 
-  <div class="intro-footer">
-    <span>● SYSTEM READY</span>
-    <span>ÇİFTLİK SİMÜLASYONU</span>
-    <span>SCIENTIFIC FARM MANAGEMENT</span>
-  </div>
+      <div class="intro-action">
+        <button id="guestLoginButton" class="intro-start-button" type="button">
+          <span class="intro-start-icon">▶</span>
+          <span><b>ÇİFTLİĞİ KUR</b><small>Simülasyona başla</small></span>
+          <i>→</i>
+        </button>
+        <div id="introAuthStatus" class="intro-auth-status">Sistem hazır. Yönetim merkezine geçmek için başlat.</div>
+        <div id="introLoading" class="intro-loading hidden"><span></span> Sistem hazırlanıyor...</div>
+      </div>
+    </section>
+
+    <section class="intro-console" aria-label="Simülasyon önizlemesi">
+      <div class="console-header"><span><i></i> LIVE FARM MONITOR</span><b>ONLINE</b></div>
+      <div class="console-scene">
+        <div class="scene-sun"></div>
+        <div class="scene-hill scene-hill-a"></div>
+        <div class="scene-hill scene-hill-b"></div>
+        <div class="scene-barn"><span></span></div>
+        <div class="scene-cow scene-cow-a">🐄</div>
+        <div class="scene-cow scene-cow-b">🐄</div>
+      </div>
+      <div class="console-metrics">
+        <div><span>SÜRÜ</span><b>24</b><small>HAYVAN</small></div>
+        <div><span>SÜT</span><b>486 L</b><small>GÜNLÜK</small></div>
+        <div><span>SAĞLIK</span><b>96%</b><small>SKOR</small></div>
+      </div>
+      <div class="console-status"><span><i></i> Çiftlik sistemi aktif</span><b>06:00</b></div>
+    </section>
+  </main>
+
+  <footer class="intro-footer">
+    <span>● SYSTEM READY</span><span>ÇİFTLİK SİMÜLASYONU</span><span>SCIENTIFIC FARM MANAGEMENT</span>
+  </footer>
 </div>
-
 
 <!-- ONBOARDING -->
 <div id="onboardingScreen" class="onboarding-screen hidden" aria-label="Çiftlik oluşturma">
