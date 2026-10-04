@@ -4863,7 +4863,13 @@ function showOnboarding(session,authClient){
         if(!f){message.textContent="Çiftlik adını gir.";message.className="onboarding-message error";return}
         const button=document.getElementById("onboardingCreateButton");button.disabled=true;button.textContent="⏳ Çiftlik oluşturuluyor...";message.textContent="Bilgilerin güvenli şekilde kaydediliyor.";message.className="onboarding-message loading";
         try{
-            const user=session?.user;if(!user) throw new Error("Oturum bulunamadı.");
+            const user=session?.user;
+            if(!user?.id){
+                message.textContent="✓ Misafir çiftliğin hazır. Oyuna giriş yapılıyor...";
+                message.className="onboarding-message success";
+                setTimeout(()=>{screen.classList.add("hidden");finishIntro(true)},350);
+                return;
+            }
             const {data:existing,error:readError}=await authClient.from("profiles").select("id,username,display_name").eq("id",user.id).maybeSingle();
             if(readError) throw readError;
             if(existing){
