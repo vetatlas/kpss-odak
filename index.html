@@ -82,6 +82,25 @@
   <div class="intro-footer"><span>ÇİFTLİK SİMÜLASYONU</span><span>v1.0 • AGRITECH CONTROL</span></div>
 </div>
 
+
+<!-- ONBOARDING -->
+<div id="onboardingScreen" class="onboarding-screen hidden" aria-label="Çiftlik oluşturma">
+  <div class="onboarding-shell">
+    <div class="onboarding-brand"><span>🐄</span><div><b>ÇİFTLİK SİMÜLASYONU</b><small>ÇİFTLİK PROFİLİNİ OLUŞTUR</small></div></div>
+    <div class="onboarding-progress"><i id="onboardingProgressBar"></i></div>
+    <div class="onboarding-title"><span class="intro-kicker">PLAYER SETUP • FARM IDENTITY</span><h2>Çiftliğine bir kimlik ver.</h2><p>Önce kullanıcı adını ve çiftlik bilgilerini oluşturalım. Bu bilgiler hesabına kaydedilecek.</p></div>
+    <form id="onboardingForm" class="onboarding-form" novalidate>
+      <div class="onboarding-grid">
+        <label><span>Kullanıcı adı</span><input id="onboardingUsername" name="username" autocomplete="username" maxlength="20" placeholder="ornek_ciftlik" required><small>3–20 karakter • a-z, 0-9, _ • ilk karakter harf</small></label>
+        <label><span>Görünen ad</span><input id="onboardingDisplayName" name="displayName" maxlength="40" placeholder="Çiftlik Yöneticisi" autocomplete="name"><small>Oyunda sana gösterilecek isim.</small></label>
+        <label class="onboarding-full"><span>Çiftlik adı</span><input id="onboardingFarmName" name="farmName" maxlength="50" placeholder="Bereket Çiftliği" required><small>Çiftliğinin ana adı.</small></label>
+      </div>
+      <div id="onboardingMessage" class="onboarding-message" role="status" aria-live="polite"></div>
+      <div class="onboarding-actions"><button id="onboardingCreateButton" class="onboarding-primary" type="submit">🌱 Çiftliği Oluştur ve Başla</button><button id="onboardingGuestButton" class="onboarding-secondary" type="button">Misafir olarak devam et</button></div>
+    </form>
+  </div>
+</div>
+
 <div id="app">
 
 <header class="sticky top-0 z-50 border-b border-slate-800 bg-[#070b12]/90 backdrop-blur">
