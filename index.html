@@ -64,22 +64,47 @@
 <div id="farmAtmosphere" class="farm-atmosphere" aria-hidden="true"></div>
 
 <!-- CINEMATIC INTRO / LOGIN -->
-<div id="introScreen" class="intro-screen" aria-label="Çiftlik Simülasyonu giriş ekranı">
-  <div class="intro-grid"></div><div class="intro-glow intro-glow-a"></div><div class="intro-glow intro-glow-b"></div>
+<div id="introScreen" class="intro-screen" aria-label="Çiftlik Simülasyonu tanıtım ekranı">
+  <div class="intro-grid" aria-hidden="true"></div>
+  <div class="intro-glow intro-glow-a" aria-hidden="true"></div>
+  <div class="intro-glow intro-glow-b" aria-hidden="true"></div>
+  <div class="intro-scanline" aria-hidden="true"></div>
+
   <div class="intro-content">
-    <div class="intro-brand-mark">🐄</div>
-    <div class="intro-kicker">DIGITAL AGRICULTURE • VETERINARY • ZOOTECHNICS</div>
-    <h1>Çiftlik<br><span>Simülasyonu</span></h1>
-    <p class="intro-lead">Bilimsel hayvancılık verileriyle kendi çiftliğini yönet.<br>Üret. Geliştir. Karar ver. Büyüt.</p>
-    <div class="intro-features"><span>🐄 Sürü</span><span>🥛 Üretim</span><span>🩺 Sağlık</span><span>📈 Ekonomi</span></div>
-    <div id="introLogin" class="intro-login">
-      <button id="googleLoginButton" class="intro-google" type="button"><span>G</span><b>Google ile giriş yap</b><i>→</i></button>
-      <button id="guestLoginButton" class="intro-guest" type="button">Misafir olarak devam et</button>
-      <div id="introAuthStatus" class="intro-auth-status">Çiftliğine giriş yap ve yolculuğa başla.</div>
+    <div class="intro-topline">
+      <span class="intro-live-dot"></span>
+      <span>AGRITECH CONTROL CENTER</span>
+      <span class="intro-version">SIMULATION • v1.0</span>
     </div>
-    <div id="introLoading" class="intro-loading hidden"><span></span> Çiftlik sistemi hazırlanıyor...</div>
+
+    <div class="intro-brand-mark"><span>🐄</span></div>
+    <div class="intro-kicker">ZOOTECHNICS • VETERINARY • FARM MANAGEMENT</div>
+    <h1>Çiftlik<br><span>Simülasyonu</span></h1>
+    <p class="intro-lead">Bilimsel hayvancılık verileriyle çalışan<br>gerçekçi bir çiftlik yönetim deneyimi.</p>
+
+    <div class="intro-feature-grid">
+      <div><b>🐄 SÜRÜ</b><span>Hayvan yönetimi</span></div>
+      <div><b>🥛 ÜRETİM</b><span>Süt ve verim takibi</span></div>
+      <div><b>🩺 SAĞLIK</b><span>Veteriner kontrolü</span></div>
+      <div><b>📈 EKONOMİ</b><span>Gelir ve maliyet</span></div>
+    </div>
+
+    <div class="intro-action">
+      <button id="guestLoginButton" class="intro-start-button" type="button">
+        <span class="intro-start-icon">▶</span>
+        <span><b>ÇİFTLİĞİ KUR</b><small>Simülasyona başla</small></span>
+        <i>→</i>
+      </button>
+      <div id="introAuthStatus" class="intro-auth-status">Hazır olduğunda çiftliğini kur ve yönetim merkezine geç.</div>
+      <div id="introLoading" class="intro-loading hidden"><span></span> Sistem hazırlanıyor...</div>
+    </div>
   </div>
-  <div class="intro-footer"><span>ÇİFTLİK SİMÜLASYONU</span><span>v1.0 • AGRITECH CONTROL</span></div>
+
+  <div class="intro-footer">
+    <span>● SYSTEM READY</span>
+    <span>ÇİFTLİK SİMÜLASYONU</span>
+    <span>SCIENTIFIC FARM MANAGEMENT</span>
+  </div>
 </div>
 
 
