@@ -9,13 +9,14 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 <!-- =====================================================
      APP
 ===================================================== -->
+
+<div id="farmAtmosphere" class="farm-atmosphere" aria-hidden="true"></div>
 
 <div id="app">
 
@@ -56,6 +57,14 @@
             </div>
 
             <div id="weatherChip" class="weather-chip">🌤️ Açık • 18°C</div>
+
+            <div class="sound-control">
+                <button id="soundToggle" type="button" class="nav-btn sound-toggle" aria-label="Çiftlik ambiyansını aç veya kapat">🔊 Sesi Başlat</button>
+                <label class="sound-volume" aria-label="Çiftlik sesi seviyesi">
+                    <span id="soundLabel">🔇 Ses kapalı</span>
+                    <input id="soundVolume" type="range" min="0" max="100" value="55" step="1">
+                </label>
+            </div>
 
             <div class="flex items-center gap-2">
                 <div id="gameClock" class="font-mono text-blue-400">Gün 1 • 06:00</div>
