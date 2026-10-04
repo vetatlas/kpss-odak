@@ -7,19 +7,9 @@
 <title>Çiftlik Simülasyonu</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="style.css">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -119,31 +109,33 @@
 </div>
 
 
-<nav id="appMenu" class="app-bottom-nav" aria-label="Çiftlik menüsü">
-<button class="nav-btn menu-btn active-menu" data-menu="genel">🏠<span>Genel</span></button>
-<button class="nav-btn menu-btn" data-menu="surusu">🐄<span>Sürü</span></button>
-<button class="nav-btn menu-btn" data-menu="besleme">🌾<span>Besleme</span></button>
-<button class="nav-btn menu-btn" data-menu="sagim">🥛<span>Sağım</span></button>
-<button class="nav-btn menu-btn" data-menu="muhasebe">🧾<span>Muhasebe</span></button>
+<nav id="appMenu" class="app-side-nav" aria-label="Çiftlik ana menüsü">
+  <div class="side-nav-brand">
+    <div class="side-nav-logo">🐄</div>
+    <div>
+      <strong>Çiftlik</strong>
+      <span>Yönetim Merkezi</span>
+    </div>
+  </div>
+  <div class="side-nav-section">ANA MENÜ</div>
+  <button class="nav-btn menu-btn active-menu" data-menu="genel"><span class="menu-icon">🏠</span><span>Genel Bakış</span></button>
+  <button class="nav-btn menu-btn" data-menu="surusu"><span class="menu-icon">🐄</span><span>Sürü Yönetimi</span></button>
+  <button class="nav-btn menu-btn" data-menu="besleme"><span class="menu-icon">🌾</span><span>Besleme & Yem</span></button>
+  <button class="nav-btn menu-btn" data-menu="sagim"><span class="menu-icon">🥛</span><span>Sağım Merkezi</span></button>
+  <div class="side-nav-section">FİNANS & ÜRETİM</div>
+  <button class="nav-btn menu-btn" data-menu="muhasebe"><span class="menu-icon">💰</span><span>Finans Özeti</span></button>
+  <button class="nav-btn menu-btn" data-menu="raporlar"><span class="menu-icon">📈</span><span>Kârlılık Raporu</span></button>
+  <button class="nav-btn menu-btn" data-menu="banka"><span class="menu-icon">🏦</span><span>Banka & Destekler</span></button>
+  <button class="nav-btn menu-btn" data-menu="islemler"><span class="menu-icon">🧾</span><span>Günlük İşlemler</span></button>
+  <button class="nav-btn menu-btn" data-menu="sut-isleme"><span class="menu-icon">🏭</span><span>Süt İşleme</span></button>
+  <div class="side-nav-footer">
+    <span class="status-dot"></span>
+    <span>Sistem Aktif</span>
+  </div>
 </nav>
 
-<main class="max-w-7xl mx-auto px-4 py-6">
+<main class="max-w-7xl mx-auto px-4 py-6 app-main">
 
-
-<div class="accounting-command-bar" data-menu-section="muhasebe">
-  <div>
-    <div class="accounting-eyebrow">MUHASEBE MERKEZİ</div>
-    <div class="accounting-command-title">Finans Yönetim Paneli</div>
-    <div class="accounting-command-sub">Gelir • Gider • Banka • Varlık • Borç • Kâr/Zarar</div>
-  </div>
-  <div class="accounting-subnav">
-    <button class="accounting-subnav-btn active" data-accounting-jump="accounting-summary">📊 Genel</button>
-    <button class="accounting-subnav-btn" data-accounting-jump="accounting-report">📈 Raporlar</button>
-    <button class="accounting-subnav-btn" data-accounting-jump="accounting-bank">🏦 Banka</button>
-    <button class="accounting-subnav-btn" data-accounting-jump="accounting-operations">🧾 İşlemler</button>
-    <button class="accounting-subnav-btn" data-accounting-jump="accounting-processing">🥛 Ürünler</button>
-  </div>
-</div>
 
 <section id="accounting-summary" class="glass p-5 accounting-module accounting-module--summary" data-menu-section="muhasebe">
     <div class="accounting-module-header">
@@ -179,7 +171,7 @@
     </div>
 </section>
 
-<section id="accounting-report" class="glass p-5 accounting-module accounting-module--report" data-menu-section="muhasebe">
+<section id="accounting-report" class="glass p-5 accounting-module accounting-module--report" data-menu-section="raporlar">
   <div class="accounting-module-header">
     <div>
       <div class="accounting-eyebrow">YÖNETİCİ RAPORU</div>
@@ -998,7 +990,7 @@
 
 <!-- FİNANS -->
 
-<section id="accounting-processing" class="glass p-5 accounting-module accounting-module--processing" data-menu-section="muhasebe">
+<section id="accounting-processing" class="glass p-5 accounting-module accounting-module--processing" data-menu-section="sut-isleme">
     <div class="flex justify-between items-center mb-4">
         <div><h2 class="font-bold">🏭 Süt İşleme Tesisi</h2><p class="text-xs text-slate-500 mt-1">Çiğ sütü katma değerli ürüne dönüştür.</p></div>
         <span id="rawMilkStock" class="text-xs font-bold text-blue-300">0 L</span>
@@ -1026,7 +1018,7 @@
 
 <!-- MUHASEBE -->
 
-<section id="accounting-bank" class="glass p-5 accounting-module accounting-module--bank" data-menu-section="muhasebe">
+<section id="accounting-bank" class="glass p-5 accounting-module accounting-module--bank" data-menu-section="banka">
     <div class="accounting-module-header">
         <div><div class="accounting-eyebrow">TARIM FİNANSMANI</div><h2 class="font-bold text-xl">🏦 Çiftlik Bankası & Destekler</h2><p class="text-xs text-slate-500 mt-1">Kredi, hibe, borçluluk ve banka değerlendirmelerini yönet.</p></div>
         <div class="accounting-status blue-status">● Finans</div>
@@ -1055,7 +1047,7 @@
     <div id="grantApplicationsList" class="mt-3 space-y-2"></div>
 </section>
 
-<section id="accounting-operations" class="glass p-5 accounting-module accounting-module--operations" data-menu-section="muhasebe">
+<section id="accounting-operations" class="glass p-5 accounting-module accounting-module--operations" data-menu-section="islemler">
 
     <div class="accounting-module-header">
         <div>
