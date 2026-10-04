@@ -2193,3 +2193,18 @@ main > section[data-menu-section="genel"].dashboard-panel::after{
     width:100%!important;
   }
 }
+
+/* V5 AYRI MENU / AYRI PANEL DUZENI */
+@media (min-width:768px){
+  .app-main{width:calc(100% - var(--side-nav-width))!important;max-width:none!important;padding-left:22px!important;padding-right:22px!important;box-sizing:border-box!important;}
+  .app-main > [data-menu-section]:not(.hidden), .app-main > .grid [data-menu-section]:not(.hidden){position:relative!important;width:100%!important;min-height:calc(100vh - 150px)!important;box-sizing:border-box!important;}
+  .app-main > [data-menu-section]:not(.hidden)::before, .app-main > .grid [data-menu-section]:not(.hidden)::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:8px;background:var(--screen-accent,#38bdf8);opacity:.7;pointer-events:none;}
+  main[data-active-menu="genel"] .farm-game-screen{width:100%!important}
+  [data-menu-section="surusu"] .grid,[data-menu-section="besleme"] .grid,[data-menu-section="sagim"] .grid,[data-menu-section="banka"] .grid,[data-menu-section="islemler"] .grid,[data-menu-section="sut-isleme"] .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  main.accounting-layout .accounting-report-bottom{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  main.accounting-layout .accounting-report-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:767px){
+  .app-main{width:100%!important;max-width:none!important;padding-left:10px!important;padding-right:10px!important}
+  .app-main > [data-menu-section]:not(.hidden),.app-main > .grid [data-menu-section]:not(.hidden){min-height:auto!important}
+}
