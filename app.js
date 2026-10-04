@@ -4916,6 +4916,19 @@ async function setupIntroLogin(){
         loading?.classList.remove("hidden");
     };
 
+    /* Misafir butonu Supabase beklemeden DAİMA çalışır. */
+    guest?.addEventListener("click",()=>{
+        begin();
+        setStatus("Misafir çiftlik kurulumu hazırlanıyor...");
+        const fakeSession={
+            user:{
+                id:null,
+                user_metadata:{name:"Misafir Çiftlik Yöneticisi"}
+            }
+        };
+        showOnboarding(fakeSession,null);
+    },{once:true});
+
     if(!window.supabase?.createClient){
         setStatus("Giriş servisi hazır değil. Misafir olarak devam edebilirsin.");
         return;
@@ -4940,6 +4953,43 @@ async function setupIntroLogin(){
     );
 
     let authHandled=false;
+
+    /*
+      BUTONLARI getSession() BEKLEMEDEN bağla.
+      Böylece ağ/Supabase gecikmesi giriş ekranındaki butonları kilitlemez.
+    */
+    google?.addEventListener("click",async()=>{
+        try{
+            const {data}=await authClient.auth.getSession();
+            if(data?.session){
+                await openForSession(data.session);
+                return;
+            }
+
+            begin();
+            setStatus("Google giriş sayfası açılıyor...");
+
+            const {error}=await authClient.auth.signInWithOAuth({
+                provider:"google",
+                options:{
+                    redirectTo:window.location.origin+window.location.pathname,
+                    queryParams:{
+                        access_type:"offline",
+                        prompt:"select_account"
+                    }
+                }
+            });
+
+            if(error) throw error;
+        }catch(error){
+            console.error("Google giriş hatası:",error);
+            authHandled=false;
+            google?.classList.remove("hidden");
+            guest?.classList.remove("hidden");
+            loading?.classList.add("hidden");
+            setStatus("Google girişi başlatılamadı: "+(error?.message||"bilinmeyen hata"));
+        }
+    },{once:true});
 
     const openForSession=async(session)=>{
         if(authHandled || !session?.user?.id) return;
@@ -5062,50 +5112,7 @@ async function setupIntroLogin(){
         loading?.classList.add("hidden");
     }
 
-    google?.addEventListener("click",async()=>{
-        try{
-            const {data}=await authClient.auth.getSession();
-            if(data?.session){
-                await openForSession(data.session);
-                return;
-            }
-
-            begin();
-            setStatus("Google giriş sayfası açılıyor...");
-
-            const {error}=await authClient.auth.signInWithOAuth({
-                provider:"google",
-                options:{
-                    redirectTo:window.location.origin+window.location.pathname,
-                    queryParams:{
-                        access_type:"offline",
-                        prompt:"select_account"
-                    }
-                }
-            });
-
-            if(error) throw error;
-        }catch(error){
-            console.error("Google giriş hatası:",error);
-            authHandled=false;
-            google?.classList.remove("hidden");
-            guest?.classList.remove("hidden");
-            loading?.classList.add("hidden");
-            setStatus("Google girişi başlatılamadı. Lütfen tekrar dene.");
-        }
-    });
-
-    guest?.addEventListener("click",()=>{
-        begin();
-        setStatus("Misafir çiftlik kurulumu hazırlanıyor...");
-        const fakeSession={
-            user:{
-                id:null,
-                user_metadata:{name:"Misafir Çiftlik Yöneticisi"}
-            }
-        };
-        showOnboarding(fakeSession,authClient);
-    });
+    /* Giriş butonları yukarıda bağlandı; getSession artık onları kilitleyemez. */
 }
 function boot(){
     setupIntroLogin();
