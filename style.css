@@ -2113,3 +2113,83 @@ main > section[data-menu-section="genel"].dashboard-panel::after{
  .hero-farm-visual{opacity:.42}
  .hero-clock{top:10px!important;right:10px!important}
 }
+
+
+/* =========================================================
+   ÇİFTLİK SİMÜLASYONU — MENÜ EKRAN İZOLASYONU V4
+   Her ana menü kendi tam ekran çalışma alanını kullanır.
+   Geniş ekranlarda seçili panel tam genişlikte kalır;
+   panel içindeki kartlar yatay olarak akışkan biçimde dizilir.
+========================================================= */
+@media (min-width:768px){
+  .app-main{
+    display:grid!important;
+    grid-template-columns:repeat(12,minmax(0,1fr))!important;
+    align-items:start!important;
+    gap:14px!important;
+  }
+  .app-main > [data-menu-section]{
+    grid-column:1 / -1!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+  .app-main > .grid{
+    display:contents!important;
+  }
+  .app-main > .grid > div{
+    display:contents!important;
+  }
+  .app-main > .grid [data-menu-section]{
+    grid-column:1 / -1!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+
+  /* Seçili ekranın ana kartı: içerideki gridler yatay genişliği kullanır. */
+  .app-main > [data-menu-section]:not(.hidden),
+  .app-main > .grid [data-menu-section]:not(.hidden){
+    animation:menuScreenIn .24s ease-out both;
+  }
+
+  /* Büyük ekranlarda dashboard alt panelleri daha dengeli yayılır. */
+  .farm-game-screen .game-main-grid,
+  .farm-game-screen .game-bottom-grid{
+    grid-template-columns:minmax(0,1.5fr) minmax(320px,.85fr)!important;
+  }
+  .farm-game-screen .game-kpi-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+
+  /* Finans ve üretim ekranlarındaki bilgi kartları yatay akışı korur. */
+  main.accounting-layout > .accounting-module .accounting-overview-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+  main.accounting-layout > .accounting-module .accounting-report-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+
+@keyframes menuScreenIn{
+  from{opacity:.65;transform:translateY(5px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+@media (min-width:1200px){
+  .app-main{
+    gap:18px!important;
+    padding-left:18px!important;
+    padding-right:18px!important;
+  }
+}
+
+@media (max-width:767px){
+  .app-main{
+    display:block!important;
+  }
+  .app-main > [data-menu-section],
+  .app-main > .grid [data-menu-section]{
+    width:100%!important;
+  }
+}
