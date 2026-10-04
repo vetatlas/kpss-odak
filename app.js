@@ -4905,111 +4905,135 @@ function finishIntro(fromOnboarding=false){
 }
 
 async function setupIntroLogin(){
-    const google=document.getElementById("googleLoginButton"),guest=document.getElementById("guestLoginButton"),status=document.getElementById("introAuthStatus"),loading=document.getElementById("introLoading");
+    const google=document.getElementById("googleLoginButton");
+    const guest=document.getElementById("guestLoginButton");
+    const status=document.getElementById("introAuthStatus");
+    const loading=document.getElementById("introLoading");
     const setStatus=m=>{if(status)status.textContent=m};
-    const begin=()=>{google?.classList.add("hidden");guest?.classList.add("hidden");loading?.classList.remove("hidden")};
+    const begin=()=>{
+        google?.classList.add("hidden");
+        guest?.classList.add("hidden");
+        loading?.classList.remove("hidden");
+    };
 
     if(!window.supabase?.createClient){
         setStatus("Giriş servisi hazır değil. Misafir olarak devam edebilirsin.");
         return;
     }
 
-    const authClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{
-        auth:{
-            persistSession:true,
-            autoRefreshToken:true,
-            detectSessionInUrl:true,
-            flowType:"implicit"
+    /*
+      TEK AUTH CLIENT:
+      Google dönüşünde Supabase hash/code işlemini kendi client'ı üzerinden
+      tamamlıyor. İkinci bir client oluşturmak auth olayını yarıştırıyordu.
+    */
+    const authClient=window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY,
+        {
+            auth:{
+                persistSession:true,
+                autoRefreshToken:true,
+                detectSessionInUrl:true,
+                flowType:"implicit"
+            }
         }
-    });
+    );
 
     let authHandled=false;
-    let callbackInProgress=false;
 
     const openForSession=async(session)=>{
-        if(authHandled||!session?.user?.id)return;
+        if(authHandled || !session?.user?.id) return;
         authHandled=true;
         begin();
-        setStatus("Hesabın kontrol ediliyor...");
+        setStatus("Google hesabın doğrulandı. Çiftliğin kontrol ediliyor...");
 
         try{
-            const [{data:profile,error:profileError},{data:farm,error:farmError}]=await Promise.all([
-                authClient.from("profiles").select("id,username,display_name").eq("id",session.user.id).maybeSingle(),
-                authClient.from("farms").select("id,name").eq("owner_id",session.user.id).maybeSingle()
+            const userId=session.user.id;
+            const [profileResult,farmResult]=await Promise.all([
+                authClient.from("profiles")
+                    .select("id,username,display_name")
+                    .eq("id",userId)
+                    .maybeSingle(),
+                authClient.from("farms")
+                    .select("id,name")
+                    .eq("owner_id",userId)
+                    .maybeSingle()
             ]);
-            if(profileError) throw profileError;
-            if(farmError) throw farmError;
 
-            if(profile?.id && farm?.id){
+            if(profileResult.error) throw profileResult.error;
+            if(farmResult.error) throw farmResult.error;
+
+            if(profileResult.data?.id && farmResult.data?.id){
                 setStatus("Çiftliğin bulundu. Oyuna giriş yapılıyor...");
-                try{window.history.replaceState({},document.title,window.location.origin+window.location.pathname)}catch(e){}
-                setTimeout(()=>finishIntro(false),250);
-                return;
+                setTimeout(()=>finishIntro(false),350);
+            }else{
+                setStatus("İlk giriş tamamlandı. Çiftlik profilini oluşturalım...");
+                showOnboarding(session,authClient);
             }
 
-            setStatus("İlk giriş tamamlandı. Çiftlik profilini oluşturalım...");
-            showOnboarding(session,authClient);
-            try{window.history.replaceState({},document.title,window.location.origin+window.location.pathname)}catch(e){}
+            try{
+                window.history.replaceState(
+                    {},
+                    document.title,
+                    window.location.origin+window.location.pathname
+                );
+            }catch(e){}
         }catch(error){
             console.error("Hesap kontrolü hatası:",error);
             authHandled=false;
             google?.classList.remove("hidden");
             guest?.classList.remove("hidden");
             loading?.classList.add("hidden");
-            setStatus("Hesap kontrolünde bir sorun oluştu. Lütfen tekrar dene.");
+            setStatus("Google hesabı doğrulandı fakat çiftlik verisine erişilemedi.");
         }
     };
 
     /*
-      STATİK GITHUB PAGES UYUMLU OAUTH:
-      Bu uygulamada PKCE yerine implicit akış kullanılıyor. Supabase
-      access_token / refresh_token değerlerini URL hash'inden kendisi işler.
-      Böylece statik sitede code-verifier kaybı nedeniyle giriş ekranına
-      geri dönme ihtimali ortadan kalkar.
+      EN ÖNEMLİ NOKTA:
+      Auth listener, callback işlenmeden ÖNCE kuruluyor.
+      Böylece Supabase'nin INITIAL_SESSION / SIGNED_IN olayını kaçırmıyoruz.
     */
-    try{
-        const url=new URL(window.location.href);
-        const authError=url.searchParams.get("error_description")||url.searchParams.get("error");
-        if(authError){
-            console.error("OAuth callback hatası:",authError);
-            setStatus("Google girişi tamamlanamadı. Lütfen tekrar dene.");
-        }
-        if(url.hash.includes("access_token=")){
-            callbackInProgress=true;
-            begin();
-            setStatus("Google hesabın doğrulanıyor...");
-            const {data,error}=await authClient.auth.getSession();
-            if(error) throw error;
-            if(data?.session) await openForSession(data.session);
-            try{window.history.replaceState({},document.title,url.origin+url.pathname)}catch(e){}
-        }
-    }catch(error){
-        console.error("Google OAuth callback hatası:",error);
-        authHandled=false;
-        google?.classList.remove("hidden");
-        guest?.classList.remove("hidden");
-        loading?.classList.add("hidden");
-        setStatus("Google doğrulaması başarısız oldu. Tekrar giriş yapabilirsin.");
-    }finally{
-        callbackInProgress=false;
-    }
-
-    if(!authHandled){
-        try{
-            const {data,error}=await authClient.auth.getSession();
-            if(error) throw error;
-            if(data?.session) await openForSession(data.session);
-        }catch(e){
-            console.warn("Oturum kontrolü:",e);
-        }
-    }
-
     authClient.auth.onAuthStateChange((event,session)=>{
-        if(callbackInProgress) return;
-        if((event==="SIGNED_IN"||event==="INITIAL_SESSION")&&session){
+        console.log("[AUTH]",event,!!session);
+        if(session && (event==="INITIAL_SESSION" || event==="SIGNED_IN" || event==="TOKEN_REFRESHED")){
             setTimeout(()=>openForSession(session),0);
         }
     });
+
+    /*
+      Supabase v2 client, implicit OAuth dönüşündeki #access_token
+      bilgisini detectSessionInUrl ile otomatik olarak localStorage'a işler.
+      Biz hash'i elle exchange etmiyoruz.
+    */
+    const hasOAuthReturn=
+        window.location.hash.includes("access_token=") ||
+        window.location.hash.includes("error_description=") ||
+        new URL(window.location.href).searchParams.has("code");
+
+    if(hasOAuthReturn){
+        begin();
+        setStatus("Google dönüşü alındı. Oturum oluşturuluyor...");
+    }
+
+    /*
+      Listener yukarıda kurulduktan sonra mevcut oturumu da kontrol ediyoruz.
+      Bu iki yol birlikte çalışır: callback olayı kaçırılırsa getSession kurtarır.
+    */
+    try{
+        const {data,error}=await authClient.auth.getSession();
+        if(error) throw error;
+        if(data?.session){
+            await openForSession(data.session);
+        }else if(!hasOAuthReturn){
+            setStatus("Çiftliğine giriş yap ve yolculuğa başla.");
+        }
+    }catch(error){
+        console.error("Oturum kontrolü hatası:",error);
+        setStatus("Oturum kontrolü başarısız. Google ile tekrar deneyebilirsin.");
+        google?.classList.remove("hidden");
+        guest?.classList.remove("hidden");
+        loading?.classList.add("hidden");
+    }
 
     google?.addEventListener("click",async()=>{
         try{
@@ -5021,44 +5045,43 @@ async function setupIntroLogin(){
 
             begin();
             setStatus("Google giriş sayfası açılıyor...");
+
             const {error}=await authClient.auth.signInWithOAuth({
                 provider:"google",
                 options:{
                     redirectTo:window.location.origin+window.location.pathname,
-                    queryParams:{access_type:"offline",prompt:"select_account"}
+                    queryParams:{
+                        access_type:"offline",
+                        prompt:"select_account"
+                    }
                 }
             });
+
             if(error) throw error;
         }catch(error){
+            console.error("Google giriş hatası:",error);
+            authHandled=false;
             google?.classList.remove("hidden");
             guest?.classList.remove("hidden");
             loading?.classList.add("hidden");
             setStatus("Google girişi başlatılamadı. Lütfen tekrar dene.");
-            console.error("Google giriş hatası:",error);
         }
     });
 
     guest?.addEventListener("click",()=>{
         begin();
         setStatus("Misafir çiftlik kurulumu hazırlanıyor...");
-        const fakeSession={user:{id:null,user_metadata:{name:"Misafir Çiftlik Yöneticisi"}}};
+        const fakeSession={
+            user:{
+                id:null,
+                user_metadata:{name:"Misafir Çiftlik Yöneticisi"}
+            }
+        };
         showOnboarding(fakeSession,authClient);
     });
 }
 function boot(){
     setupIntroLogin();
-    /* İlk giriş ekranı kapanmadan ana oyun başlatılmaz. */
-    if(window.supabase?.createClient){
-        try{
-            const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-            client.auth.getSession().then(({data})=>{
-                if(data?.session){
-                    const status=document.getElementById("introAuthStatus");
-                    if(status)status.textContent="Oturum bulundu. Çiftliğin seni bekliyor.";
-                }
-            }).catch(()=>{});
-        }catch(e){}
-    }
 }
 
 /* =========================================================
