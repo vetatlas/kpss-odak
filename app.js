@@ -4916,22 +4916,17 @@ async function setupIntroLogin(){
         loading?.classList.remove("hidden");
     };
 
-    /* Misafir butonu Supabase beklemeden DAİMA çalışır. */
+    /* TANITIM EKRANI: Şimdilik Google/Auth yok.
+       Bu düğme doğrudan simülasyonu başlatır. */
     guest?.addEventListener("click",()=>{
+        if(guest.dataset.starting==="1") return;
+        guest.dataset.starting="1";
         begin();
-        setStatus("Misafir çiftlik kurulumu hazırlanıyor...");
-        const fakeSession={
-            user:{
-                id:null,
-                user_metadata:{name:"Misafir Çiftlik Yöneticisi"}
-            }
-        };
-        if(typeof authClient==="undefined"){
+        setStatus("Çiftlik sistemi başlatılıyor...");
+        setTimeout(()=>{
             finishIntro(true);
-            return;
-        }
-        showOnboarding(fakeSession,authClient);
-    },{once:true});
+        },180);
+    });
 
     if(!window.supabase?.createClient){
         setStatus("Giriş servisi hazır değil. Misafir olarak devam edebilirsin.");
