@@ -900,41 +900,26 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 </style>
 <style id="accounting-center-final">
 /* =========================================================
-   FİNANS YÖNETİMİ — TEMİZ RESPONSIVE CSS
-   Tek katman: masaüstü / tablet / telefon.
-   Fonksiyonlara ve HTML yapısına dokunmaz.
+   MUHASEBE MERKEZİ — RAPOR PANELİ İLE UYUMLU PREMIUM TASARIM
+   İşlev/HTML/JS değişmez; yalnızca görsel katman.
 ========================================================= */
 
-/* ---------- ANA YAPI ---------- */
 main.accounting-layout{
   display:grid!important;
   grid-template-columns:repeat(12,minmax(0,1fr))!important;
-  gap:16px!important;
+  gap:14px!important;
   width:100%!important;
   min-width:0!important;
   align-items:stretch!important;
 }
-
-main.accounting-layout>.accounting-command-bar{
-  grid-column:1/-1!important;
-  margin:0!important;
-}
-
-main.accounting-layout>#accounting-summary{
-  grid-column:1 / span 5!important;
-}
-
-main.accounting-layout>#accounting-processing{
-  grid-column:6 / -1!important;
-}
-
+main.accounting-layout>.accounting-command-bar{grid-column:1/-1!important;margin:0!important}
+main.accounting-layout>#accounting-summary{grid-column:1 / span 5!important}
+main.accounting-layout>#accounting-processing{grid-column:6 / -1!important}
 main.accounting-layout>#accounting-report,
 main.accounting-layout>#accounting-bank,
-main.accounting-layout>#accounting-operations{
-  grid-column:1/-1!important;
-}
+main.accounting-layout>#accounting-operations{grid-column:1/-1!important}
 
-/* ---------- ÜST FİNANS YÖNETİM PANELİ ---------- */
+/* ---------- ÜST KOMUTA BAR ---------- */
 .accounting-command-bar{
   position:relative!important;
   display:flex!important;
@@ -953,672 +938,282 @@ main.accounting-layout>#accounting-operations{
     linear-gradient(135deg,rgba(15,23,42,.98),rgba(8,15,25,.96))!important;
   box-shadow:0 18px 45px rgba(0,0,0,.20)!important;
 }
-
 .accounting-command-bar:after{
-  content:"";
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  width:3px;
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
   background:linear-gradient(180deg,#22c55e,#38bdf8);
 }
-
-.accounting-command-title{
-  min-width:0;
-  font-size:22px!important;
-  line-height:1.12!important;
-  font-weight:900!important;
-  letter-spacing:-.4px!important;
-}
-
-.accounting-command-sub{
-  max-width:520px;
-  margin-top:4px!important;
-  color:#71869a!important;
-  font-size:11px!important;
-  line-height:1.35!important;
-}
-
-.accounting-subnav{
-  position:relative;
-  z-index:1;
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-  gap:7px!important;
-  min-width:0;
-}
-
+.accounting-command-title{min-width:0;font-size:22px!important;line-height:1.12!important;font-weight:900!important;letter-spacing:-.4px!important}
+.accounting-command-sub{max-width:520px;margin-top:4px!important;color:#71869a!important;font-size:11px!important;line-height:1.35!important}
+.accounting-subnav{position:relative;z-index:1;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px!important;min-width:0}
 .accounting-subnav-btn{
-  min-width:0!important;
-  min-height:40px!important;
-  padding:9px 11px!important;
-  border:1px solid rgba(148,163,184,.12)!important;
-  border-radius:11px!important;
-  background:rgba(2,6,23,.35)!important;
-  color:#94a3b8!important;
-  font-size:11px!important;
-  font-weight:800!important;
-  line-height:1.15!important;
-  white-space:normal!important;
+  min-width:0!important;min-height:40px!important;padding:9px 11px!important;
+  border:1px solid rgba(148,163,184,.12)!important;border-radius:11px!important;
+  background:rgba(2,6,23,.35)!important;color:#94a3b8!important;
+  font-size:11px!important;font-weight:800!important;line-height:1.15!important;
 }
+.accounting-subnav-btn.active{background:rgba(34,197,94,.14)!important;border-color:rgba(34,197,94,.30)!important;color:#86efac!important}
 
-.accounting-subnav-btn.active{
-  background:rgba(34,197,94,.14)!important;
-  border-color:rgba(34,197,94,.30)!important;
-  color:#86efac!important;
-}
-
-/* ---------- ORTAK MODÜL ---------- */
+/* ---------- ORTAK RAPOR DİLİ ---------- */
 main.accounting-layout .accounting-module{
-  position:relative!important;
-  overflow:hidden!important;
-  min-width:0!important;
-  width:100%!important;
-  margin:0!important;
-  padding:20px!important;
-  border:1px solid rgba(148,163,184,.11)!important;
-  border-radius:20px!important;
-  background:linear-gradient(145deg,rgba(17,27,41,.96),rgba(8,14,22,.96))!important;
-  box-shadow:0 16px 40px rgba(0,0,0,.16)!important;
+  position:relative!important;overflow:hidden!important;min-width:0!important;width:100%!important;
+  margin:0!important;padding:18px!important;border:1px solid rgba(148,163,184,.10)!important;
+  border-radius:18px!important;
+  background:linear-gradient(145deg,rgba(17,27,41,.97),rgba(8,14,22,.97))!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.17)!important;
 }
-
 main.accounting-layout .accounting-module:before{
-  content:"";
-  position:absolute;
-  right:-80px;
-  top:-90px;
-  width:190px;
-  height:190px;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(56,189,248,.07),transparent 68%);
-  pointer-events:none;
+  content:"";position:absolute;right:-80px;top:-90px;width:190px;height:190px;border-radius:50%;
+  background:radial-gradient(circle,rgba(56,189,248,.07),transparent 68%);pointer-events:none;
 }
-
+main.accounting.layout .accounting-module{min-width:0}
 .accounting-module-header{
-  position:relative;
-  z-index:1;
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:16px;
-  min-width:0;
-  margin-bottom:16px!important;
+  position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;
+  gap:16px;min-width:0;margin-bottom:13px!important;
 }
-
-.accounting-eyebrow{
-  color:#64748b!important;
-  font-size:9px!important;
-  letter-spacing:2.2px!important;
-  font-weight:900!important;
-}
-
+.accounting-eyebrow{color:#64748b!important;font-size:9px!important;letter-spacing:2.2px!important;font-weight:900!important}
+.accounting-module-header h2{margin-top:2px!important}
 .accounting-status{
-  flex:0 0 auto;
-  padding:7px 10px!important;
-  border-radius:999px!important;
-  white-space:nowrap;
+  flex:0 0 auto;padding:6px 9px!important;border:1px solid rgba(148,163,184,.10)!important;
+  border-radius:999px!important;background:rgba(2,6,23,.28)!important;color:#94a3b8!important;
+  white-space:nowrap;font-size:10px!important;font-weight:800!important;
 }
+.accounting-status.blue-status{border-color:rgba(96,165,250,.18)!important;color:#93c5fd!important;background:rgba(59,130,246,.06)!important}
 
-/* ---------- FİNANS ÖZETİ ---------- */
+/* ---------- FİNANSAL ÖZET ---------- */
 #accounting-summary{
-  display:block!important;
   border-color:rgba(34,197,94,.16)!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(34,197,94,.055),transparent 30%),
+    linear-gradient(145deg,rgba(17,27,41,.97),rgba(8,14,22,.97))!important;
 }
+.accounting-overview-grid{
+  position:relative;z-index:1;display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;
+}
+.accounting-overview-card{
+  min-width:0;min-height:100px!important;padding:13px!important;border-radius:15px!important;
+  border:1px solid rgba(148,163,184,.08)!important;background:rgba(2,6,23,.30)!important;
+  display:flex!important;flex-direction:column!important;justify-content:space-between!important;
+  gap:6px!important;
+}
+.accounting-overview-card:nth-child(1){border-color:rgba(34,197,94,.16)!important}
+.accounting-overview-card:nth-child(2){border-color:rgba(239,68,68,.14)!important}
+.accounting-overview-card:nth-child(3){border-color:rgba(56,189,248,.16)!important}
+.accounting-overview-card:nth-child(4){border-color:rgba(59,130,246,.14)!important}
+.accounting-overview-card>span{font-size:9px!important;color:#71869a!important;font-weight:800!important;letter-spacing:.15px}
+.accounting-overview-card>strong{font-size:20px!important;font-weight:900!important;line-height:1.05!important;overflow-wrap:anywhere}
+.accounting-overview-card>small{font-size:9px!important;color:#64748b!important;line-height:1.25!important}
 
-#accounting-summary>h2{
-  position:relative;
-  margin-bottom:4px!important;
-  font-size:18px!important;
+/* ---------- SÜT İŞLEME ---------- */
+#accounting-processing{
+  border-color:rgba(56,189,248,.15)!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(56,189,248,.06),transparent 30%),
+    linear-gradient(145deg,rgba(17,27,41,.97),rgba(8,14,22,.97))!important;
 }
-
-#accounting-summary>.text-\[10px\]{
-  margin-bottom:14px!important;
-  color:#64748b!important;
-  line-height:1.5!important;
+#accounting-processing>.flex{
+  position:relative;z-index:1;padding-bottom:12px;margin-bottom:12px!important;
+  border-bottom:1px solid rgba(148,163,184,.08);
 }
-
-#accounting-summary>.space-y-3{
-  display:grid!important;
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  gap:8px!important;
+#accounting-processing>.flex h2{font-size:17px!important}
+#accounting-processing .grid.grid-cols-2{
+  position:relative;z-index:1;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;
 }
-
-#accounting-summary>.space-y-3>div{
-  min-height:78px!important;
-  display:flex!important;
-  flex-direction:column!important;
-  justify-content:space-between!important;
-  gap:8px!important;
-  min-width:0!important;
-  padding:12px!important;
-  border:1px solid rgba(148,163,184,.08)!important;
-  border-radius:14px!important;
-  background:rgba(2,6,23,.28)!important;
+#accounting-processing .metric{
+  min-width:0;min-height:78px!important;padding:11px!important;
+  border:1px solid rgba(148,163,184,.08)!important;border-radius:14px!important;
+  background:rgba(2,6,23,.30)!important;
 }
-
-#accounting-summary>.space-y-3>div:last-child{
-  border-color:rgba(34,197,94,.15)!important;
-  background:rgba(34,197,94,.045)!important;
+#accounting-processing .metric .font-bold{font-size:17px!important;margin-top:5px!important;overflow-wrap:anywhere}
+#processingQueueText{position:relative;z-index:1;border:1px solid rgba(56,189,248,.10)!important;border-radius:14px!important;background:rgba(56,189,248,.035)!important}
+#accounting-processing .grid.md\:grid-cols-2{
+  position:relative;z-index:1;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;
 }
-
-#accounting-summary>.space-y-3>div span:last-child{
-  font-size:17px!important;
-  font-weight:900!important;
-  overflow-wrap:anywhere;
+#accounting-processing .grid.md\:grid-cols-2 .nav-btn{
+  min-height:48px!important;padding:9px!important;border:1px solid rgba(148,163,184,.10)!important;
+  border-radius:13px!important;background:rgba(2,6,23,.30)!important;font-size:10px!important;font-weight:800!important;
 }
+#accounting-processing .grid.md\:grid-cols-2 .nav-btn:hover{border-color:rgba(56,189,248,.30)!important;background:rgba(56,189,248,.07)!important}
 
 /* ---------- RAPOR ---------- */
 #accounting-report{
   border-color:rgba(59,130,246,.13)!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(59,130,246,.045),transparent 28%),
+    linear-gradient(145deg,rgba(17,27,41,.97),rgba(8,14,22,.97))!important;
 }
-
-.accounting-report-grid{
-  display:grid;
-  grid-template-columns:repeat(6,minmax(0,1fr));
-  gap:9px!important;
-}
-
+.accounting-report-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px!important}
 .accounting-report-card{
-  min-width:0;
-  min-height:92px!important;
-  padding:13px!important;
-  border-radius:15px;
-  background:rgba(2,6,23,.30)!important;
-  border-color:rgba(148,163,184,.08)!important;
+  min-width:0;min-height:92px!important;padding:13px!important;border-radius:15px!important;
+  background:rgba(2,6,23,.30)!important;border-color:rgba(148,163,184,.08)!important;
 }
-
-.accounting-report-card strong{
-  font-size:19px!important;
-  overflow-wrap:anywhere;
-}
-
-.accounting-report-card:nth-child(3){
-  border-color:rgba(34,197,94,.18)!important;
-}
-
-.accounting-report-card:nth-child(6){
-  border-color:rgba(239,68,68,.14)!important;
-}
-
-.accounting-report-bottom{
-  display:grid;
-  grid-template-columns:1fr 1fr 1.25fr;
-  gap:10px!important;
-  margin-top:12px;
-}
-
+.accounting-report-card strong{font-size:19px!important;overflow-wrap:anywhere}
+.accounting-report-card:nth-child(3){border-color:rgba(34,197,94,.18)!important}
+.accounting-report-card:nth-child(6){border-color:rgba(239,68,68,.14)!important}
+.accounting-report-bottom{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:10px!important;margin-top:12px}
 .accounting-report-panel{
-  min-width:0;
-  padding:14px;
-  border-radius:15px;
-  background:rgba(2,6,23,.24)!important;
+  min-width:0;padding:14px;border-radius:15px;background:rgba(2,6,23,.24)!important;
   border-color:rgba(148,163,184,.08)!important;
 }
-
-.accounting-panel-title{
-  font-size:10px!important;
-  letter-spacing:.3px;
-}
-
-/* ---------- İŞLEME ---------- */
-#accounting-processing{
-  border-color:rgba(56,189,248,.14)!important;
-}
-
-#accounting-processing>.flex{
-  position:relative;
-  z-index:1;
-  padding-bottom:12px;
-  border-bottom:1px solid rgba(148,163,184,.08);
-}
-
-#accounting-processing>.flex h2{
-  font-size:17px!important;
-}
-
-#accounting-processing .metric{
-  min-width:0;
-  min-height:72px;
-  border:1px solid rgba(148,163,184,.07);
-  background:rgba(2,6,23,.28);
-}
-
-#accounting-processing .grid.md\:grid-cols-2{
-  position:relative;
-  z-index:1;
-  gap:8px!important;
-}
-
-#accounting-processing .grid.md\:grid-cols-2 .nav-btn{
-  min-height:52px;
-  border-color:rgba(148,163,184,.10);
-  background:rgba(15,23,42,.45);
-}
-
-#accounting-processing .grid.md\:grid-cols-2 .nav-btn:hover{
-  border-color:rgba(56,189,248,.30);
-  background:rgba(56,189,248,.07);
-}
+.accounting-panel-title{font-size:10px!important;letter-spacing:.3px}
 
 /* ---------- BANKA ---------- */
 #accounting-bank{
-  border-color:rgba(167,139,250,.14)!important;
+  border-color:rgba(167,139,250,.15)!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(167,139,250,.055),transparent 30%),
+    linear-gradient(145deg,rgba(17,27,41,.97),rgba(8,14,22,.97))!important;
 }
-
 #accounting-bank>.grid.md\:grid-cols-3{
-  position:relative;
-  z-index:1;
+  position:relative;z-index:1;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px!important;
 }
-
 #accounting-bank>.grid.md\:grid-cols-3 .metric{
-  min-width:0;
-  min-height:72px;
-  border:1px solid rgba(148,163,184,.07);
-  background:rgba(2,6,23,.26);
+  min-width:0;min-height:84px!important;padding:12px!important;border:1px solid rgba(148,163,184,.08)!important;
+  border-radius:14px!important;background:rgba(2,6,23,.30)!important;
 }
-
-#accounting-bank>.metric{
-  position:relative;
-  z-index:1;
-  border-color:rgba(167,139,250,.10);
-  background:rgba(167,139,250,.035);
+#accounting-bank>.grid.md\:grid-cols-3 .metric:nth-child(1){border-color:rgba(239,68,68,.13)!important}
+#accounting-bank>.grid.md\:grid-cols-3 .metric:nth-child(2){border-color:rgba(167,139,250,.15)!important}
+#accounting-bank>.grid.md\:grid-cols-3 .metric:nth-child(3){border-color:rgba(34,197,94,.15)!important}
+#accounting-bank>.grid.md\:grid-cols-3 .font-bold{font-size:18px!important;margin-top:5px!important;overflow-wrap:anywhere}
+#accounting-bank>.grid.md\:grid-cols-3 + .grid{
+  position:relative;z-index:1;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;
 }
-
+#accounting-bank>.grid.md\:grid-cols-3 + .grid + .grid{
+  position:relative;z-index:1;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;
+}
 #accounting-bank button{
-  min-height:54px;
-  min-width:0;
-  background:rgba(15,23,42,.48);
-  border-color:rgba(148,163,184,.10);
+  min-width:0;min-height:50px!important;padding:9px!important;border:1px solid rgba(148,163,184,.10)!important;
+  border-radius:13px!important;background:rgba(2,6,23,.30)!important;font-size:10px!important;font-weight:800!important;
+}
+#accounting-bank button:hover{border-color:rgba(167,139,250,.32)!important;background:rgba(167,139,250,.07)!important}
+#accounting-bank>.metric{
+  position:relative;z-index:1;padding:13px!important;border:1px solid rgba(167,139,250,.10)!important;
+  border-radius:15px!important;background:rgba(167,139,250,.035)!important;
+}
+#accounting-bank .space-y-2{position:relative;z-index:1}
+#accounting-bank .space-y-2>div{
+  border:1px solid rgba(148,163,184,.07);border-radius:12px;background:rgba(2,6,23,.24);padding:9px;
 }
 
-#accounting-bank button:hover{
-  border-color:rgba(167,139,250,.32);
-  background:rgba(167,139,250,.07);
-}
-
-/* ---------- OPERASYONLAR ---------- */
+/* ---------- GÜNLÜK İŞLEMLER ---------- */
 #accounting-operations{
-  border-color:rgba(245,158,11,.13)!important;
+  border-color:rgba(245,158,11,.14)!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(245,158,11,.045),transparent 28%),
+    linear-gradient(145deg,rgba(17,27,41,.97),rgba(8,14,22,.97))!important;
 }
-
+#accounting-operations>.metric{
+  position:relative;z-index:1;padding:13px!important;border:1px solid rgba(245,158,11,.10)!important;
+  border-radius:15px!important;background:rgba(2,6,23,.25)!important;
+}
 #accounting-operations>.grid.grid-cols-2{
-  position:relative;
-  z-index:1;
+  position:relative;z-index:1;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;
 }
-
 #accounting-operations>.grid.grid-cols-2 .metric{
-  min-width:0;
-  min-height:76px;
-  border:1px solid rgba(148,163,184,.07);
-  background:rgba(2,6,23,.26);
+  min-width:0;min-height:82px!important;padding:12px!important;border:1px solid rgba(148,163,184,.08)!important;
+  border-radius:14px!important;background:rgba(2,6,23,.30)!important;
 }
-
 .accounting-operation-grid{
-  position:relative;
-  z-index:1;
-  display:grid;
-  grid-template-columns:1fr 1.35fr!important;
-  gap:12px!important;
+  position:relative;z-index:1;display:grid;grid-template-columns:1fr 1.35fr!important;gap:10px!important;
 }
-
 .accounting-action-group{
-  min-width:0;
-  padding:13px!important;
-  border-radius:15px!important;
-  background:rgba(2,6,23,.22)!important;
-  border-color:rgba(148,163,184,.08)!important;
+  min-width:0;padding:13px!important;border-radius:15px!important;
+  background:rgba(2,6,23,.24)!important;border:1px solid rgba(148,163,184,.08)!important;
 }
-
-.accounting-group-title{
-  padding-bottom:9px;
-  border-bottom:1px solid rgba(148,163,184,.07);
-}
-
+.accounting-group-title{padding-bottom:9px;border-bottom:1px solid rgba(148,163,184,.07);font-size:11px!important;font-weight:900!important}
 .accounting-action-card{
-  min-width:0;
-  padding:11px 0!important;
+  min-width:0;display:flex!important;align-items:center!important;justify-content:space-between!important;
+  gap:10px!important;padding:10px 0!important;border-bottom:1px solid rgba(148,163,184,.06)!important;
 }
-
-.accounting-action-card button{
-  min-height:42px!important;
-  min-width:0;
-}
-
+.accounting-action-card:last-child{border-bottom:0}
+.accounting-action-card>div{min-width:0;display:flex;flex-direction:column;gap:3px}
+.accounting-action-card b{font-size:10px!important;color:#cbd5e1}
+.accounting-action-card span{font-size:8px!important;color:#64748b}
+.accounting-action-card button{min-height:40px!important;padding:7px 9px!important;border-radius:11px!important;font-size:9px!important;white-space:nowrap}
 #accountingLog{
-  position:relative;
-  z-index:1;
-  min-height:52px;
-  min-width:0;
-  border-color:rgba(148,163,184,.08)!important;
-  background:rgba(2,6,23,.28)!important;
+  position:relative;z-index:1;min-height:52px;min-width:0;padding:8px!important;
+  border:1px solid rgba(148,163,184,.08)!important;border-radius:14px!important;background:rgba(2,6,23,.28)!important;
 }
+#accountingLog .log{border-bottom-color:rgba(148,163,184,.06)!important}
 
-/* =========================================================
-   TABLET YATAY
-   Finans üst barında başlık ve menü yan yana, butonlar taşmaz.
-========================================================= */
+/* ---------- TABLET YATAY ---------- */
 @media (min-width:768px) and (max-width:1400px) and (orientation:landscape){
-  main.accounting-layout{
-    grid-template-columns:repeat(12,minmax(0,1fr))!important;
-    gap:10px!important;
-  }
-
+  main.accounting-layout{grid-template-columns:repeat(12,minmax(0,1fr))!important;gap:10px!important}
   main.accounting-layout>.accounting-command-bar{
-    display:grid!important;
-    grid-template-columns:minmax(180px,.8fr) minmax(0,1.7fr)!important;
-    align-items:center!important;
-    gap:12px!important;
-    padding:13px 15px!important;
-    min-height:0!important;
+    display:grid!important;grid-template-columns:minmax(180px,.8fr) minmax(0,1.7fr)!important;
+    align-items:center!important;gap:12px!important;padding:13px 15px!important;min-height:0!important;
   }
-
-  .accounting-command-title{
-    font-size:18px!important;
-    line-height:1.15!important;
-  }
-
-  .accounting-command-sub{
-    max-width:100%!important;
-    font-size:9px!important;
-    line-height:1.3!important;
-  }
-
-  .accounting-subnav{
-    display:grid!important;
-    grid-template-columns:repeat(5,minmax(0,1fr))!important;
-    gap:5px!important;
-    width:100%!important;
-  }
-
-  .accounting-subnav-btn{
-    width:100%!important;
-    min-height:34px!important;
-    padding:6px 3px!important;
-    font-size:8.5px!important;
-    line-height:1.15!important;
-  }
-
-  main.accounting-layout .accounting-module{
-    padding:14px!important;
-    border-radius:15px!important;
-  }
-
-  #accounting-summary{
-    grid-column:1 / span 5!important;
-  }
-
-  #accounting-processing{
-    grid-column:6 / -1!important;
-  }
-
-  #accounting-summary>.space-y-3{
-    gap:6px!important;
-  }
-
-  #accounting-summary>.space-y-3>div{
-    min-height:68px!important;
-    padding:9px!important;
-  }
-
-  #accounting-summary>.space-y-3>div span:last-child{
-    font-size:14px!important;
-  }
-
-  .accounting-report-grid{
-    grid-template-columns:repeat(6,minmax(0,1fr))!important;
-    gap:6px!important;
-  }
-
-  .accounting-report-card{
-    min-height:78px!important;
-    padding:9px!important;
-  }
-
-  .accounting-report-card strong{
-    font-size:15px!important;
-  }
-
-  .accounting-report-bottom{
-    gap:7px!important;
-  }
-
-  .accounting-operation-grid{
-    grid-template-columns:1fr 1.25fr!important;
-    gap:8px!important;
-  }
-
-  .accounting-action-group{
-    padding:10px!important;
-  }
-
-  .accounting-action-card{
-    gap:7px!important;
-    padding:8px 0!important;
-  }
-
-  .accounting-action-card b{
-    font-size:10px!important;
-  }
-
-  .accounting-action-card span{
-    font-size:8px!important;
-  }
-
-  .accounting-action-card button{
-    min-height:34px!important;
-    padding:5px 7px!important;
-    font-size:9px!important;
-  }
+  .accounting-command-title{font-size:18px!important}.accounting-command-sub{max-width:100%!important;font-size:9px!important}
+  .accounting-subnav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important;width:100%!important}
+  .accounting-subnav-btn{width:100%!important;min-height:34px!important;padding:6px 3px!important;font-size:8.5px!important}
+  main.accounting-layout .accounting-module{padding:14px!important;border-radius:15px!important}
+  #accounting-summary{grid-column:1 / span 5!important} #accounting-processing{grid-column:6 / -1!important}
+  .accounting-overview-grid{gap:6px!important}.accounting-overview-card{min-height:78px!important;padding:9px!important}
+  .accounting-overview-card>strong{font-size:15px!important}
+  #accounting-processing .grid.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+  #accounting-processing .metric{min-height:66px!important;padding:9px!important}
+  #accounting-processing .grid.md\:grid-cols-2{gap:6px!important}
+  .accounting-report-grid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:6px!important}
+  .accounting-report-card{min-height:78px!important;padding:9px!important}.accounting-report-card strong{font-size:15px!important}
+  .accounting-report-bottom{gap:7px!important}
+  #accounting-bank>.grid.md\:grid-cols-3{gap:6px!important} #accounting-bank>.grid.md\:grid-cols-3 .metric{min-height:70px!important;padding:9px!important}
+  #accounting-bank>.grid.md\:grid-cols-3 + .grid,#accounting-bank>.grid.md\:grid-cols-3 + .grid + .grid{gap:6px!important}
+  .accounting-operation-grid{grid-template-columns:1fr 1.25fr!important;gap:8px!important}
+  .accounting-action-group{padding:10px!important}.accounting-action-card{gap:7px!important;padding:8px 0!important}
+  .accounting-action-card button{min-height:34px!important;padding:5px 7px!important;font-size:8.5px!important}
 }
 
-/* =========================================================
-   TABLET DİKEY / KÜÇÜK TABLET
-========================================================= */
+/* ---------- TABLET DİKEY ---------- */
 @media (min-width:768px) and (max-width:1200px) and (orientation:portrait){
-  main.accounting-layout{
-    grid-template-columns:1fr 1fr!important;
-    gap:10px!important;
-  }
-
+  main.accounting-layout{grid-template-columns:1fr 1fr!important;gap:10px!important}
   main.accounting-layout>.accounting-command-bar,
+  main.accounting.layout>#accounting-report,
   main.accounting-layout>#accounting-report,
   main.accounting-layout>#accounting-bank,
-  main.accounting-layout>#accounting-operations{
-    grid-column:1/-1!important;
-  }
-
+  main.accounting-layout>#accounting-operations{grid-column:1/-1!important}
   main.accounting-layout>#accounting-summary,
-  main.accounting-layout>#accounting-processing{
-    grid-column:auto!important;
-  }
-
-  main.accounting-layout .accounting-module{
-    padding:14px!important;
-    border-radius:15px!important;
-  }
-
-  .accounting-command-bar{
-    display:flex!important;
-    flex-direction:column!important;
-    align-items:stretch!important;
-    gap:10px!important;
-    min-height:0!important;
-    padding:14px!important;
-  }
-
-  .accounting-subnav{
-    display:grid!important;
-    grid-template-columns:repeat(5,minmax(0,1fr))!important;
-    justify-content:stretch!important;
-    width:100%!important;
-  }
-
-  .accounting-subnav-btn{
-    width:100%!important;
-    padding:7px 4px!important;
-    font-size:9px!important;
-  }
-
-  .accounting-report-grid{
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  }
-
-  .accounting-report-bottom{
-    grid-template-columns:1fr 1fr!important;
-  }
-
-  .accounting-report-panel:last-child{
-    grid-column:1/-1;
-  }
+  main.accounting-layout>#accounting-processing{grid-column:auto!important}
+  main.accounting-layout .accounting-module{padding:14px!important;border-radius:15px!important}
+  .accounting-command-bar{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:10px!important;min-height:0!important;padding:14px!important}
+  .accounting-subnav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;width:100%!important}
+  .accounting-subnav-btn{width:100%!important;padding:7px 4px!important;font-size:9px!important}
+  .accounting-report-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .accounting-report-bottom{grid-template-columns:1fr 1fr!important}.accounting-report-panel:last-child{grid-column:1/-1}
+  #accounting-processing .grid.grid-cols-2{grid-template-columns:1fr 1fr!important}
 }
 
-/* =========================================================
-   TELEFON
-========================================================= */
+/* ---------- TELEFON ---------- */
 @media (max-width:767px){
-  main.accounting-layout{
-    display:block!important;
-    width:100%!important;
-  }
-
-  main.accounting-layout .accounting-module{
-    width:100%!important;
-    margin-bottom:12px!important;
-    padding:14px!important;
-    border-radius:15px!important;
-  }
-
-  .accounting-command-bar{
-    display:flex!important;
-    flex-direction:column!important;
-    align-items:stretch!important;
-    justify-content:flex-start!important;
-    gap:10px!important;
-    min-height:0!important;
-    padding:15px!important;
-  }
-
-  .accounting-command-title{
-    font-size:19px!important;
-  }
-
-  .accounting-command-sub{
-    max-width:none!important;
-    font-size:10px!important;
-  }
-
-  .accounting-subnav{
-    display:grid!important;
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    width:100%!important;
-    justify-content:stretch!important;
-    gap:6px!important;
-  }
-
-  .accounting-subnav-btn{
-    width:100%!important;
-    min-height:36px!important;
-    padding:7px 5px!important;
-    font-size:9px!important;
-  }
-
-  main.accounting-layout>#accounting-summary,
-  main.accounting-layout>#accounting-processing,
-  main.accounting-layout>#accounting-report,
-  main.accounting-layout>#accounting-bank,
-  main.accounting-layout>#accounting-operations{
-    grid-column:auto!important;
-  }
-
-  #accounting-summary>.space-y-3{
-    grid-template-columns:1fr 1fr!important;
-  }
-
-  #accounting-summary>.space-y-3>div{
-    min-height:70px!important;
-    padding:10px!important;
-  }
-
-  #accounting-summary>.space-y-3>div:last-child{
-    grid-column:1/-1!important;
-  }
-
-  .accounting-report-grid{
-    grid-template-columns:1fr 1fr!important;
-    gap:7px!important;
-  }
-
-  .accounting-report-card{
-    min-height:78px!important;
-    padding:10px!important;
-  }
-
-  .accounting-report-card strong{
-    font-size:16px!important;
-  }
-
-  .accounting-report-bottom{
-    grid-template-columns:1fr!important;
-    gap:8px!important;
-  }
-
-  .accounting-report-panel:last-child{
-    grid-column:auto!important;
-  }
-
-  .accounting-operation-grid{
-    grid-template-columns:1fr!important;
-  }
-
-  .accounting-action-card{
-    align-items:flex-start;
-  }
-
-  .accounting-action-card button{
-    min-width:94px!important;
-  }
+  main.accounting-layout{display:block!important;width:100%!important}
+  main.accounting-layout .accounting-module{width:100%!important;margin-bottom:12px!important;padding:14px!important;border-radius:15px!important}
+  .accounting-command-bar{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:10px!important;min-height:0!important;padding:15px!important}
+  .accounting-command-title{font-size:19px!important}.accounting-command-sub{max-width:none!important;font-size:10px!important}
+  .accounting-subnav{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important;gap:6px!important}
+  .accounting-subnav-btn{width:100%!important;min-height:36px!important;padding:7px 5px!important;font-size:9px!important}
+  .accounting-overview-grid{grid-template-columns:1fr 1fr!important;gap:7px!important}
+  .accounting-overview-card{min-height:88px!important;padding:10px!important}.accounting-overview-card>strong{font-size:17px!important}
+  #accounting-processing .grid.grid-cols-2{grid-template-columns:1fr 1fr!important}
+  #accounting-processing .grid.md\:grid-cols-2{grid-template-columns:1fr!important}
+  .accounting-report-grid{grid-template-columns:1fr 1fr!important;gap:7px!important}
+  .accounting-report-card{min-height:78px!important;padding:10px!important}.accounting-report-card strong{font-size:16px!important}
+  .accounting-report-bottom{grid-template-columns:1fr!important;gap:8px!important}
+  #accounting-bank>.grid.md\:grid-cols-3,
+  #accounting-bank>.grid.md\:grid-cols-3 + .grid,
+  #accounting-bank>.grid.md\:grid-cols-3 + .grid + .grid{grid-template-columns:1fr 1fr!important;gap:7px!important}
+  #accounting-bank>.grid.md\:grid-cols-3 .metric{min-height:78px!important}
+  .accounting-operation-grid{grid-template-columns:1fr!important}
 }
-
-/* ---------- ÇOK KÜÇÜK TELEFON ---------- */
 @media (max-width:430px){
-  main.accounting-layout .accounting-module{
-    padding:12px!important;
-  }
-
-  .accounting-command-title{
-    font-size:18px!important;
-  }
-
-  .accounting-subnav{
-    grid-template-columns:1fr 1fr!important;
-  }
-
-  .accounting-report-grid{
-    grid-template-columns:1fr!important;
-  }
-
-  #accounting-summary>.space-y-3{
-    grid-template-columns:1fr!important;
-  }
-
-  #accounting-summary>.space-y-3>div:last-child{
-    grid-column:auto!important;
-  }
-
-  #accounting-processing .grid.md\:grid-cols-2{
-    grid-template-columns:1fr!important;
-  }
-
-  .accounting-module-header{
-    gap:8px!important;
-  }
-
-  .accounting-status{
-    font-size:9px!important;
-    padding:6px 8px!important;
-  }
+  main.accounting-layout .accounting-module{padding:12px!important}
+  .accounting-command-title{font-size:18px!important}
+  .accounting-subnav{grid-template-columns:1fr 1fr!important}
+  .accounting-overview-grid{grid-template-columns:1fr!important}
+  #accounting-processing .grid.grid-cols-2{grid-template-columns:1fr!important}
+  #accounting-bank>.grid.md\:grid-cols-3,
+  #accounting-bank>.grid.md\:grid-cols-3 + .grid,
+  #accounting-bank>.grid.md\:grid-cols-3 + .grid + .grid{grid-template-columns:1fr!important}
+  .accounting-module-header{gap:8px!important}
+  .accounting-status{font-size:9px!important;padding:6px 8px!important}
 }
 </style>
 <style id="responsive-all-screens">
