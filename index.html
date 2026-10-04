@@ -9,6 +9,51 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+<!-- MOBILE/GAME HUD HOTFIX V3 -->
+.farm-game-screen{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;color:#e5edf5!important;display:block!important}
+.farm-game-screen .game-hero{position:relative!important;display:flex!important;align-items:center!important;min-height:250px!important;overflow:hidden!important;padding:27px!important;border-radius:19px!important;background:linear-gradient(110deg,#0d1d2c,#0b1724 55%,#102a29)!important;border:1px solid rgba(148,163,184,.12)!important}
+.farm-game-screen .hero-copy{position:relative!important;z-index:3!important;display:block!important;max-width:54%!important}
+.farm-game-screen .hero-copy h2{display:block!important;font-size:clamp(28px,3.5vw,42px)!important;line-height:1.05!important;font-weight:850!important;margin:14px 0 9px!important}
+.farm-game-screen .hero-copy p{display:block!important;font-size:12px!important;line-height:1.6!important;color:#8da0b2!important}
+.farm-game-screen .hero-actions{display:flex!important;align-items:center!important;gap:10px!important;margin-top:20px!important}
+.farm-game-screen .hero-farm-visual{position:absolute!important;inset:0!important;display:block!important;pointer-events:none!important;overflow:hidden!important}
+.farm-game-screen .hero-clock{position:absolute!important;z-index:5!important;right:16px!important;top:16px!important;display:block!important;padding:9px 12px!important;border-radius:12px!important;background:rgba(4,11,18,.78)!important;border:1px solid rgba(56,189,248,.14)!important;text-align:right!important}
+.farm-game-screen .hero-clock span,.farm-game-screen .hero-clock small{display:block!important;font-size:8px!important;line-height:1.2!important;color:#64748b!important;letter-spacing:.12em!important}
+.farm-game-screen .hero-clock strong{display:block!important;font-size:27px!important;line-height:1.1!important;color:#e0f2fe!important;margin:3px 0!important}
+.farm-game-screen .player-strip{display:grid!important;grid-template-columns:auto minmax(180px,1fr) auto!important;align-items:center!important;gap:18px!important;margin-top:9px!important;padding:11px 13px!important;border-radius:15px!important;background:#0b1724!important;border:1px solid rgba(148,163,184,.09)!important}
+.farm-game-screen .game-kpi-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;margin-top:9px!important}
+.farm-game-screen .game-stat-card{display:flex!important;align-items:center!important;gap:11px!important;min-height:82px!important;padding:12px!important;border-radius:14px!important;background:#0b1724!important;border:1px solid rgba(148,163,184,.09)!important}
+.farm-game-screen .game-main-grid,.farm-game-screen .game-bottom-grid{display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr)!important;gap:8px!important;margin-top:9px!important}
+.farm-game-screen .game-feed-card,.farm-game-screen .mission-game-card,.farm-game-screen .next-action-card,.farm-game-screen .alert-game-card{display:block!important;border-radius:16px!important;padding:14px!important;background:#0b1724!important;border:1px solid rgba(148,163,184,.09)!important}
+.farm-game-screen .farm-condition-row{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important;margin-top:8px!important}
+.farm-game-screen .condition-card{display:block!important;padding:10px!important;border-radius:12px!important;background:#0b1724!important}
+.farm-game-screen .game-mini-footer{display:flex!important;justify-content:space-between!important;gap:10px!important;flex-wrap:wrap!important}
+@media(max-width:900px){
+ .farm-game-screen .game-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .farm-game-screen .game-main-grid,.farm-game-screen .game-bottom-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:767px){
+ .farm-game-screen{padding:8px!important;border-radius:19px!important}
+ .farm-game-screen .game-hero{min-height:300px!important;padding:18px!important;align-items:flex-start!important}
+ .farm-game-screen .hero-copy{max-width:100%!important;padding-top:43px!important}
+ .farm-game-screen .hero-copy h2{font-size:29px!important}
+ .farm-game-screen .hero-farm-visual{opacity:.38!important}
+ .farm-game-screen .hero-clock{top:10px!important;right:10px!important}
+ .farm-game-screen .player-strip{grid-template-columns:1fr!important;gap:12px!important}
+ .farm-game-screen .farm-score{text-align:left!important}
+ .farm-game-screen .game-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+ .farm-game-screen .game-stat-card{min-height:88px!important;padding:11px!important}
+ .farm-game-screen .game-stat-card strong{font-size:21px!important}
+ .farm-game-screen .stat-state{display:none!important}
+ .farm-game-screen .farm-condition-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .farm-game-screen .game-mini-footer{display:grid!important;grid-template-columns:1fr 1fr!important}
+ .farm-game-screen .game-mini-footer span:last-child{grid-column:1/-1!important}
+}
+@media(max-width:380px){
+ .farm-game-screen .game-kpi-grid{grid-template-columns:1fr!important}
+}
+</style>
 </head>
 
 <body>
