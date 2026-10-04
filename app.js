@@ -4622,40 +4622,74 @@ function setupFarmSound(){
 
 let farmGameLayerTimer=null;
 const FARM_EVENTS=[
-  ["🥛","Sağım hattı hazır","Bir sonraki sağım için sistem hazır durumda.","ŞİMDİ"],
-  ["🌾","Yem kontrolü","Rasyon ve yem stoğu izleniyor.","CANLI"],
-  ["🐄","Sürü taraması","Hayvanların biyolojik göstergeleri kontrol ediliyor.","CANLI"],
-  ["📈","Üretim analizi","Bugünkü süt verimi değerlendiriliyor.","BUGÜN"]
+  ["🥛","Sağım hattı","Bir sonraki sağım için sistem hazır.","CANLI"],
+  ["🌾","Yemlikler kontrol altında","Rasyon ve yem tüketimi izleniyor.","CANLI"],
+  ["🐄","Sürü aktif","Biyolojik göstergeler takip ediliyor.","CANLI"],
+  ["📈","Üretim analizi","Bugünkü performans hesaplanıyor.","BUGÜN"]
 ];
 function readKpiNumber(id){
   const el=document.getElementById(id);
   if(!el) return 0;
-  const n=parseFloat(String(el.textContent).replace(/[^0-9.,-]/g,"").replace(/./g,"").replace(",","."));
+  const raw=String(el.textContent||"").replace(/\s/g,"").replace(/₺|L|kg|%/gi,"").replace(/\./g,"").replace(",",".");
+  const n=parseFloat(raw);
   return Number.isFinite(n)?n:0;
 }
+function setGameText(id,value){const el=document.getElementById(id);if(el)el.textContent=value}
 function renderFarmEvents(){
-  const box=document.getElementById("farmEventFeed");
-  if(!box) return;
-  const milk=readKpiNumber("milkKpi"),herd=readKpiNumber("herdKpi"),feed=readKpiNumber("feedKpi");
+  const box=document.getElementById("farmEventFeed"); if(!box)return;
+  const milk=readKpiNumber("milkKpi"),herd=readKpiNumber("herdKpi"),feed=readKpiNumber("feedKpi"),rumen=readKpiNumber("rumenKpi");
   const events=[...FARM_EVENTS];
-  if(milk>0) events[0]=["🥛","Süt üretimi devam ediyor",milk.toLocaleString("tr-TR")+" L günlük üretim kaydedildi.","CANLI"];
-  if(herd>0) events[2]=["🐄","Sürü aktif",herd.toLocaleString("tr-TR")+" baş hayvan sistemde takip ediliyor.","CANLI"];
-  if(feed>0) events[1]=["🌾","Yem stoğu izleniyor",feed.toLocaleString("tr-TR")+" kg mevcut stok.","CANLI"];
+  if(milk>0)events[0]=["🥛","Süt üretimi devam ediyor",milk.toLocaleString("tr-TR")+" L bugün üretildi.","CANLI"];
+  if(feed>0)events[1]=["🌾","Yem stokları izleniyor",feed.toLocaleString("tr-TR")+" kg mevcut yem.","CANLI"];
+  if(herd>0)events[2]=["🐄","Sürü sahada",herd.toLocaleString("tr-TR")+" baş hayvan aktif.","CANLI"];
+  if(rumen>0&&rumen<5.8)events[3]=["⚠️","Rumen pH dikkat istiyor","Ortalama pH "+rumen.toFixed(1)+" — rasyonu kontrol et.","DİKKAT"];
   box.innerHTML=events.map(e=>'<div class="farm-event-item"><span class="farm-event-icon">'+e[0]+'</span><div><div class="farm-event-title">'+e[1]+'</div><div class="farm-event-meta">'+e[2]+'</div></div><span class="farm-event-time">'+e[3]+'</span></div>').join("");
 }
+function renderFarmGameHUD(){
+  const herd=readKpiNumber("herdKpi"),milk=readKpiNumber("milkKpi"),feed=readKpiNumber("feedKpi"),money=readKpiNumber("moneyKpi"),rumen=readKpiNumber("rumenKpi");
+  const level=Math.max(1,Math.min(20,Math.floor(herd/10)+1));
+  const xp=Math.min(499,Math.max(80,Math.round((milk%5000)/10)));
+  const score=Math.max(45,Math.min(99,Math.round(70+(herd?Math.min(15,herd/10):0)+(feed>1000?7:0)+(rumen>=5.8&&rumen<=6.6?8:2))));
+  setGameText("farmLevelBadge",String(level).padStart(2,"0"));
+  setGameText("farmLevelName",level>=10?"Uzman Çiftlik":level>=6?"Büyüyen Çiftlik":"Gelişen Çiftlik");
+  setGameText("farmXpText",xp+" / 500 XP");
+  const xpBar=document.getElementById("farmXpBar");if(xpBar)xpBar.style.width=(xp/5)+"%";
+  setGameText("farmScore",score);
+  const herdHealth=Math.max(60,Math.min(99,Math.round(88+(rumen>=5.8&&rumen<=6.6?6:0))));
+  const feedHealth=Math.max(45,Math.min(99,feed>2000?95:feed>1000?86:feed>500?72:52));
+  const productionHealth=Math.max(55,Math.min(99,Math.round(72+(milk>0?Math.min(20,milk/200):0))));
+  const economyHealth=Math.max(50,Math.min(99,Math.round(65+(money>0?Math.min(25,money/10000):0))));
+  [["gameHerdHealth",herdHealth],["gameFeedHealth",feedHealth],["gameProductionHealth",productionHealth],["gameEconomyHealth",economyHealth]].forEach(([id,v])=>{
+    const el=document.getElementById(id);if(el){el.textContent=v;const bar=el.parentElement?.querySelector("div i");if(bar)bar.style.width=v+"%";}
+  });
+}
 function renderDailyMission(){
-  const target=3000,milk=readKpiNumber("milkKpi"),pct=Math.max(0,Math.min(100,Math.round((milk/target)*100)));
-  const bar=document.getElementById("missionProgress"),txt=document.getElementById("missionProgressText"),status=document.getElementById("missionStatus"),panel=document.querySelector(".daily-mission-panel");
-  if(bar) bar.style.width=pct+"%"; if(txt) txt.textContent=pct+"%"; if(status) status.textContent=pct>=100?"✓ Görev tamamlandı":"Devam ediyor"; panel?.classList.toggle("mission-complete",pct>=100);
-  const action=document.getElementById("missionAction"); if(action) action.textContent=pct>=100?"✓ TAMAMLANDI":"HEDEFİ TAKİP ET";
+  const target=3000,milk=readKpiNumber("milkKpi"),pct=Math.max(0,Math.min(100,Math.round(milk/target*100)));
+  const bar=document.getElementById("missionProgress");if(bar)bar.style.width=pct+"%";
+  setGameText("missionProgressText",pct+"%");
+  setGameText("missionStatus",pct>=100?"✓ Görev tamamlandı":"Devam ediyor • "+milk.toLocaleString("tr-TR")+" / "+target.toLocaleString("tr-TR")+" L");
+  setGameText("missionReward",pct>=100?"+250 XP KAZANILDI":"+250 XP");
+  const action=document.getElementById("missionAction");if(action)action.textContent=pct>=100?"✓ TAMAMLANDI":"HEDEFİ TAKİP ET →";
+}
+function renderGameAlerts(){
+  const box=document.getElementById("dashboardAlerts"),count=document.getElementById("alertCount");if(!box)return;
+  const feed=readKpiNumber("feedKpi"),rumen=readKpiNumber("rumenKpi"),milk=readKpiNumber("milkKpi");
+  const alerts=[];
+  if(feed>0&&feed<500)alerts.push(["Yem stoğu azalıyor","Kritik seviyeye yaklaşmadan yem al."]);
+  if(rumen>0&&rumen<5.8)alerts.push(["Rumen pH düşük","Rasyon ve nişasta yükünü kontrol et."]);
+  if(milk>0&&milk<1500)alerts.push(["Süt üretimi düşük","Sağım ve sürü performansını incele."]);
+  if(!alerts.length)alerts.push(["Çiftlik stabil","Şu anda kritik bir uyarı bulunmuyor."]);
+  if(count)count.textContent=alerts.length+" aktif";
+  box.innerHTML=alerts.map(a=>'<div class="game-alert-item">⚠️ <b>'+a[0]+'</b><br><span>'+a[1]+'</span></div>').join("");
 }
 function initGameLayer(){
-  renderFarmEvents();renderDailyMission();
-  if(farmGameLayerTimer) clearInterval(farmGameLayerTimer);
-  farmGameLayerTimer=setInterval(()=>{renderFarmEvents();renderDailyMission();},5000);
-  document.getElementById("missionAction")?.addEventListener("click",()=>document.querySelector(".daily-mission-panel")?.scrollIntoView({behavior:"smooth",block:"center"}));
+  const refresh=()=>{renderFarmEvents();renderDailyMission();renderFarmGameHUD();renderGameAlerts()};
+  refresh();
+  if(farmGameLayerTimer)clearInterval(farmGameLayerTimer);
+  farmGameLayerTimer=setInterval(refresh,5000);
+  document.getElementById("missionAction")?.addEventListener("click",()=>document.getElementById("farmEventFeed")?.scrollIntoView({behavior:"smooth",block:"center"}));
+  document.getElementById("heroMissionButton")?.addEventListener("click",()=>document.getElementById("missionAction")?.scrollIntoView({behavior:"smooth",block:"center"}));
 }
-
 function setupMobileMenu(){
     const menu=document.getElementById("appMenu");
     const toggle=document.getElementById("mobileMenuToggle");
