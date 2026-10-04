@@ -447,6 +447,21 @@ input,select{min-height:48px;border-radius:14px}
 .mobile-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .mobile-action-grid>button{width:100%;min-height:56px;border-radius:14px}
 </style>
+<style id="menu-visibility-guard">
+/* Menü görünürlük kilidi: finans/muhasebe ekranı diğer menülere taşmasın. */
+[data-menu-section][hidden],
+[data-menu-section].hidden{
+    display:none!important;
+}
+.accounting-command-bar[hidden],
+#accounting-summary[hidden],
+#accounting-report[hidden],
+#accounting-bank[hidden],
+#accounting-operations[hidden],
+#accounting-processing[hidden]{
+    display:none!important;
+}
+</style>
 <style id="mobile-nav-final-fix">
 html,body{min-height:100%;width:100%;overflow-x:hidden}
 #appMenu.app-bottom-nav{
@@ -6960,12 +6975,52 @@ function setupFarmSound(){
 function setupAppMenu(){
     const buttons=[...document.querySelectorAll("#appMenu .menu-btn")];
     const sections=[...document.querySelectorAll("[data-menu-section]")];
+
+    /*
+      Menü izolasyonu:
+      Finans/Muhasebe bileşenleri de dahil olmak üzere her bölüm yalnızca
+      kendi menüsü aktifken DOM'da görünür. "hidden" sınıfına ek olarak
+      native hidden özelliğini kullanıyoruz; böylece Tailwind/CSS kuralları
+      görünürlüğü yanlışlıkla geri açamaz.
+    */
     const activate=(key)=>{
-        buttons.forEach(b=>b.classList.toggle("active-menu",b.dataset.menu===key));
-        sections.forEach(s=>s.classList.toggle("hidden",s.dataset.menuSection!==key));
-        document.querySelector("main")?.classList.toggle("accounting-layout",key==="muhasebe");
+        buttons.forEach(b=>{
+            b.classList.toggle("active-menu",b.dataset.menu===key);
+            b.setAttribute("aria-selected",b.dataset.menu===key ? "true" : "false");
+        });
+
+        sections.forEach(s=>{
+            const visible=s.dataset.menuSection===key;
+            s.classList.toggle("hidden",!visible);
+            s.hidden=!visible;
+            s.setAttribute("aria-hidden",visible ? "false" : "true");
+        });
+
+        const main=document.querySelector("main");
+        main?.classList.toggle("accounting-layout",key==="muhasebe");
+
+        /*
+          Muhasebe dışındaki ekranlarda herhangi bir finans özetinin
+          görünür kalmasını garanti altına al.
+        */
+        if(key!=="muhasebe"){
+            document.querySelectorAll(
+                ".accounting-command-bar,"+
+                "#accounting-summary,"+
+                "#accounting-report,"+
+                "#accounting-bank,"+
+                "#accounting-operations,"+
+                "#accounting-processing"
+            ).forEach(el=>{
+                el.hidden=true;
+                el.classList.add("hidden");
+                el.setAttribute("aria-hidden","true");
+            });
+        }
+
         window.scrollTo({top:0,behavior:"smooth"});
     };
+
     buttons.forEach(b=>b.addEventListener("click",()=>activate(b.dataset.menu)));
     activate("genel");
 }
