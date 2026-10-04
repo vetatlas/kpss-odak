@@ -4933,7 +4933,7 @@ async function setupIntroLogin(){
             auth:{
                 persistSession:true,
                 autoRefreshToken:true,
-                detectSessionInUrl:true,
+                detectSessionInUrl:false,
                 flowType:"implicit"
             }
         }
@@ -5001,30 +5001,56 @@ async function setupIntroLogin(){
     });
 
     /*
-      Supabase v2 client, implicit OAuth dönüşündeki #access_token
-      bilgisini detectSessionInUrl ile otomatik olarak localStorage'a işler.
-      Biz hash'i elle exchange etmiyoruz.
+      GOOGLE CALLBACK'I KENDİMİZ İŞLİYORUZ.
+      GitHub Pages SPA'da Supabase'nin URL hash parser'ına takılmamak için
+      access_token + refresh_token değerlerini doğrudan setSession'a veriyoruz.
     */
-    const hasOAuthReturn=
+    const hashParams=new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const accessToken=hashParams.get("access_token");
+    const refreshToken=hashParams.get("refresh_token");
+    const oauthError=hashParams.get("error_description");
+    const hasOAuthReturn=Boolean(accessToken || refreshToken || oauthError) || new URL(window.location.href).searchParams.has("code");
+
         window.location.hash.includes("access_token=") ||
         window.location.hash.includes("error_description=") ||
         new URL(window.location.href).searchParams.has("code");
 
     if(hasOAuthReturn){
         begin();
-        setStatus("Google dönüşü alındı. Oturum oluşturuluyor...");
+        if(oauthError){
+            setStatus("Google girişi reddedildi: "+oauthError);
+        }else if(accessToken && refreshToken){
+            setStatus("Google dönüşü alındı. Oturum doğrulanıyor...");
+            try{
+                const {data,error}=await authClient.auth.setSession({
+                    access_token:accessToken,
+                    refresh_token:refreshToken
+                });
+                if(error) throw error;
+                if(!data?.session) throw new Error("Supabase setSession session döndürmedi.");
+                try{ window.history.replaceState({},document.title,window.location.origin+window.location.pathname); }catch(e){}
+                await openForSession(data.session);
+            }catch(error){
+                console.error("OAuth callback setSession hatası:",error);
+                authHandled=false;
+                google?.classList.remove("hidden");
+                guest?.classList.remove("hidden");
+                loading?.classList.add("hidden");
+                setStatus("Google hesabı geldi fakat Supabase oturumu oluşturamadı: "+(error?.message||"bilinmeyen hata"));
+            }
+        }else{
+            setStatus("Google dönüşü eksik. Oturum anahtarları bulunamadı.");
+        }
+        return;
     }
 
-    /*
-      Listener yukarıda kurulduktan sonra mevcut oturumu da kontrol ediyoruz.
-      Bu iki yol birlikte çalışır: callback olayı kaçırılırsa getSession kurtarır.
-    */
+    /* Normal açılışta mevcut oturumu kontrol et. */
     try{
         const {data,error}=await authClient.auth.getSession();
         if(error) throw error;
         if(data?.session){
             await openForSession(data.session);
-        }else if(!hasOAuthReturn){
+        }else{
             setStatus("Çiftliğine giriş yap ve yolculuğa başla.");
         }
     }catch(error){
