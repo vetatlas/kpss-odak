@@ -1919,3 +1919,109 @@ main .accounting-module::before{
 #accounting-bank{--module-accent:#f59e0b}
 #accounting-operations{--module-accent:#ef4444}
 #accounting-processing{--module-accent:#38bdf8}
+
+/* =========================================================
+   ANA KOKPİT — OYUN ODAKLI GÖRSEL KATMAN
+   ========================================================= */
+main > section[data-menu-section="genel"].dashboard-panel{
+  position:relative!important;
+  isolation:isolate;
+  border:1px solid rgba(96,165,250,.16)!important;
+  border-radius:30px!important;
+  padding:clamp(20px,3vw,34px)!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 82% 12%,rgba(34,197,94,.13),transparent 22%),
+    radial-gradient(circle at 8% 100%,rgba(56,189,248,.12),transparent 28%),
+    linear-gradient(145deg,rgba(11,21,35,.97),rgba(5,10,18,.98))!important;
+  box-shadow:0 24px 80px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.05)!important;
+}
+main > section[data-menu-section="genel"].dashboard-panel::before{
+  content:"";
+  position:absolute;inset:-35% -10% auto 40%;
+  height:280px;
+  background:radial-gradient(circle,rgba(56,189,248,.14),transparent 68%);
+  pointer-events:none;z-index:-1;
+}
+main > section[data-menu-section="genel"].dashboard-panel::after{
+  content:"ÇİFTLİK KONTROL MERKEZİ";
+  position:absolute;right:24px;top:22px;
+  font-size:9px;font-weight:900;letter-spacing:.22em;
+  color:rgba(148,163,184,.28);
+  pointer-events:none;
+}
+.dashboard-panel .dashboard-clock{
+  min-width:170px;
+  padding:14px 17px;
+  border:1px solid rgba(56,189,248,.16);
+  border-radius:18px;
+  background:rgba(2,8,18,.55);
+  box-shadow:inset 0 1px rgba(255,255,255,.04);
+}
+.dashboard-panel .dashboard-clock #bigClock{
+  font-size:clamp(30px,4vw,48px)!important;
+  line-height:1;
+  letter-spacing:-.05em;
+  text-shadow:0 0 28px rgba(96,165,250,.28);
+}
+.dashboard-panel .dashboard-card{
+  position:relative;
+  min-height:112px;
+  padding:17px!important;
+  border:1px solid rgba(148,163,184,.10)!important;
+  border-radius:20px!important;
+  background:linear-gradient(145deg,rgba(19,31,49,.78),rgba(8,15,26,.78))!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.04),0 12px 28px rgba(0,0,0,.16)!important;
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease!important;
+}
+.dashboard-panel .dashboard-card:hover{
+  transform:translateY(-3px);
+  border-color:rgba(56,189,248,.24)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.06),0 18px 34px rgba(0,0,0,.25)!important;
+}
+.dashboard-panel .kpi-label{
+  color:#64748b!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+}
+.dashboard-panel .kpi-value{
+  margin-top:8px;
+  font-size:clamp(23px,2.7vw,31px)!important;
+  line-height:1!important;
+  letter-spacing:-.04em;
+}
+.dashboard-panel .quick-status{
+  min-height:64px;
+  padding:12px 15px!important;
+  border-radius:16px!important;
+  border:1px solid rgba(148,163,184,.09)!important;
+  background:rgba(15,23,42,.56)!important;
+}
+.dashboard-panel .quick-status span{
+  color:#64748b;
+  font-size:10px;
+  display:block;
+  margin-bottom:5px;
+}
+.dashboard-panel .quick-status b{font-size:13px;color:#e2e8f0}
+.dashboard-panel .metric{
+  border-color:rgba(148,163,184,.09)!important;
+  background:rgba(7,14,25,.55)!important;
+  border-radius:18px!important;
+}
+.dashboard-panel .milk-performance-panel{
+  margin-top:18px!important;
+  border-color:rgba(56,189,248,.12)!important;
+}
+@media(max-width:767px){
+  main > section[data-menu-section="genel"].dashboard-panel{
+    border-radius:22px!important;
+    padding:16px!important;
+  }
+  main > section[data-menu-section="genel"].dashboard-panel::after{display:none}
+  .dashboard-panel .dashboard-clock{min-width:0;width:100%}
+  .dashboard-panel .dashboard-card{min-height:94px;padding:13px!important}
+  .dashboard-panel .kpi-value{font-size:22px!important}
+}
