@@ -4619,6 +4619,47 @@ function setupFarmSound(){
    ANA MENÜ
 ========================================================= */
 
+function setupMobileMenu(){
+    const menu=document.getElementById("appMenu");
+    const toggle=document.getElementById("mobileMenuToggle");
+    const backdrop=document.getElementById("mobileMenuBackdrop");
+    if(!menu || !toggle) return;
+
+    const close=()=>{
+        menu.classList.remove("mobile-open");
+        backdrop?.classList.remove("open");
+        document.body.classList.remove("mobile-menu-open");
+        toggle.setAttribute("aria-expanded","false");
+        toggle.setAttribute("aria-label","Menüyü aç");
+        toggle.textContent="☰";
+    };
+    const open=()=>{
+        menu.classList.add("mobile-open");
+        backdrop?.classList.add("open");
+        document.body.classList.add("mobile-menu-open");
+        toggle.setAttribute("aria-expanded","true");
+        toggle.setAttribute("aria-label","Menüyü kapat");
+        toggle.textContent="✕";
+    };
+
+    toggle.addEventListener("click",()=>{
+        menu.classList.contains("mobile-open") ? close() : open();
+    });
+    backdrop?.addEventListener("click",close);
+    menu.querySelectorAll(".menu-btn").forEach(btn=>{
+        btn.addEventListener("click",()=>{
+            if(window.matchMedia("(max-width:767px)").matches) close();
+        });
+    });
+    window.addEventListener("resize",()=>{
+        if(window.innerWidth>=768) close();
+    });
+    document.addEventListener("keydown",e=>{
+        if(e.key==="Escape") close();
+    });
+}
+
+
 function setupAppMenu(){
     const buttons=[...document.querySelectorAll("#appMenu .menu-btn")];
     const sections=[...document.querySelectorAll("[data-menu-section]")];
@@ -4671,6 +4712,7 @@ function initFarmApp(){
     try{
         document.getElementById("app")?.classList.remove("hidden-screen");
         setupAppMenu();
+        setupMobileMenu();
         setupAccountingCenter();
         setupNotifications();
         setupAnimalCardModal();
