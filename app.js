@@ -4409,6 +4409,12 @@ function realTimeLoop(){
 
         const sharedClock=document.getElementById("sharedWorldClock");
         if(sharedClock) sharedClock.textContent="🌍 Ortak Dünya Saati • 6 dk/gün";
+
+        /* Hafif saat göstergeleri her saniye ortak dünya saatine bağlanır. */
+        const h=String(Math.floor(world.minute/60)%24).padStart(2,"0");
+        const m=String(world.minute%60).padStart(2,"0");
+        document.querySelectorAll("#bigClock, #farmClockPanel").forEach(el=>el.textContent=h+":"+m);
+        document.querySelectorAll("#dayText, #farmDayPanel").forEach(el=>el.textContent=world.day+". Gün");
     }
 
     requestAnimationFrame(realTimeLoop);
