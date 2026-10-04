@@ -3554,8 +3554,6 @@ function setupAnimalCardModal(){
 function updateFarmAtmosphere(){
     const layer=document.getElementById("farmAtmosphere");
     const chip=document.getElementById("weatherChip");
-    if(!layer) return;
-
     const m=game.minute;
     const h=m/60;
 
@@ -4590,7 +4588,7 @@ function setupFarmSound(){
     const savedVolume=Number(localStorage.getItem("ciftlikSesSeviyesi")||0.55);
     const volume=Math.max(0,Math.min(1,savedVolume));
     if(slider) slider.value=Math.round(volume*100);
-    if(slider) slider.addEventListener("input",e=>setFarmVolume(Number(e.target.value)/100));
+    if(slider) slider.addEventListener("input",e=>setFarmVolume(Number(e.target.value)));
 
     const toggle=document.getElementById("soundToggle");
     if(toggle){
