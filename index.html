@@ -226,76 +226,89 @@
      KPI
 ===================================================== -->
 
-<section class="glass p-5 mb-6 dashboard-panel" data-dashboard="true" data-menu-section="genel">
-    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-5">
-        <div>
-            <div class="text-xs text-slate-500 tracking-[2px] uppercase">Çiftlik Kontrol Merkezi</div>
-            <h2 class="text-2xl md:text-3xl font-black mt-1">Bugünkü Çiftlik Durumu</h2>
-            <p class="text-sm text-slate-500 mt-1">Sürü, yem, süt, kasa ve bir sonraki sağım tek ekranda.</p>
-        </div>
-        <div class="dashboard-clock">
-            <div class="text-xs text-slate-500">Çiftlik Saati</div>
-            <div id="bigClock" class="text-2xl font-black text-blue-300">06:00</div>
-            <div id="dayText" class="text-xs text-slate-500">1. Gün</div>
-        </div>
+<section class="farm-game-screen" data-dashboard="true" data-menu-section="genel">
+  <div class="game-hero">
+    <div class="hero-copy">
+      <div class="game-badge"><span class="game-live-dot"></span> ÇİFTLİKTE CANLI</div>
+      <h2>🐄 Çiftliğinin başında sen varsın.</h2>
+      <p>Hayvanlarını yönet, üretimi artır, doğru kararlarla çiftliğini büyüt.</p>
+      <div class="hero-actions">
+        <button class="game-primary-action" id="heroMissionButton" type="button">🎯 Bugünün görevine git</button>
+        <div class="hero-weather" id="heroWeather">🌤️ Açık • 18°C</div>
+      </div>
+    </div>
+    <div class="hero-farm-visual" aria-hidden="true">
+      <div class="sun-orb"></div><div class="farm-moon"></div>
+      <div class="hill hill-back"></div><div class="hill hill-front"></div>
+      <div class="barn-shape">🏠</div><div class="hero-cow">🐄</div><div class="hero-cow hero-cow-2">🐄</div>
+    </div>
+    <div class="hero-clock">
+      <span>ÇİFTLİK SAATİ</span><strong id="bigClock">06:00</strong><small id="dayText">1. Gün</small>
+    </div>
+  </div>
+
+  <div class="player-strip">
+    <div class="player-rank">
+      <div class="farm-level-badge" id="farmLevelBadge">03</div>
+      <div><span>ÇİFTLİK SEVİYESİ</span><strong id="farmLevelName">Gelişen Çiftlik</strong></div>
+    </div>
+    <div class="xp-block">
+      <div class="xp-head"><span>İLERLEME</span><b id="farmXpText">240 / 500 XP</b></div>
+      <div class="xp-track"><i id="farmXpBar" style="width:48%"></i></div>
+    </div>
+    <div class="farm-score"><span>ÇİFTLİK SKORU</span><strong id="farmScore">86</strong><small>/ 100</small></div>
+  </div>
+
+  <div class="game-kpi-grid">
+    <div class="game-stat-card stat-herd"><span class="stat-icon">🐄</span><div><small>SÜRÜ</small><strong id="herdKpi">24</strong><em>baş</em></div><b class="stat-state">AKTİF</b></div>
+    <div class="game-stat-card stat-milk"><span class="stat-icon">🥛</span><div><small>BUGÜN SÜT</small><strong id="milkKpi">0</strong><em>L</em></div><b class="stat-state">ÜRETİM</b></div>
+    <div class="game-stat-card stat-feed"><span class="stat-icon">🌾</span><div><small>YEM STOĞU</small><strong id="feedKpi">0</strong><em>kg</em></div><b class="stat-state">STOK</b></div>
+    <div class="game-stat-card stat-money"><span class="stat-icon">💰</span><div><small>KASA</small><strong id="moneyKpi">0</strong><em>₺</em></div><b class="stat-state">CANLI</b></div>
+  </div>
+
+  <div class="game-main-grid">
+    <div class="game-feed-card">
+      <div class="game-section-head"><div><span class="section-kicker">CANLI AKIŞ</span><h3>⚡ Çiftlikte şu anda</h3></div><span class="live-pill"><i></i> CANLI</span></div>
+      <div id="farmEventFeed" class="farm-event-feed"></div>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-        <div class="dashboard-card"><div class="kpi-label">Sürü</div><div id="herdKpi" class="kpi-value">24</div><div class="text-xs text-slate-500">baş</div></div>
-        <div class="dashboard-card"><div class="kpi-label">Günlük Süt</div><div id="milkKpi" class="kpi-value green">0 L</div><div class="text-xs text-slate-500">bugün</div></div>
-        <div class="dashboard-card"><div class="kpi-label">Yem Stoğu</div><div id="feedKpi" class="kpi-value yellow">0 kg</div><div class="text-xs text-slate-500">stok</div></div>
-        <div class="dashboard-card"><div class="kpi-label">Kasa</div><div id="moneyKpi" class="kpi-value blue">0 ₺</div><div class="text-xs text-slate-500">nakit</div></div>
-        <div class="dashboard-card"><div class="kpi-label">Meme Doluluğu</div><div id="udderKpi" class="kpi-value">0%</div><div class="text-xs text-slate-500">ortalama</div></div>
-        <div class="dashboard-card"><div class="kpi-label">Rumen pH</div><div id="rumenKpi" class="kpi-value green">0</div><div class="text-xs text-slate-500">ortalama</div></div>
+    <div class="mission-game-card">
+      <div class="mission-glow"></div>
+      <div class="game-section-head"><div><span class="section-kicker">BUGÜNÜN GÖREVİ</span><h3 id="dailyMissionTitle">🎯 Süt Ustası</h3></div><span id="missionReward" class="mission-reward">+250 XP</span></div>
+      <p id="dailyMissionText" class="mission-text">Günün süt hedefini tamamla.</p>
+      <div class="mission-target"><strong id="missionProgressText">0%</strong><span>HEDEF</span></div>
+      <div class="mission-track"><i id="missionProgress"></i></div>
+      <div class="mission-bottom"><span id="missionStatus">Devam ediyor</span><button id="missionAction" type="button">HEDEFİ TAKİP ET →</button></div>
     </div>
+  </div>
 
-    <div class="game-layer-grid mt-5">
-        <div class="game-event-panel">
-            <div class="game-panel-head"><div><span class="game-eyebrow">CANLI AKIŞ</span><h3>🐄 Çiftlikte Şu Anda</h3></div><span id="eventPulse" class="live-pill">● CANLI</span></div>
-            <div id="farmEventFeed" class="farm-event-feed"></div>
-        </div>
-        <div class="daily-mission-panel">
-            <div class="game-panel-head"><div><span class="game-eyebrow">BUGÜNÜN HEDEFİ</span><h3 id="dailyMissionTitle">🎯 Süt Ustası</h3></div><span id="missionReward" class="mission-reward">+100 XP</span></div>
-            <p id="dailyMissionText" class="mission-text">Günün süt hedefini tamamla.</p>
-            <div class="mission-progress-row"><div class="mission-track"><div id="missionProgress" class="mission-fill"></div></div><b id="missionProgressText">0%</b></div>
-            <div class="mission-footer"><span id="missionStatus">Devam ediyor</span><button id="missionAction" class="mission-action" type="button">HEDEFİ TAKİP ET</button></div>
-        </div>
-    </div>
+  <div class="farm-condition-row">
+    <div class="condition-card"><span>❤️ SÜRÜ SAĞLIĞI</span><strong id="gameHerdHealth">92</strong><div><i style="width:92%"></i></div></div>
+    <div class="condition-card"><span>🌾 BESLEME</span><strong id="gameFeedHealth">87</strong><div><i style="width:87%"></i></div></div>
+    <div class="condition-card"><span>🥛 ÜRETİM</span><strong id="gameProductionHealth">94</strong><div><i style="width:94%"></i></div></div>
+    <div class="condition-card"><span>💰 EKONOMİ</span><strong id="gameEconomyHealth">76</strong><div><i style="width:76%"></i></div></div>
+  </div>
 
-    <div class="grid md:grid-cols-3 gap-3 mt-4">
-        <div class="quick-status">
-            <span>🥛 Sonraki sağım</span>
-            <b id="nextMilkingText">Hesaplanıyor...</b>
-        </div>
-        <div class="quick-status">
-            <span>🌾 Yem durumu</span>
-            <b id="feedDaysText">Hesaplanıyor...</b>
-        </div>
-        <div class="quick-status">
-            <span>💰 Günlük net</span>
-            <b id="dashboardNet">0 ₺</b>
-        </div>
+  <div class="game-bottom-grid">
+    <div class="next-action-card">
+      <div class="game-section-head"><div><span class="section-kicker">SIRADA NE VAR?</span><h3>⏱️ Çiftlik planı</h3></div></div>
+      <div class="action-timeline">
+        <div class="timeline-item active"><i>🥛</i><div><b id="nextMilkingText">Sonraki sağım hesaplanıyor...</b><small>Üretim kontrolü</small></div><span>1</span></div>
+        <div class="timeline-item"><i>🌾</i><div><b>Rasyon kontrolü</b><small id="feedDaysText">Yem durumu hesaplanıyor...</small></div><span>2</span></div>
+        <div class="timeline-item"><i>🐄</i><div><b>Sürü taraması</b><small>Hayvanların biyolojik durumunu kontrol et</small></div><span>3</span></div>
+      </div>
     </div>
-    <div class="mt-4 metric">
-        <div class="flex items-center justify-between gap-3 mb-2">
-            <span class="text-xs font-bold text-slate-300">🚨 Çiftlik Uyarıları</span>
-            <span id="alertCount" class="text-[10px] text-slate-500">0 aktif</span>
-        </div>
-        <div id="dashboardAlerts" class="space-y-1 text-xs text-slate-400">
-            Sistem kontrol ediliyor...
-        </div>
+    <div class="alert-game-card">
+      <div class="game-section-head"><div><span class="section-kicker">DİKKAT</span><h3>🚨 Çiftlik uyarıları</h3></div><span id="alertCount" class="alert-count">0</span></div>
+      <div id="dashboardAlerts" class="game-alert-list">Sistem kontrol ediliyor...</div>
     </div>
-    <div class="mt-4 metric milk-performance-panel">
-        <div class="flex items-center justify-between gap-3 mb-3">
-            <div>
-                <div class="text-xs font-bold text-slate-300">📊 Süt Verimi Raporu</div>
-                <div class="text-[10px] text-slate-500 mt-1">Günlük toplam süt, hayvan bazlı verim ve olası düşüş nedenleri</div>
-            </div>
-            <span id="milkPerformanceSummary" class="text-[10px] text-slate-500">Hesaplanıyor...</span>
-        </div>
-        <div id="milkDailyChart" class="milk-daily-chart"></div>
-        <div id="milkPerformanceTable" class="mt-3"></div>
-    </div>
+  </div>
+
+  <div class="game-mini-footer">
+    <span>🌍 Ortak dünya saati • 6 dakika = 1 çiftlik günü</span>
+    <span id="dashboardNet">Günlük net: 0 ₺</span>
+    <span>Rumen pH <b id="rumenKpi">0</b> • Meme doluluğu <b id="udderKpi">0%</b></span>
+  </div>
 </section>
 
 
