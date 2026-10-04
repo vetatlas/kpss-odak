@@ -249,6 +249,19 @@
         <div class="dashboard-card"><div class="kpi-label">Rumen pH</div><div id="rumenKpi" class="kpi-value green">0</div><div class="text-xs text-slate-500">ortalama</div></div>
     </div>
 
+    <div class="game-layer-grid mt-5">
+        <div class="game-event-panel">
+            <div class="game-panel-head"><div><span class="game-eyebrow">CANLI AKIŞ</span><h3>🐄 Çiftlikte Şu Anda</h3></div><span id="eventPulse" class="live-pill">● CANLI</span></div>
+            <div id="farmEventFeed" class="farm-event-feed"></div>
+        </div>
+        <div class="daily-mission-panel">
+            <div class="game-panel-head"><div><span class="game-eyebrow">BUGÜNÜN HEDEFİ</span><h3 id="dailyMissionTitle">🎯 Süt Ustası</h3></div><span id="missionReward" class="mission-reward">+100 XP</span></div>
+            <p id="dailyMissionText" class="mission-text">Günün süt hedefini tamamla.</p>
+            <div class="mission-progress-row"><div class="mission-track"><div id="missionProgress" class="mission-fill"></div></div><b id="missionProgressText">0%</b></div>
+            <div class="mission-footer"><span id="missionStatus">Devam ediyor</span><button id="missionAction" class="mission-action" type="button">HEDEFİ TAKİP ET</button></div>
+        </div>
+    </div>
+
     <div class="grid md:grid-cols-3 gap-3 mt-4">
         <div class="quick-status">
             <span>🥛 Sonraki sağım</span>
