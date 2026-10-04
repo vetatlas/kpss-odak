@@ -966,6 +966,39 @@ main.accounting-layout .accounting-module:before{
   background:radial-gradient(circle,rgba(56,189,248,.07),transparent 68%);pointer-events:none;
 }
 main.accounting.layout .accounting-module{min-width:0}
+
+/* ---------- GENİŞLİK / YERLEŞİM KİLİDİ ---------- */
+main.accounting-layout > #accounting-report,
+main.accounting-layout > #accounting-bank,
+main.accounting-layout > #accounting-operations{
+  grid-column:1 / -1!important;
+  grid-row:auto!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  justify-self:stretch!important;
+  align-self:stretch!important;
+  box-sizing:border-box!important;
+}
+main.accounting-layout > #accounting-summary,
+main.accounting-layout > #accounting-processing{
+  min-width:0!important;
+  max-width:none!important;
+  box-sizing:border-box!important;
+}
+#accounting-bank,
+#accounting-operations,
+#accounting-report{
+  overflow:visible!important;
+}
+#accounting-bank > *,
+#accounting-operations > *,
+#accounting-report > *{
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+
 .accounting-module-header{
   position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;
   gap:16px;min-width:0;margin-bottom:13px!important;
