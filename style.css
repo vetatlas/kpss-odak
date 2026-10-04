@@ -1843,3 +1843,25 @@ body:has([data-menu-section="sut-isleme"]:not([hidden])){--screen-accent:#38bdf8
     width:calc(100% - var(--side-nav-width))!important;
   }
 }
+
+/* Bağımsız finans ekranları — konumdan bağımsız premium yüzey */
+main .accounting-module{
+  border:1px solid rgba(255,255,255,.08)!important;
+  border-radius:24px!important;
+  background:
+    radial-gradient(circle at 100% 0,rgba(56,189,248,.065),transparent 32%),
+    linear-gradient(145deg,rgba(15,23,42,.94),rgba(8,13,24,.97))!important;
+  box-shadow:0 18px 50px rgba(0,0,0,.28)!important;
+  padding:clamp(18px,2.5vw,30px)!important;
+  overflow:hidden!important;
+  position:relative!important;
+}
+main .accounting-module::before{
+  content:"";position:absolute;inset:0 0 auto;height:3px;
+  background:linear-gradient(90deg,transparent,var(--module-accent,#38bdf8),transparent);
+}
+#accounting-summary{--module-accent:#22c55e}
+#accounting-report{--module-accent:#a78bfa}
+#accounting-bank{--module-accent:#f59e0b}
+#accounting-operations{--module-accent:#ef4444}
+#accounting-processing{--module-accent:#38bdf8}
