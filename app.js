@@ -4919,7 +4919,7 @@ async function setupIntroLogin(){
             persistSession:true,
             autoRefreshToken:true,
             detectSessionInUrl:true,
-            flowType:"pkce"
+            flowType:"implicit"
         }
     });
 
@@ -4961,29 +4961,27 @@ async function setupIntroLogin(){
     };
 
     /*
-      KRİTİK OAUTH CALLBACK:
-      Google/Supabase PKCE akışında geri dönüş URL'sinde ?code= bulunabilir.
-      Bu kod exchange edilmeden getSession() çağrılırsa tarayıcıda oturum
-      oluşmaz ve kullanıcı tekrar giriş ekranını görür.
+      STATİK GITHUB PAGES UYUMLU OAUTH:
+      Bu uygulamada PKCE yerine implicit akış kullanılıyor. Supabase
+      access_token / refresh_token değerlerini URL hash'inden kendisi işler.
+      Böylece statik sitede code-verifier kaybı nedeniyle giriş ekranına
+      geri dönme ihtimali ortadan kalkar.
     */
     try{
         const url=new URL(window.location.href);
-        const code=url.searchParams.get("code");
         const authError=url.searchParams.get("error_description")||url.searchParams.get("error");
-
         if(authError){
             console.error("OAuth callback hatası:",authError);
             setStatus("Google girişi tamamlanamadı. Lütfen tekrar dene.");
         }
-
-        if(code){
+        if(url.hash.includes("access_token=")){
             callbackInProgress=true;
             begin();
-            setStatus("Google hesabı doğrulanıyor...");
-            const {data,error}=await authClient.auth.exchangeCodeForSession(code);
+            setStatus("Google hesabın doğrulanıyor...");
+            const {data,error}=await authClient.auth.getSession();
             if(error) throw error;
-            try{window.history.replaceState({},document.title,url.origin+url.pathname)}catch(e){}
             if(data?.session) await openForSession(data.session);
+            try{window.history.replaceState({},document.title,url.origin+url.pathname)}catch(e){}
         }
     }catch(error){
         console.error("Google OAuth callback hatası:",error);
