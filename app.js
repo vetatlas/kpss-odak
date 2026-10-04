@@ -4899,19 +4899,38 @@ function finishIntro(fromOnboarding=false){
 }
 
 async function setupIntroLogin(){
-    const google=document.getElementById("googleLoginButton");const guest=document.getElementById("guestLoginButton");const status=document.getElementById("introAuthStatus");const loading=document.getElementById("introLoading");
-    const setStatus=m=>{if(status)status.textContent=m}; const begin=()=>{google?.classList.add("hidden");guest?.classList.add("hidden");loading?.classList.remove("hidden")};
+    const google=document.getElementById("googleLoginButton"),guest=document.getElementById("guestLoginButton"),status=document.getElementById("introAuthStatus"),loading=document.getElementById("introLoading");
+    const setStatus=m=>{if(status)status.textContent=m};
+    const begin=()=>{google?.classList.add("hidden");guest?.classList.add("hidden");loading?.classList.remove("hidden")};
     if(!window.supabase?.createClient){setStatus("Giriş servisi hazır değil. Misafir olarak devam edebilirsin.");return}
     const authClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-    try{
-        const {data}=await authClient.auth.getSession();
-        if(data?.session){setStatus("Oturum bulundu. Profilin kontrol ediliyor...");if(google)google.querySelector("b").textContent="Çiftliğe devam et";showOnboarding(data.session,authClient)}
-    }catch(e){console.warn("Oturum kontrolü:",e)}
+    let authHandled=false;
+    const handleSession=async(session)=>{
+        if(authHandled||!session?.user?.id)return;
+        authHandled=true;
+        setStatus("Google girişi başarılı. Profilin kontrol ediliyor...");
+        showOnboarding(session,authClient);
+        try{window.history.replaceState({},document.title,window.location.origin+window.location.pathname)}catch(e){}
+    };
+    try{const {data}=await authClient.auth.getSession();if(data?.session)await handleSession(data.session)}catch(e){console.warn("Oturum kontrolü:",e)}
+    authClient.auth.onAuthStateChange((event,session)=>{
+        if((event==="SIGNED_IN"||event==="INITIAL_SESSION")&&session)setTimeout(()=>handleSession(session),0);
+    });
     google?.addEventListener("click",async()=>{
-        try{const {data}=await authClient.auth.getSession();if(data?.session){begin();showOnboarding(data.session,authClient);return}begin();setStatus("Google giriş sayfası açılıyor...");const {error}=await authClient.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin+window.location.pathname}});if(error)throw error}catch(error){google?.classList.remove("hidden");guest?.classList.remove("hidden");loading?.classList.add("hidden");setStatus("Google girişi başlatılamadı. Misafir olarak devam edebilirsin.");console.error(error)}});
+        try{
+            const {data}=await authClient.auth.getSession();
+            if(data?.session){begin();await handleSession(data.session);return}
+            begin();setStatus("Google giriş sayfası açılıyor...");
+            const {error}=await authClient.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin+window.location.pathname}});
+            if(error)throw error;
+        }catch(error){
+            google?.classList.remove("hidden");guest?.classList.remove("hidden");loading?.classList.add("hidden");
+            setStatus("Google girişi başlatılamadı. Misafir olarak devam edebilirsin.");
+            console.error("Google giriş hatası:",error);
+        }
+    });
     guest?.addEventListener("click",()=>{begin();setStatus("Misafir çiftlik hazırlanıyor...");setTimeout(()=>finishIntro(true),350)});
 }
-
 function boot(){
     setupIntroLogin();
     /* İlk giriş ekranı kapanmadan ana oyun başlatılmaz. */
