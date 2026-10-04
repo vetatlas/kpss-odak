@@ -4926,7 +4926,11 @@ async function setupIntroLogin(){
                 user_metadata:{name:"Misafir Çiftlik Yöneticisi"}
             }
         };
-        showOnboarding(fakeSession,null);
+        if(typeof authClient==="undefined"){
+            finishIntro(true);
+            return;
+        }
+        showOnboarding(fakeSession,authClient);
     },{once:true});
 
     if(!window.supabase?.createClient){
