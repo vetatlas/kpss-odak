@@ -1496,9 +1496,14 @@ main.accounting-layout > #accounting-operations *{
 }
 @media (min-width:768px) and (max-width:1400px) and (orientation:landscape){
   main.accounting-layout{
-    grid-template-columns:minmax(0,5fr) minmax(0,7fr)!important;
+    grid-template-columns:repeat(12,minmax(0,1fr))!important;
     gap:10px!important;
   }
+  main.accounting-layout > #accounting-summary{grid-column:1 / span 5!important;}
+  main.accounting-layout > #accounting-processing{grid-column:6 / -1!important;}
+  main.accounting-layout > #accounting-report{grid-column:1 / span 4!important;}
+  main.accounting-layout > #accounting-bank{grid-column:5 / span 4!important;}
+  main.accounting-layout > #accounting-operations{grid-column:9 / -1!important;}
 }
 </style>
 </head>
