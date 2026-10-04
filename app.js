@@ -4914,8 +4914,17 @@ async function setupIntroLogin(){
         return;
     }
 
-    const authClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+    const authClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{
+        auth:{
+            persistSession:true,
+            autoRefreshToken:true,
+            detectSessionInUrl:true,
+            flowType:"pkce"
+        }
+    });
+
     let authHandled=false;
+    let callbackInProgress=false;
 
     const openForSession=async(session)=>{
         if(authHandled||!session?.user?.id)return;
@@ -4924,32 +4933,21 @@ async function setupIntroLogin(){
         setStatus("Hesabın kontrol ediliyor...");
 
         try{
-            /*
-              Google ile daha önce kurulmuş hesabı her girişte yeniden
-              onboarding ekranına sokma. Profil + çiftlik varsa doğrudan oyuna gir.
-            */
-            const {data:profile,error:profileError}=await authClient
-                .from("profiles")
-                .select("id,username,display_name")
-                .eq("id",session.user.id)
-                .maybeSingle();
+            const [{data:profile,error:profileError},{data:farm,error:farmError}]=await Promise.all([
+                authClient.from("profiles").select("id,username,display_name").eq("id",session.user.id).maybeSingle(),
+                authClient.from("farms").select("id,name").eq("owner_id",session.user.id).maybeSingle()
+            ]);
             if(profileError) throw profileError;
-
-            const {data:farm,error:farmError}=await authClient
-                .from("farms")
-                .select("id,name")
-                .eq("owner_id",session.user.id)
-                .maybeSingle();
             if(farmError) throw farmError;
 
             if(profile?.id && farm?.id){
                 setStatus("Çiftliğin bulundu. Oyuna giriş yapılıyor...");
                 try{window.history.replaceState({},document.title,window.location.origin+window.location.pathname)}catch(e){}
-                setTimeout(()=>finishIntro(false),300);
+                setTimeout(()=>finishIntro(false),250);
                 return;
             }
 
-            setStatus("Hesabın hazır. Çiftlik profilini oluşturalım...");
+            setStatus("İlk giriş tamamlandı. Çiftlik profilini oluşturalım...");
             showOnboarding(session,authClient);
             try{window.history.replaceState({},document.title,window.location.origin+window.location.pathname)}catch(e){}
         }catch(error){
@@ -4962,14 +4960,54 @@ async function setupIntroLogin(){
         }
     };
 
+    /*
+      KRİTİK OAUTH CALLBACK:
+      Google/Supabase PKCE akışında geri dönüş URL'sinde ?code= bulunabilir.
+      Bu kod exchange edilmeden getSession() çağrılırsa tarayıcıda oturum
+      oluşmaz ve kullanıcı tekrar giriş ekranını görür.
+    */
     try{
-        const {data}=await authClient.auth.getSession();
-        if(data?.session) await openForSession(data.session);
-    }catch(e){
-        console.warn("Oturum kontrolü:",e);
+        const url=new URL(window.location.href);
+        const code=url.searchParams.get("code");
+        const authError=url.searchParams.get("error_description")||url.searchParams.get("error");
+
+        if(authError){
+            console.error("OAuth callback hatası:",authError);
+            setStatus("Google girişi tamamlanamadı. Lütfen tekrar dene.");
+        }
+
+        if(code){
+            callbackInProgress=true;
+            begin();
+            setStatus("Google hesabı doğrulanıyor...");
+            const {data,error}=await authClient.auth.exchangeCodeForSession(code);
+            if(error) throw error;
+            try{window.history.replaceState({},document.title,url.origin+url.pathname)}catch(e){}
+            if(data?.session) await openForSession(data.session);
+        }
+    }catch(error){
+        console.error("Google OAuth callback hatası:",error);
+        authHandled=false;
+        google?.classList.remove("hidden");
+        guest?.classList.remove("hidden");
+        loading?.classList.add("hidden");
+        setStatus("Google doğrulaması başarısız oldu. Tekrar giriş yapabilirsin.");
+    }finally{
+        callbackInProgress=false;
+    }
+
+    if(!authHandled){
+        try{
+            const {data,error}=await authClient.auth.getSession();
+            if(error) throw error;
+            if(data?.session) await openForSession(data.session);
+        }catch(e){
+            console.warn("Oturum kontrolü:",e);
+        }
     }
 
     authClient.auth.onAuthStateChange((event,session)=>{
+        if(callbackInProgress) return;
         if((event==="SIGNED_IN"||event==="INITIAL_SESSION")&&session){
             setTimeout(()=>openForSession(session),0);
         }
@@ -4988,10 +5026,11 @@ async function setupIntroLogin(){
             const {error}=await authClient.auth.signInWithOAuth({
                 provider:"google",
                 options:{
-                    redirectTo:window.location.origin+window.location.pathname
+                    redirectTo:window.location.origin+window.location.pathname,
+                    queryParams:{access_type:"offline",prompt:"select_account"}
                 }
             });
-            if(error)throw error;
+            if(error) throw error;
         }catch(error){
             google?.classList.remove("hidden");
             guest?.classList.remove("hidden");
@@ -5001,11 +5040,6 @@ async function setupIntroLogin(){
         }
     });
 
-    /*
-      Misafir artık doğrudan ana sayfaya atlamaz.
-      Önce aynı onboarding akışını görür; ardından kullanıcı isterse
-      yerel/misafir çiftliğini başlatır.
-    */
     guest?.addEventListener("click",()=>{
         begin();
         setStatus("Misafir çiftlik kurulumu hazırlanıyor...");
