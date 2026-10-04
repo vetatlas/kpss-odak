@@ -189,10 +189,10 @@ async function initSharedBackend(){
             .subscribe();
 
         sharedBackend.channel=sharedBackend.client
-            .channel("ciftlik-kisisel-dunya-${sharedBackend.farmId}")
+            .channel("ciftlik-kisisel-dunya-"+sharedBackend.farmId)
             .on(
                 "postgres_changes",
-                {event:"UPDATE",schema:"public",table:"farm_saves",filter:"farm_id=eq.${sharedBackend.farmId}"},
+                {event:"UPDATE",schema:"public",table:"farm_saves",filter:"farm_id=eq."+sharedBackend.farmId},
                 payload=>{
                     const incoming=payload?.new?.state;
                     const incomingVersion=Number(payload?.new?.version||0);
