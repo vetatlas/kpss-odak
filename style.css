@@ -1820,28 +1820,82 @@ body:has([data-menu-section="sut-isleme"]:not([hidden])){--screen-accent:#38bdf8
     width:calc(100% - var(--side-nav-width))!important;
   }
 }
+@media (max-width:1100px) and (min-width:768px){
+  :root{--side-nav-width:220px}
+  #appMenu.app-side-nav{padding:18px 10px!important}
+  #appMenu.app-side-nav .menu-btn{font-size:13px!important;padding:9px 10px!important}
+  .side-nav-brand{padding-left:5px;padding-right:5px}
+}
 @media(max-width:767px){
-  :root{--side-nav-width:76px}
+  :root{--side-nav-width:0px}
   #appMenu.app-side-nav{
-    width:var(--side-nav-width)!important;
-    padding:14px 8px!important;
+    width:250px!important;
+    max-width:86vw!important;
+    right:auto!important;
+    padding:18px 12px!important;
+    transform:translateX(-105%)!important;
+    transition:transform .24s ease,box-shadow .24s ease!important;
+    box-shadow:none!important;
+    overscroll-behavior:contain;
   }
-  .side-nav-brand{justify-content:center;padding:4px 0 14px}
-  .side-nav-brand>div:last-child,.side-nav-section,.side-nav-footer span:last-child{display:none}
+  #appMenu.app-side-nav.mobile-open{
+    transform:translateX(0)!important;
+    box-shadow:18px 0 55px rgba(0,0,0,.5)!important;
+  }
+  .side-nav-brand{padding:4px 8px 18px!important}
+  .side-nav-brand>div:last-child,.side-nav-section,.side-nav-footer span:last-child{display:block}
   #appMenu.app-side-nav .menu-btn{
-    justify-content:center!important;
-    padding:9px!important;
+    justify-content:flex-start!important;
+    padding:11px 12px!important;
+    min-height:48px!important;
   }
-  #appMenu.app-side-nav .menu-btn>span:last-child{display:none}
-  .menu-icon{width:38px;height:38px;flex-basis:38px;font-size:17px}
+  #appMenu.app-side-nav .menu-btn>span:last-child{display:block}
+  .menu-icon{width:32px;height:32px;flex-basis:32px;font-size:15px}
   .app-main{
-    margin-left:var(--side-nav-width)!important;
-    max-width:calc(100% - var(--side-nav-width))!important;
+    margin-left:0!important;
+    max-width:100%!important;
+    width:100%!important;
   }
   header.sticky{
-    margin-left:var(--side-nav-width)!important;
-    width:calc(100% - var(--side-nav-width))!important;
+    margin-left:0!important;
+    width:100%!important;
   }
+  .mobile-menu-toggle{
+    display:grid!important;
+    place-items:center;
+    position:fixed;
+    left:10px;
+    top:max(10px,env(safe-area-inset-top));
+    z-index:120!important;
+    width:42px;
+    height:42px;
+    border:1px solid rgba(148,163,184,.18);
+    border-radius:12px;
+    background:rgba(7,12,21,.92);
+    color:#e2e8f0;
+    box-shadow:0 8px 24px rgba(0,0,0,.3);
+    font-size:21px;
+    cursor:pointer;
+  }
+  .mobile-menu-backdrop{
+    display:block!important;
+    position:fixed;
+    inset:0;
+    z-index:75;
+    background:rgba(0,0,0,.55);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease;
+    backdrop-filter:blur(2px);
+  }
+  .mobile-menu-backdrop.open{
+    opacity:1;
+    pointer-events:auto;
+  }
+  body.mobile-menu-open{overflow:hidden}
+}
+@media(min-width:768px){
+  .mobile-menu-toggle,.mobile-menu-backdrop{display:none!important}
 }
 
 /* Bağımsız finans ekranları — konumdan bağımsız premium yüzey */
