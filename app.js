@@ -4764,6 +4764,10 @@ function setupAppMenu(){
         const main=document.querySelector("main");
         main?.classList.toggle("accounting-layout",key==="muhasebe");
 
+        /* Her menüyü ayrı bir çalışma ekranı olarak işaretle. */
+        main?.setAttribute("data-active-menu",key);
+        document.body.setAttribute("data-active-menu",key);
+
         /*
           Muhasebe dışındaki ekranlarda herhangi bir finans özetinin
           görünür kalmasını garanti altına al.
