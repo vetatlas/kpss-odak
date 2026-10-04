@@ -4816,28 +4816,61 @@ function initFarmApp(){
     }
 }
 
-function boot(){
-    document.getElementById("bootScreen")?.remove();
+function finishIntro(){
+    const screen=document.getElementById("introScreen");
+    if(!screen) return boot();
+    screen.classList.add("intro-hide");
+    setTimeout(()=>screen.remove(),750);
     initFarmApp();
-
-    /* Sayfa açılır açılmaz çiftlik ambiyansını başlatmayı dene. */
-    try{
-        startFarmAmbience();
-        resumeFarmAudio();
-    }catch(e){}
-
-    /* Tarayıcı autoplay'i engellerse ilk kullanıcı etkileşiminde anında tekrar dene. */
-    const unlockAudio=()=>{
-        try{
-            startFarmAmbience();
-            resumeFarmAudio();
-        }catch(e){}
-    };
-    ["pointerdown","touchstart","keydown"].forEach(type=>{
-        document.addEventListener(type,unlockAudio,{once:true,passive:true});
-    });
+    try{startFarmAmbience();resumeFarmAudio()}catch(e){}
 }
 
+async function setupIntroLogin(){
+    const google=document.getElementById("googleLoginButton");
+    const guest=document.getElementById("guestLoginButton");
+    const status=document.getElementById("introAuthStatus");
+    const loading=document.getElementById("introLoading");
+    const setStatus=(msg)=>{if(status)status.textContent=msg};
+    const begin=()=>{google?.classList.add("hidden");guest?.classList.add("hidden");loading?.classList.remove("hidden")};
+    if(!window.supabase?.createClient){setStatus("Giriş servisi hazır değil. Misafir olarak devam edebilirsin.");return}
+    const authClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+    try{
+        const {data}=await authClient.auth.getSession();
+        if(data?.session){
+            setStatus("Oturum bulundu. Çiftliğin seni bekliyor.");
+            if(google)google.querySelector("b").textContent="Çiftliğe devam et";
+        }
+    }catch(e){console.warn("Oturum kontrolü:",e)}
+    google?.addEventListener("click",async()=>{
+        try{
+            const {data}=await authClient.auth.getSession();
+            if(data?.session){begin();finishIntro();return}
+            begin();setStatus("Google giriş sayfası açılıyor...");
+            const {error}=await authClient.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin+window.location.pathname}});
+            if(error)throw error;
+        }catch(error){
+            google?.classList.remove("hidden");guest?.classList.remove("hidden");loading?.classList.add("hidden");
+            setStatus("Google girişi başlatılamadı. Misafir olarak devam edebilirsin.");console.error(error);
+        }
+    });
+    guest?.addEventListener("click",()=>{begin();setStatus("Misafir çiftlik hazırlanıyor...");setTimeout(finishIntro,350)});
+}
+
+function boot(){
+    setupIntroLogin();
+    /* İlk giriş ekranı kapanmadan ana oyun başlatılmaz. */
+    if(window.supabase?.createClient){
+        try{
+            const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+            client.auth.getSession().then(({data})=>{
+                if(data?.session){
+                    const status=document.getElementById("introAuthStatus");
+                    if(status)status.textContent="Oturum bulundu. Çiftliğin seni bekliyor.";
+                }
+            }).catch(()=>{});
+        }catch(e){}
+    }
+}
 
 /* =========================================================
    BAŞLAT
