@@ -1,1 +1,8 @@
-
+[
+  { "key":"islamOncesi", "dosya":"islamiyet-oncesi.json", "ad":"İslamiyet Öncesi Türk Tarihi", "ikon":"🏹", "aciklama":"Hunlar, Göktürkler, Uygurlar" },
+  { "key":"turkIslam",   "dosya":"turk-islam.json",       "ad":"İlk Türk-İslam Devletleri",     "ikon":"🕌", "aciklama":"Karahanlılar, Gazneliler" },
+  { "key":"osmanli",     "dosya":"osmanli.json",          "ad":"Osmanlı Tarihi",                "ikon":"⚔️", "aciklama":"Kuruluş'tan Dağılma'ya" },
+  { "key":"kurtulus",    "dosya":"kurtulus-savasi.json",  "ad":"Kurtuluş Savaşı",               "ikon":"🎖️", "aciklama":"1918-1923 Milli Mücadele" },
+  { "key":"inkilap",     "dosya":"inkilap-tarihi.json",   "ad":"Atatürk İlkeleri ve İnkılapları","ikon":"📜", "aciklama":"Cumhuriyet devrimleri" },
+  { "key":"cagdas",      "dosya":"cagdas-tarih.json",     "ad":"Çağdaş Türk ve Dünya Tarihi",   "ikon":"🌍", "aciklama":"Dünya savaşları, Soğuk Savaş" }
+]
