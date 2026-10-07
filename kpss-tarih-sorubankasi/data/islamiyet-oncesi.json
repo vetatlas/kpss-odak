@@ -1,0 +1,19 @@
+{
+  "kategori": "İslamiyet Öncesi Türk Tarihi",
+  "sorular": [
+    {
+      "id": 1,
+      "soru": "Türk tarihinin ilk yazılı belgesi hangisidir?",
+      "secenekler": ["Kutadgu Bilig", "Orhun Yazıtları", "Divanü Lügati't-Türk", "Atabetü'l-Hakayık"],
+      "dogru": 1,
+      "aciklama": "Orhun Yazıtları, II. Göktürk Devleti döneminde yazılmıştır."
+    },
+    {
+      "id": 2,
+      "soru": "Osmanlı Devleti'nin kurucusu kimdir?",
+      "secenekler": ["Ertuğrul Gazi", "Osman Bey", "Orhan Bey", "I. Murat"],
+      "dogru": 1,
+      "aciklama": "Osman Bey, 1299'da bağımsızlığını ilan etmiştir."
+    }
+  ]
+}
